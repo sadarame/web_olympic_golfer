@@ -22,3 +22,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 backend/venv/
+frontend/olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json
