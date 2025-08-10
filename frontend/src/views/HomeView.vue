@@ -15,7 +15,7 @@
     </p>
 
     <!-- ログインセクション -->
-    <div v-if="!isLoggedIn" class="text-center">
+    <div v-if="!authStore.isAuthenticated" class="text-center">
       <!-- Google Sign-In button -->
       <div id="g_id_onload"
            data-client_id="662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com"
@@ -35,9 +35,10 @@
     <!-- ログイン後の表示 -->
     <div v-else class="text-center">
       <div class="message-box">
-        <p v-if="userName">こんにちは、{{ userName }}さん！</p>
-        <img v-if="userPicture" :src="userPicture" alt="User Profile" class="mx-auto rounded-full w-20 h-20 mb-4">
-        <p>ログインしました！🥳</p>
+        <p v-if="authStore.user">
+          こんにちは<br>
+          {{ authStore.user.name }}さん！
+        </p>
       </div>
       <button @click="handleStartGame" class="btn btn-start">
         ゲームを始める 🏌️‍♂️
@@ -47,11 +48,10 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { onMounted } from 'vue'; // Add onMounted
+  import { useAuthStore } from '../stores/auth';
 
-  const isLoggedIn = ref(false);
-  const userName = ref('');
-  const userPicture = ref('');
+  const authStore = useAuthStore();
 
   function decodeJwtResponse(token: string) {
     var base64Url = token.split('.')[1];
@@ -64,16 +64,30 @@
 
   // This function will be called by Google's GIS library
   // It needs to be globally accessible, so we attach it to window
-  (window as any).handleCredentialResponse = (response: any) => {
+  const handleCredentialResponse = (response: any) => {
     console.log("Encoded JWT ID token: " + response.credential);
     const decoded = decodeJwtResponse(response.credential);
     console.log("Decoded JWT payload:", decoded);
 
-    userName.value = decoded.name;
-    userPicture.value = decoded.picture;
-    isLoggedIn.value = true;
+    authStore.setAuthInfo(decoded, response.credential); // Save user info and token to Pinia store
     alert('Googleログイン成功！IDトークンをコンソールで確認してください。');
   };
+
+  onMounted(() => {
+    // Attach the function to window after the component is mounted
+    (window as any).handleCredentialResponse = handleCredentialResponse;
+    // If the GSI script is already loaded, this will re-render the button
+    // Otherwise, it will render once the GSI script loads
+    const googleAccounts = (window as any).google?.accounts?.id;
+    const signInButton = document.querySelector(".g_id_signin") as HTMLElement;
+
+    if (googleAccounts && signInButton) {
+      googleAccounts.renderButton(
+        signInButton,
+        { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" } // customization attributes
+      );
+    }
+  });
 
   const handleStartGame = () => {
     alert('次の画面（開始画面）への遷移をシミュレートします。');

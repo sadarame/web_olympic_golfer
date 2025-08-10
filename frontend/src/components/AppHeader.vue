@@ -7,12 +7,12 @@
         <!-- ログイン状態表示部分 -->
         <div id="user-info" class="flex items-center space-x-4 relative">
             <div id="user-profile-button" class="flex items-center space-x-2 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
-                <img id="user-avatar" src="https://placehold.co/40x40/cccccc/333333?text=User" alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-green-500">
-                <span id="user-name" class="font-semibold text-gray-700">ゲストユーザー</span>
+                <img id="user-avatar" :src="authStore.user?.picture || 'https://placehold.co/40x40/cccccc/333333?text=User'" alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-green-500">
+                <span id="user-name" class="font-semibold text-gray-700">{{ authStore.user?.name || 'ゲストユーザー' }}</span>
             </div>
             <!-- ホバーメニュー (初期状態では非表示) -->
-            <div id="hover-menu" class="absolute right-0 top-14 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden z-20">
-                <button id="logout-button" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <div id="hover-menu" class="absolute right-0 top-14 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden z-20" v-if="authStore.isAuthenticated">
+                <button id="logout-button" @click="handleLogout" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                     ログアウト
                 </button>
             </div>
@@ -21,7 +21,15 @@
 </template>
 
 <script setup lang="ts">
-// No specific script logic needed for this simple header yet
+import { useAuthStore } from '../stores/auth';
+
+const authStore = useAuthStore();
+
+const handleLogout = () => {
+  authStore.clearAuthInfo();
+  alert('ログアウトしました。');
+  // Optionally, redirect to login page or home page
+};
 </script>
 
 <style scoped>
