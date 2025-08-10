@@ -1,11 +1,12 @@
 from firebase_admin import firestore
 import datetime
 
-db = firestore.client()
-
 class GameModel:
     def __init__(self):
-        self.collection = db.collection("games")
+        self.collection = self._get_db().collection("games")
+
+    def _get_db(self):
+        return firestore.client()
 
     def create_game(self, game_id, game_data):
         game_data["createdAt"] = datetime.datetime.now(datetime.timezone.utc)

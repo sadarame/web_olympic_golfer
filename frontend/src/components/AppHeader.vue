@@ -1,20 +1,19 @@
 <template>
-  <header class="bg-green-700 text-white p-4 shadow-md"> <!-- Removed fixed positioning classes -->
-    <div class="container mx-auto flex flex-col items-center"> <!-- Changed to flex-col and items-center -->
-      <!-- Site Title -->
-      <h1 class="text-2xl font-bold text-white">Golf Olympic ⛳️</h1> <!-- Changed text color to white -->
-      <!-- Login Status Display Part -->
-      <div id="user-info" class="flex items-center space-x-4 mt-2"> <!-- Added mt-2 for spacing -->
-          <div class="flex items-center space-x-2">
-              <img id="user-avatar" src="https://placehold.co/40x40/cccccc/333333?text=User" alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-green-500">
-              <span id="user-name" class="font-semibold text-white">ゲストユーザー</span> <!-- Changed text color to white -->
-          </div>
-          <button id="logout-button" class="text-white hover:text-red-200 transition-colors duration-200"> <!-- Changed text color to white -->
-              ログアウト
-          </button>
-      </div>
-    </div>
-  </header>
+    <header class="header fixed top-0 left-0 right-0 z-10">
+        <h1 class="text-2xl font-bold text-gray-800">
+            Golf Olympic ⛳️
+        </h1>
+        <!-- ログイン状態表示部分 (初期状態では非表示) -->
+        <div id="user-info" class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <img id="user-avatar" src="https://placehold.co/40x40/cccccc/333333?text=User" alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-green-500">
+                <span id="user-name" class="font-semibold text-gray-700">ログイン中</span>
+            </div>
+            <button id="logout-button" class="text-gray-500 hover:text-red-500 transition-colors duration-200">
+                ログアウト
+            </button>
+        </div>
+    </header>
 </template>
 
 <script setup lang="ts">

@@ -4,10 +4,9 @@ import json
 from datetime import datetime
 from firebase_functions import https_fn
 
-game_service = GameService()
-
 def start_game_controller(request: https_fn.Request):
     """Handles the logic for starting a new game."""
+    game_service = GameService() # Instantiate GameService inside the function
     try:
         data = request.get_json()
         golf_course = data.get('golfCourse')
@@ -26,6 +25,7 @@ def start_game_controller(request: https_fn.Request):
 
 def update_score_and_game_status_controller(request: https_fn.Request):
     """Handles the logic for updating score and game status."""
+    game_service = GameService() # Instantiate GameService inside the function
     try:
         data = request.get_json()
         game_id = data.get('gameId')
@@ -43,6 +43,7 @@ def update_score_and_game_status_controller(request: https_fn.Request):
 
 def get_game_list_controller(request: https_fn.Request):
     """Handles the logic for getting the game list."""
+    game_service = GameService() # Instantiate GameService inside the function
     try:
         games = game_service.get_all_games_list()
         # Convert datetime objects to string for JSON serialization
@@ -58,6 +59,7 @@ def get_game_list_controller(request: https_fn.Request):
 
 def delete_game_controller(request: https_fn.Request):
     """Handles the logic for deleting a game."""
+    game_service = GameService() # Instantiate GameService inside the function
     try:
         game_id = request.args.get('gameId')
         if not game_id:
@@ -71,6 +73,7 @@ def delete_game_controller(request: https_fn.Request):
 
 def get_game_info_controller(request: https_fn.Request):
     """Handles the logic for getting game info."""
+    game_service = GameService() # Instantiate GameService inside the function
     try:
         game_id = request.args.get('gameId')
         if not game_id:
@@ -82,9 +85,9 @@ def get_game_info_controller(request: https_fn.Request):
             return https_fn.Response("Game not found", status=404)
 
         # Convert datetime objects to string for JSON serialization
-        if 'createdAt' in game_data and isinstance(game_data['createdAt'], datetime):
+        if 'createdAt' in game_data and isinstance(game_data['createdAt'], datetime.datetime):
             game_data['createdAt'] = game_data['createdAt'].isoformat()
-        if 'updatedAt' in game_data and isinstance(game_data['updatedAt'], datetime):
+        if 'updatedAt' in game_data and isinstance(game_data['updatedAt'], datetime.datetime):
             game_data['updatedAt'] = game_data['updatedAt'].isoformat()
 
         return https_fn.Response(json.dumps(game_data), status=200, mimetype="application/json")

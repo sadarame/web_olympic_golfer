@@ -1,10 +1,10 @@
-
-
 import json
 import os
 from unittest.mock import Mock
 from controllers.game_controller import start_game_controller
 from firebase_admin import initialize_app, credentials
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/Users/yosuke/Desktop/PJ/olympic_golfer/backend/olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json"
 
 # --- モックデータ ---
 # 実際のテストシナリオに合わせてこのデータを変更してください
@@ -22,14 +22,8 @@ mock_request.get_json.return_value = mock_data
 mock_request.args = {} # GETリクエストのクエリパラメータ用
 
 # --- Firebaseアプリの初期化 ---
-# GOOGLE_APPLICATION_CREDENTIALS 環境変数からサービスアカウントキーを読み込みます
-if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
-    cred = credentials.Certificate(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
-    initialize_app(cred)
-else:
-    print("WARNING: GOOGLE_APPLICATION_CREDENTIALS environment variable not set.")
-    print("Firebase app will be initialized without credentials, which may cause issues with Firestore access.")
-    initialize_app() # 資格情報なしで初期化（テスト目的の場合など）
+cred = credentials.Certificate(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
+initialize_app(cred)
 
 # --- テスト対象の関数を呼び出し ---
 if __name__ == "__main__":
@@ -42,5 +36,3 @@ if __name__ == "__main__":
     print(f"Mimetype: {response.mimetype}")
     print(f"Body: {response.get_data(as_text=True)}")
     print("----------------")
-
-
