@@ -34,12 +34,6 @@
 
     <!-- ログイン後の表示 -->
     <div v-else class="text-center">
-      <div class="message-box">
-        <p v-if="authStore.user">
-          こんにちは<br>
-          {{ authStore.user.name }}さん！
-        </p>
-      </div>
       <button @click="handleStartGame" class="btn btn-start">
         ゲームを始める 🏌️‍♂️
       </button>
@@ -76,17 +70,35 @@
   onMounted(() => {
     // Attach the function to window after the component is mounted
     (window as any).handleCredentialResponse = handleCredentialResponse;
-    // If the GSI script is already loaded, this will re-render the button
-    // Otherwise, it will render once the GSI script loads
-    const googleAccounts = (window as any).google?.accounts?.id;
-    const signInButton = document.querySelector(".g_id_signin") as HTMLElement;
 
-    if (googleAccounts && signInButton) {
-      googleAccounts.renderButton(
-        signInButton,
-        { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" } // customization attributes
-      );
-    }
+    const renderGoogleButton = () => {
+      const googleAccounts = (window as any).google?.accounts?.id;
+      const signInButton = document.querySelector(".g_id_signin") as HTMLElement;
+
+      console.log("renderGoogleButton called.");
+      console.log("googleAccounts:", googleAccounts);
+      console.log("signInButton:", signInButton);
+
+      if (googleAccounts && signInButton) {
+        console.log("Attempting to initialize and render Google button.");
+        // Initialize the Google Identity Services client
+        googleAccounts.initialize({
+          client_id: "662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com",
+          callback: (window as any).handleCredentialResponse,
+        });
+
+        // Render the button
+        googleAccounts.renderButton(
+          signInButton,
+          { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" } // customization attributes
+        );
+      } else {
+        // If not ready, try again after a short delay
+        setTimeout(renderGoogleButton, 100);
+      }
+    };
+
+    renderGoogleButton(); // Initial call
   });
 
   const handleStartGame = () => {
@@ -114,7 +126,7 @@
   }
 
   .btn-start {
-    @apply bg-green-500 text-white hover:bg-green-600 focus:ring-green-400;
+    @apply bg-white text-gray-800 hover:bg-gray-100 focus:ring-gray-300;
   }
 
   .message-box {
