@@ -2,16 +2,20 @@
   <div class="container mx-auto p-4 md:p-8 max-w-sm card">
     <!-- アプリタイトル -->
     <h1 class="text-4xl font-bold text-center mb-4 text-gray-800">
-      Golf Olympic ⛳️
+      ⛳️
     </h1>
     <p class="text-center text-gray-600 mb-8">
+      オリンピックゴルフの<br>
       スコアを楽しく記録しよう！😊
     </p>
 
     <!-- アプリ説明 -->
     <p class="text-center text-gray-700 mb-8 leading-relaxed">
-      ゴルフのオリンピックスコアを記録するツールです✨<br>
-      Googleアカウントでのログインが必要です。
+      
+      <div v-if="!authStore.isAuthenticated">
+        Googleアカウントでの<br>
+        ログインが必要です
+      </div>
     </p>
 
     <!-- ログインセクション -->
@@ -33,20 +37,29 @@
     </div>
 
     <!-- ログイン後の表示 -->
-    <div v-else class="text-center">
-      <button @click="handleStartGame" class="btn btn-start">
+    <div v-else class="flex flex-col space-y-4">
+      <button @click="handleStartGame" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
         ゲームを始める 🏌️‍♂️
+      </button>
+      <button @click="handleEditFriends" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+        友達編集 🤝
+      </button>
+      <button @click="handleViewScores" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+        過去のスコア一覧 📊
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted } from 'vue'; // Add onMounted
+  import { onMounted, watch, nextTick } from 'vue';
   import { useAuthStore } from '../stores/auth';
+  import { useRouter } from 'vue-router';
 
   const authStore = useAuthStore();
+  const router = useRouter();
 
+  // JWTデコード関数
   function decodeJwtResponse(token: string) {
     var base64Url = token.split('.')[1];
     var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -56,8 +69,7 @@
     return JSON.parse(jsonPayload);
   }
 
-  // This function will be called by Google's GIS library
-  // It needs to be globally accessible, so we attach it to window
+  // コールバック関数
   const handleCredentialResponse = (response: any) => {
     console.log("Encoded JWT ID token: " + response.credential);
     const decoded = decodeJwtResponse(response.credential);
@@ -67,66 +79,50 @@
     alert('Googleログイン成功！IDトークンをコンソールで確認してください。');
   };
 
+  const renderGoogleButton = () => {
+    const googleAccounts = (window as any).google?.accounts?.id;
+    const signInButton = document.querySelector(".g_id_signin") as HTMLElement;
+
+    if (googleAccounts && signInButton) {
+      googleAccounts.initialize({
+        client_id: "662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com",
+        callback: handleCredentialResponse,
+      });
+      googleAccounts.renderButton(
+        signInButton,
+        { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" }
+      );
+    }
+  };
+
   onMounted(() => {
-    // Attach the function to window after the component is mounted
     (window as any).handleCredentialResponse = handleCredentialResponse;
-
-    const renderGoogleButton = () => {
-      const googleAccounts = (window as any).google?.accounts?.id;
-      const signInButton = document.querySelector(".g_id_signin") as HTMLElement;
-
-      console.log("renderGoogleButton called.");
-      console.log("googleAccounts:", googleAccounts);
-      console.log("signInButton:", signInButton);
-
-      if (googleAccounts && signInButton) {
-        console.log("Attempting to initialize and render Google button.");
-        // Initialize the Google Identity Services client
-        googleAccounts.initialize({
-          client_id: "662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com",
-          callback: (window as any).handleCredentialResponse,
-        });
-
-        // Render the button
-        googleAccounts.renderButton(
-          signInButton,
-          { type: "standard", size: "large", theme: "outline", text: "sign_in_with", shape: "rectangular", logo_alignment: "left" } // customization attributes
-        );
-      } else {
-        // If not ready, try again after a short delay
-        setTimeout(renderGoogleButton, 100);
-      }
-    };
-
-    renderGoogleButton(); // Initial call
   });
 
+  watch(() => authStore.isAuthenticated, (newIsAuthenticated) => {
+    if (!newIsAuthenticated) {
+      nextTick(() => {
+        renderGoogleButton();
+      });
+    }
+  }, { immediate: true });
+
   const handleStartGame = () => {
-    alert('次の画面（開始画面）への遷移をシミュレートします。');
+    router.push('/start');
+  };
+
+  const handleEditFriends = () => {
+    alert('友達編集画面への遷移をシミュレートします。');
+  };
+
+  const handleViewScores = () => {
+    alert('過去のスコア一覧画面への遷移をシミュレートします。');
   };
 </script>
 
 <style scoped>
-  .card {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 1.5rem; /* より丸みのあるデザインに */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* 影を強調 */
-    padding: 2rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  .btn {
-    @apply w-full py-3 px-6 font-bold rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2;
-  }
-
   .btn-google {
     @apply bg-blue-500 text-white hover:bg-blue-600 focus:ring-blue-400;
-  }
-
-  .btn-start {
-    @apply bg-white text-gray-800 hover:bg-gray-100 focus:ring-gray-300;
   }
 
   .message-box {
