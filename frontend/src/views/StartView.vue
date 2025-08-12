@@ -10,7 +10,7 @@
             <div class="space-y-4 mb-6 text-left">
                 <div>
                     <label for="round-date" class="block text-sm font-medium text-gray-700 mb-1">ラウンド日</label>
-                    <input type="date" id="round-date" class="w-full rounded border bg-gray-50 px-3 py-2 text-black outline-none ring-indigo-300 transition duration-100 focus:ring" v-model="roundDate">
+                    <input type="date" id="round-date" class="w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring" v-model="roundDate">
                 </div>
                 <div>
                     <label for="course-name" class="block text-sm font-medium text-gray-700 mb-1">ゴルフ場名</label>
@@ -73,7 +73,11 @@
 </script>
 
 <style scoped>
-    .input-field {
-        @apply w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200;
+    .input-base {
+    @apply w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none transition duration-100 ring ring-indigo-300;
+    }
+    /* ← バリアントは @apply に入れない */
+    .input-base:focus {
+    @apply ring;
     }
 </style>

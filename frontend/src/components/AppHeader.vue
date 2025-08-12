@@ -1,7 +1,7 @@
 <template>
     <!-- ヘッダー部分 -->
     <header class="header fixed top-0 left-0 right-0 z-10 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800">
+        <h1 class="text-2xl font-bold text-gray-800 cursor-pointer" @click="goToHome">
             Golf Olympic  <span class="inline-block golf-ball-bounce">⛳️</span>
         </h1>
         <!-- ログイン状態表示部分 -->
@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+// TODO: Home画面以外でログインしていなかった場合、/に遷移する処理を追加する
     import { useAuthStore } from '../stores/auth';
     import { useRoundStore } from '../stores/round';
     import { useRouter } from 'vue-router';
@@ -40,8 +41,11 @@
     const handleLogout = () => {
         authStore.clearAuthInfo();
         roundStore.clearRouundInfo();
-        alert('ログアウトしました。');
-        // Optionally, redirect to login page or home page
+        router.push('/');
+    };
+
+    const goToHome = () => {
+        roundStore.clearRouundInfo();
         router.push('/');
     };
 </script>
