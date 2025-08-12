@@ -30,13 +30,16 @@
 
 <script setup lang="ts">
     import { useAuthStore } from '../stores/auth';
+    import { useRoundStore } from '../stores/round';
     import { useRouter } from 'vue-router';
 
     const router = useRouter();
     const authStore = useAuthStore();
+    const roundStore = useRoundStore();
 
     const handleLogout = () => {
         authStore.clearAuthInfo();
+        roundStore.clearRouundInfo();
         alert('ログアウトしました。');
         // Optionally, redirect to login page or home page
         router.push('/');
