@@ -1,4 +1,94 @@
-<template>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ゴルフ オリンピック スコア記録アプリ</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #c7e5a0 0%, #90d36a 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 1rem;
+        }
+
+        .input-field {
+            @apply w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200;
+        }
+        
+        /* プレイヤーリストアイテムのデザイン */
+        .player-list-item {
+            flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transition-all duration-200 cursor-pointer;
+            margin-bottom: 0.5rem;
+            border: 2px solid transparent;
+        }
+        .player-list-item:hover {
+            background-color: #f9fafb; /* bg-gray-50 */
+        }
+        .player-list-item.selected {
+            background-color: #dcfce7; /* bg-green-100 */
+            border-color: #22c55e; /* border-green-500 */
+            box-shadow: 0 0 0 2px #22c55e; /* ring-2 ring-green-500 */
+        }
+        .player-list-item.selected:hover {
+            background-color: #bbf7d0; /* bg-green-200 */
+        }
+
+        /* スクロールビューのカスタムデザイン */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #a3e635;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #84cc16;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー部分 -->
+    <header class="header fixed top-0 left-0 right-0 z-10">
+        <h1 class="text-2xl font-bold text-gray-800">
+            Golf Olympic ⛳️
+        </h1>
+    </header>
+
+    <!-- メインコンテンツ部分 -->
     <div class="flex-grow flex justify-center items-center p-4 pt-20">
         <div class="container mx-auto max-w-sm card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
@@ -40,26 +130,8 @@
             </div>
         </div>
     </div>
-</template>
 
-<script setup lang="ts">
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { useRoundStore } from '../stores/round';
-  import type { Player } from '../types'; // Import Player interface
-
-  const router = useRouter();
-  const roundStore = useRoundStore();
-
-  const existingPlayers = ref<Player[]>([
-    { id: 1, name: '田中 太郎' },
-    { id: 2, name: '山田 花子' },
-    { id: 3, name: '鈴木 一郎' },
-    { id: 4, name: '佐藤 次郎' },
-  ]);
-
-    const newPlayerName = ref('');
-
+    <script>
         const existingPlayerList = document.getElementById('existing-player-list');
         const selectedPlayerList = document.getElementById('selected-player-list');
         const newPlayerInput = document.getElementById('new-player-name');
@@ -168,41 +240,6 @@
         // ページ読み込み時にリストをレンダリング
         renderExistingPlayers();
         renderSelectedPlayers();
-
-</script>
-
-<style scoped>
-        /* プレイヤーリストアイテムのデザイン */
-        .player-list-item {
-            /* flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transition-all duration-200 cursor-pointer; */
-            margin-bottom: 0.5rem;
-            border: 2px solid transparent;
-        }
-        .player-list-item:hover {
-            background-color: #f9fafb; /* bg-gray-50 */
-        }
-        .player-list-item.selected {
-            background-color: #dcfce7; /* bg-green-100 */
-            border-color: #22c55e; /* border-green-500 */
-            box-shadow: 0 0 0 2px #22c55e; /* ring-2 ring-green-500 */
-        }
-        .player-list-item.selected:hover {
-            background-color: #bbf7d0; /* bg-green-200 */
-        }
-
-        /* スクロールビューのカスタムデザイン */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #a3e635;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #84cc16;
-        }
-</style>
+    </script>
+</body>
+</html>

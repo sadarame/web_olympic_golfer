@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 任意: 共通クラス */
+@layer components {
+  .input-base {
+    @apply w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none transition duration-100 ring ring-indigo-300;
+  }
+  .input-base:focus { @apply ring; }
+}
