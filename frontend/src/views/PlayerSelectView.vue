@@ -9,8 +9,8 @@
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
                 <div class="flex items-center space-x-2">
-                    <input type="text" id="new-player-name" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
-                    <button id="add-player-button" class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+                    <input type="text" v-model="newPlayerName" @keyup.enter="addNewPlayer" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
+                    <button @click="addNewPlayer" class="group btn-outline">
                         追加
                     </button>
                 </div>
@@ -19,23 +19,34 @@
             <!-- 既存プレイヤーリストセクション -->
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択</h2>
-                <div id="existing-player-list" class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
-                    <!-- 既存プレイヤーリストがここに追加されます -->
+                <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
+                    <div v-for="player in existingPlayers" :key="player.id" @click="toggleSelection(player)"
+                         :class="['player-list-item', { 'selected': isSelected(player) }]">
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" :checked="isSelected(player)" class="form-checkbox h-5 w-5 text-green-600 rounded-md">
+                            <span class="text-gray-800 font-medium">{{ player.name }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- ラウンド参加メンバーリストセクション -->
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者</h2>
-                <div id="selected-player-list" class="space-y-2">
-                    <!-- 選択されたプレイヤーリストがここに追加されます -->
+                <div class="space-y-2">
+                    <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
+                        <span class="text-gray-800 font-medium">{{ player.name }}</span>
+                        <button @click="removePlayer(player)" class="remove-player-btn">
+                            ×
+                        </button>
+                    </div>
                 </div>
             </div>
             
             <!-- 次へボタン -->
             <div class="text-center">
-                <button id="next-button" class="w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 [box-shadow:3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(20_100_20)]" disabled>
-                    ゲームを開始 ➡️
+                <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
+                    {{ selectedPlayers.length < 1 ? '同伴者を1人以上選択してください' : 'ゲームを開始 ➡️' }}
                 </button>
             </div>
         </div>
@@ -43,166 +54,103 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import { useRouter } from 'vue-router';
-  import { useRoundStore } from '../stores/round';
-  import type { Player } from '../types'; // Import Player interface
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useRoundStore } from '../stores/round';
+import type { Player } from '../types';
 
-  const router = useRouter();
-  const roundStore = useRoundStore();
+const router = useRouter();
+const roundStore = useRoundStore();
 
-  const existingPlayers = ref<Player[]>([
-    { id: 1, name: '田中 太郎' },
-    { id: 2, name: '山田 花子' },
-    { id: 3, name: '鈴木 一郎' },
-    { id: 4, name: '佐藤 次郎' },
-  ]);
+const newPlayerName = ref('');
+const existingPlayers = ref<Player[]>([
+  { id: 1, name: '田中 太郎' },
+  { id: 2, name: '山田 花子' },
+  { id: 3, name: '鈴木 一郎' },
+  { id: 4, name: '佐藤 次郎' },
+]);
+const selectedPlayers = ref<Player>([]);
 
-    const newPlayerName = ref('');
+const isSelected = (player: Player) => {
+  return selectedPlayers.value.some(p => p.id === player.id);
+};
 
-        const existingPlayerList = document.getElementById('existing-player-list');
-        const selectedPlayerList = document.getElementById('selected-player-list');
-        const newPlayerInput = document.getElementById('new-player-name');
-        const addPlayerButton = document.getElementById('add-player-button');
-        const nextButton = document.getElementById('next-button');
+const toggleSelection = (player: Player) => {
+  if (isSelected(player)) {
+    selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
+  } else {
+    selectedPlayers.value.push(player);
+  }
+};
 
-        // ダミーデータ（Firebaseなどのバックエンドから取得するデータを想定）
-        let existingPlayers = ['ログインユーザー', 'プレイヤーA', 'プレイヤーB', 'プレイヤーC', 'プレイヤーD', 'プレイヤーE', 'プレイヤーF', 'プレイヤーG', 'プレイヤーH', 'プレイヤーI', 'プレイヤーJ'];
-        let selectedPlayers = new Set();
-        
-        // ログインユーザーをデフォルトで選択
-        selectedPlayers.add('ログインユーザー');
+const addNewPlayer = () => {
+  const name = newPlayerName.value.trim();
+  if (name && !existingPlayers.value.some(p => p.name === name)) {
+    const newPlayer: Player = {
+      id: Date.now(), // Simple unique ID
+      name: name,
+    };
+    existingPlayers.value.push(newPlayer);
+    selectedPlayers.value.push(newPlayer);
+    newPlayerName.value = '';
+  }
+};
 
-        // 既存プレイヤーリストをレンダリングする関数
-        const renderExistingPlayers = () => {
-            existingPlayerList.innerHTML = '';
-            existingPlayers.forEach(name => {
-                const isSelected = selectedPlayers.has(name);
-                const item = document.createElement('div');
-                item.className = `player-list-item ${isSelected ? 'selected' : ''}`;
-                item.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <input type="checkbox" ${isSelected ? 'checked' : ''} class="form-checkbox h-5 w-5 text-green-600 rounded-md" ${name === 'ログインユーザー' ? 'disabled' : ''}>
-                        <span class="text-gray-800 font-medium">${name}</span>
-                    </div>
-                `;
+const removePlayer = (player: Player) => {
+  selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
+};
 
-                // リストアイテム全体のクリックイベント
-                if (name !== 'ログインユーザー') { // ログインユーザーは選択解除できない
-                    item.addEventListener('click', (e) => {
-                        if (e.target.tagName !== 'INPUT') {
-                            const checkbox = item.querySelector('input[type="checkbox"]');
-                            checkbox.checked = !checkbox.checked;
-                        }
-                        
-                        if (item.querySelector('input[type="checkbox"]').checked) {
-                            selectedPlayers.add(name);
-                        } else {
-                            selectedPlayers.delete(name);
-                        }
-                        renderSelectedPlayers();
-                    });
-                }
-                existingPlayerList.appendChild(item);
-            });
-        };
-
-        // 選択されたプレイヤーリストをレンダリングする関数
-        const renderSelectedPlayers = () => {
-            selectedPlayerList.innerHTML = '';
-            Array.from(selectedPlayers).forEach(name => {
-                const item = document.createElement('div');
-                item.className = 'player-list-item';
-                item.innerHTML = `
-                    <span class="text-gray-800 font-medium">${name}</span>
-                    <button class="remove-player-btn text-gray-400 hover:text-red-500 transition-colors duration-200 ${name === 'ログインユーザー' ? 'hidden' : ''}">
-                        ×
-                    </button>
-                `;
-
-                // 削除ボタンのクリックイベント
-                item.querySelector('.remove-player-btn')?.addEventListener('click', () => {
-                    selectedPlayers.delete(name);
-                    renderExistingPlayers(); // 既存リストの表示を更新
-                    renderSelectedPlayers(); // 選択リストの表示を更新
-                });
-                selectedPlayerList.appendChild(item);
-            });
-            updateNextButtonState();
-        };
-
-        // 新しいプレイヤーを追加する関数
-        const addNewPlayer = (name) => {
-            if (name && !existingPlayers.includes(name)) {
-                existingPlayers.push(name);
-                selectedPlayers.add(name);
-                renderExistingPlayers();
-                renderSelectedPlayers();
-                newPlayerInput.value = '';
-            }
-        };
-
-        // 「ゲームを開始」ボタンの状態を更新する関数
-        const updateNextButtonState = () => {
-            nextButton.disabled = selectedPlayers.size < 2;
-            if (nextButton.disabled) {
-                nextButton.textContent = '同伴者を1人以上選択してください';
-            } else {
-                nextButton.textContent = `ゲームを開始 ➡️`;
-            }
-        };
-
-        // 新しいプレイヤーを追加するイベントリスナー
-        addPlayerButton.addEventListener('click', () => {
-            addNewPlayer(newPlayerInput.value);
-        });
-
-        // 「ゲームを開始」ボタンのクリックイベント
-        nextButton.addEventListener('click', () => {
-            if (selectedPlayers.size >= 2) {
-                alert(`ゲームを開始します！\n参加メンバー: ${Array.from(selectedPlayers).join(', ')}`);
-                // TODO: 実際のアプリでは、この後スコア入力画面に遷移する処理を実装
-            }
-        });
-
-        // ページ読み込み時にリストをレンダリング
-        renderExistingPlayers();
-        renderSelectedPlayers();
-
+const startGame = () => {
+  if (selectedPlayers.value.length >= 1) {
+    roundStore.setPlayers(selectedPlayers.value);
+    router.push({ name: 'ScoreEntry' });
+  }
+};
 </script>
 
 <style scoped>
-        /* プレイヤーリストアイテムのデザイン */
-        .player-list-item {
-            /* flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transition-all duration-200 cursor-pointer; */
-            margin-bottom: 0.5rem;
-            border: 2px solid transparent;
-        }
-        .player-list-item:hover {
-            background-color: #f9fafb; /* bg-gray-50 */
-        }
-        .player-list-item.selected {
-            background-color: #dcfce7; /* bg-green-100 */
-            border-color: #22c55e; /* border-green-500 */
-            box-shadow: 0 0 0 2px #22c55e; /* ring-2 ring-green-500 */
-        }
-        .player-list-item.selected:hover {
-            background-color: #bbf7d0; /* bg-green-200 */
-        }
+.player-list-item {
+    /* @apply flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transition-all duration-200 cursor-pointer mb-2 border-2 border-transparent; */
+}
+.player-list-item:hover {
+    @apply bg-gray-50;
+}
+.player-list-item.selected {
+    /* @apply bg-green-100 border-green-500 ring-2 ring-green-500; */
+}
+.player-list-item.selected:hover {
+    @apply bg-green-200;
+}
 
-        /* スクロールビューのカスタムデザイン */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #a3e635;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #84cc16;
-        }
+.input-field {
+    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.btn-outline {
+    @apply relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 shadow-[3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(60_80_60)];
+}
+
+.btn-solid {
+    @apply w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 shadow-[3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(20_100_20)];
+}
+
+.remove-player-btn {
+    @apply text-gray-400 hover:text-red-500 transition-colors duration-200;
+}
+
+/* スクロールビューのカスタムデザイン */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #a3e635;
+    border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #84cc16;
+}
 </style>
