@@ -16,4 +16,17 @@
   .main-input {
     @apply  w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring
   }
+
+  .btn-solid {
+    @apply w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 shadow-[3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(20_100_20)];
+  }
+
+  .main-checkbox {
+    @apply
+    form-checkbox h-5 w-5 rounded-md
+    bg-white dark:bg-white
+    border-gray-300 dark:border-gray-300
+    accent-green-600 dark:accent-green-600;
+  }
+
 }

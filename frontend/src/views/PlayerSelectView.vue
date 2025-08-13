@@ -9,6 +9,7 @@
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
                 <div class="flex items-center space-x-2">
+                    <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
                     <button @click="addNewPlayer" class="group btn-outline">
                         追加
@@ -22,9 +23,9 @@
                 <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択</h2>
                 <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
                     <div v-for="player in existingPlayers" :key="player.id" @click="toggleSelection(player)"
-                         :class="['player-list-item', { 'selected': isSelected(player) }]">
+                        :class="['player-list-item', { 'selected': isSelected(player) }]">
                         <div class="flex items-center space-x-3">
-                            <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === 0" class="form-checkbox h-5 w-5 text-green-600 rounded-md">
+                            <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === 0" class="main-checkbox">
                             <span class="text-gray-800 font-medium">{{ player.name }}</span>
                         </div>
                     </div>
@@ -93,7 +94,7 @@ const selectedPlayers = ref<Player[]>([{ id: 0, name: 'ログインユーザー'
  * @returns - 選択されていればtrue、そうでなければfalse
  */
 const isSelected = (player: Player) => {
-  return selectedPlayers.value.some(p => p.id === player.id);
+    return selectedPlayers.value.some(p => p.id === player.id);
 };
 
 /**
@@ -182,23 +183,13 @@ const startGame = () => {
 .player-list-item:hover {
     @apply bg-gray-50;
 }
-.player-list-item.selected {
-    /* @apply bg-green-100 border-green-500 ring-2 ring-green-500; */
-}
-.player-list-item.selected:hover {
-    /* @apply bg-green-200; */
-}
 
 .input-field {
-    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring;
 }
 
 .btn-outline {
     @apply relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 shadow-[3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(60_80_60)];
-}
-
-.btn-solid {
-    @apply w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 shadow-[3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(20_100_20)];
 }
 
 .remove-player-btn {
