@@ -36,4 +36,5 @@ export const useRoundStore = defineStore('round', {
       this.players = [];
     },
   },
+  persist: true,
 });
