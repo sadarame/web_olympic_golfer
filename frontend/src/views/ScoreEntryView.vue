@@ -1,8 +1,7 @@
 <template>
-  <div>
+  <div class="main-layout">
     <div class="container mx-auto p-4 md:p-8 max-w-lg card">
       <h2 class="text-2xl font-bold text-center mb-6">スコア入力</h2>
-
       <!-- ラウンド情報表示 -->
       <div class="mb-6 p-4 bg-gray-100 rounded-md">
         <p><strong>ラウンド日:</strong> {{ roundStore.roundDate }}</p>

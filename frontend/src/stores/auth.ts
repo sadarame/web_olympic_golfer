@@ -29,6 +29,13 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('user');
       localStorage.removeItem('token');
     },
+    // ユーザー名を更新するアクションを追加
+    updateUserName(newName: string) {
+      if (this.user) {
+        this.user.name = newName;
+        localStorage.setItem('user', JSON.stringify(this.user));
+      }
+    },
   },
   getters: {
     getUser: (state) => state.user,

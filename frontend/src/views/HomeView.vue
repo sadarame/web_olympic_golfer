@@ -39,6 +39,19 @@
 
       <!-- ログイン後の表示 -->
       <div v-else class="flex flex-col space-y-4">
+        <div class="text-center mb-4">
+          <div v-if="!isEditingUserName">
+            <p class="text-xl font-semibold text-gray-800">ようこそ、{{ authStore.user?.name || 'ゲスト' }}さん！</p>
+            <button @click="editUserName" class="text-blue-500 hover:underline text-sm mt-1">ユーザー名を変更</button>
+          </div>
+          <div v-else>
+            <input type="text" v-model="userName" class="input-field text-center text-xl font-semibold text-gray-800 w-full" />
+            <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
+            <button @click="saveUserName" class="btn-primary mt-2">保存</button>
+            <button @click="isEditingUserName = false" class="btn-secondary mt-2 ml-2">キャンセル</button>
+          </div>
+        </div>
+
         <button @click="handleStartGame" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
           ゲームを始める 🏌️‍♂️
         </button>
@@ -54,12 +67,17 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, watch, nextTick } from 'vue';
+  import { onMounted, watch, nextTick, ref } from 'vue';
   import { useAuthStore } from '../stores/auth';
   import { useRouter } from 'vue-router';
 
   const authStore = useAuthStore();
   const router = useRouter();
+
+  // ユーザー名編集用のリアクティブ変数
+  const userName = ref(authStore.user?.name || '');
+  const isEditingUserName = ref(false);
+  const errorMessage = ref('');
 
   // JWTデコード関数
   function decodeJwtResponse(token: string) {
@@ -109,6 +127,32 @@
     }
   }, { immediate: true });
 
+  // authStore.user の変更を監視し、userName を更新
+  watch(() => authStore.user, (newUser) => {
+    if (newUser) {
+      userName.value = newUser.name || '';
+    }
+  }, { immediate: true });
+
+  // ユーザー名編集モードに入る
+  const editUserName = () => {
+    isEditingUserName.value = true;
+    userName.value = authStore.user?.name || ''; // 現在のユーザー名で初期化
+    errorMessage.value = ''; // エラーメッセージをクリア
+  };
+
+  // ユーザー名を保存する
+  const saveUserName = () => {
+    const trimmedUserName = userName.value.trim();
+    if (!trimmedUserName) {
+      errorMessage.value = 'ユーザー名を入力してください。';
+      return;
+    }
+    authStore.updateUserName(trimmedUserName);
+    isEditingUserName.value = false;
+    errorMessage.value = '';
+  };
+
   const handleStartGame = () => {
     router.push('/start');
   };
@@ -130,5 +174,17 @@
   .message-box {
     @apply p-4 rounded-lg text-center font-semibold text-white mb-4;
     background-color: #4CAF50; /* 緑色の背景 */
+  }
+
+  .input-field {
+    @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  .btn-primary {
+    @apply bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors duration-200;
   }
 </style>
