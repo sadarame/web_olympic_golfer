@@ -1,8 +1,10 @@
 // src/stores/round.ts
 import { defineStore } from 'pinia';
 import type { Player } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 export interface Round {
+  roundId: string;
   roundDate: string;
   course: string;
   wager: string;
@@ -12,6 +14,7 @@ export interface Round {
 
 export const useRoundStore = defineStore('round', {
   state: (): Round => ({
+    roundId: '',
     roundDate: '',
     course: '',
     wager: '100',
@@ -20,6 +23,9 @@ export const useRoundStore = defineStore('round', {
   }),
   actions: {
     setRoundInfo(info: Partial<Round>) {
+      if (!this.roundId) {
+        this.roundId = uuidv4();
+      }
       if (info.roundDate) this.roundDate = info.roundDate;
       if (info.course) this.course = info.course;
       if (info.wager) this.wager = info.wager;
@@ -29,6 +35,7 @@ export const useRoundStore = defineStore('round', {
       this.players = players;
     },
     clearRouundInfo() {
+      this.roundId = '';
       this.roundDate = '';
       this.course = '';
       this.wager = '100';
