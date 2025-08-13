@@ -7,46 +7,45 @@
 
             <!-- 新規プレイヤー追加セクション -->
             <div class="space-y-4 mb-6">
-                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
-                <div class="flex items-center space-x-2">
-                    <input type="text" v-model="newPlayerName" @keyup.enter="addNewPlayer" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
-                    <button @click="addNewPlayer" class="group btn-outline">
-                        追加
-                    </button>
-                </div>
+              <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
+              <div class="flex items-center space-x-2 w-full">
+                <!-- input 8割 -->
+                <input
+                  type="text"
+                  id="new-player-name"
+                  class="main-input basis-4/5 flex-none"
+                  placeholder="同伴者名を入力..."
+                >
+                <!-- ボタン 2割 -->
+                <button
+                  id="add-player-button"
+                  class="add-bottn"
+                >
+                  追加
+                </button>
+              </div>
             </div>
 
             <!-- 既存プレイヤーリストセクション -->
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択</h2>
-                <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
-                    <div v-for="player in existingPlayers" :key="player.id" @click="toggleSelection(player)"
-                         :class="['player-list-item', { 'selected': isSelected(player) }]">
-                        <div class="flex items-center space-x-3">
-                            <input type="checkbox" :checked="isSelected(player)" class="form-checkbox h-5 w-5 text-green-600 rounded-md">
-                            <span class="text-gray-800 font-medium">{{ player.name }}</span>
-                        </div>
-                    </div>
+                <div id="existing-player-list" class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
+                    <!-- 既存プレイヤーリストがここに追加されます -->
                 </div>
             </div>
 
             <!-- ラウンド参加メンバーリストセクション -->
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者</h2>
-                <div class="space-y-2">
-                    <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
-                        <span class="text-gray-800 font-medium">{{ player.name }}</span>
-                        <button @click="removePlayer(player)" class="remove-player-btn">
-                            ×
-                        </button>
-                    </div>
+                <div id="selected-player-list" class="space-y-2">
+                    <!-- 選択されたプレイヤーリストがここに追加されます -->
                 </div>
             </div>
             
             <!-- 次へボタン -->
             <div class="text-center">
-                <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
-                    {{ selectedPlayers.length < 1 ? '同伴者を1人以上選択してください' : 'ゲームを開始 ➡️' }}
+                <button id="next-button" class="w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 [box-shadow:3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(20_100_20)]" disabled>
+                    ゲームを開始 ➡️
                 </button>
             </div>
         </div>
@@ -69,7 +68,7 @@ const existingPlayers = ref<Player[]>([
   { id: 3, name: '鈴木 一郎' },
   { id: 4, name: '佐藤 次郎' },
 ]);
-const selectedPlayers = ref<Player>([]);
+const selectedPlayers = ref<Player[]>([]);
 
 const isSelected = (player: Player) => {
   return selectedPlayers.value.some(p => p.id === player.id);
@@ -109,6 +108,11 @@ const startGame = () => {
 </script>
 
 <style scoped>
+
+.add-bottom {
+  @apply basis-1/5 flex-none group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-3 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]
+}
+
 .player-list-item {
     /* @apply flex items-center justify-between p-3 bg-white rounded-lg shadow-sm transition-all duration-200 cursor-pointer mb-2 border-2 border-transparent; */
 }

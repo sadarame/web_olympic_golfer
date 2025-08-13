@@ -8,4 +8,12 @@
     @apply w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none transition duration-100 ring ring-indigo-300;
   }
   .input-base:focus { @apply ring; }
+
+   .main-layout {
+    @apply flex-grow flex justify-center items-center p-4 pt-20;
+  }
+  
+  .main-input {
+    @apply  w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring
+  }
 }

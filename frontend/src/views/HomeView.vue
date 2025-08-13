@@ -1,52 +1,54 @@
 <template>
-  <div class="container mx-auto p-4 md:p-8 max-w-sm card">
-   <!-- ページタイトル -->
-    <h1 class="text-4xl font-bold text-center mb-4 text-gray-800">
-      ⛳️
-    </h1>
-    <p class="text-center text-gray-600 mb-8">
-      オリンピックゴルフの<br>
-      スコアを楽しく記録しよう！😊
-    </p>
+  <div class="main-layout">
+    <div class="container mx-auto p-4 md:p-8 max-w-sm card">
+    <!-- ページタイトル -->
+      <h1 class="text-4xl font-bold text-center mb-4 text-gray-800">
+        ⛳️
+      </h1>
+      <p class="text-center text-gray-600 mb-8">
+        オリンピックゴルフの<br>
+        スコアを楽しく記録しよう！😊
+      </p>
 
-    <!-- アプリ説明 -->
-    <p class="text-center text-gray-700 mb-8 leading-relaxed">
-      
-      <div v-if="!authStore.isAuthenticated">
-        Googleアカウントでの<br>
-        ログインが必要です
-      </div>
-    </p>
+      <!-- アプリ説明 -->
+      <p class="text-center text-gray-700 mb-8 leading-relaxed">
+        
+        <div v-if="!authStore.isAuthenticated">
+          Googleアカウントでの<br>
+          ログインが必要です
+        </div>
+      </p>
 
-    <!-- ログインセクション -->
-    <div v-if="!authStore.isAuthenticated" class="text-center">
-      <!-- Google Sign-In button -->
-      <div id="g_id_onload"
-           data-client_id="662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com"
-           data-callback="handleCredentialResponse"
-           data-auto_prompt="false">
+      <!-- ログインセクション -->
+      <div v-if="!authStore.isAuthenticated" class="text-center">
+        <!-- Google Sign-In button -->
+        <div id="g_id_onload"
+            data-client_id="662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com"
+            data-callback="handleCredentialResponse"
+            data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin"
+            data-type="standard"
+            data-size="large"
+            data-theme="outline"
+            data-text="sign_in_with"
+            data-shape="rectangular"
+            data-logo_alignment="left">
+        </div>
       </div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-size="large"
-           data-theme="outline"
-           data-text="sign_in_with"
-           data-shape="rectangular"
-           data-logo_alignment="left">
-      </div>
-    </div>
 
-    <!-- ログイン後の表示 -->
-    <div v-else class="flex flex-col space-y-4">
-      <button @click="handleStartGame" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
-        ゲームを始める 🏌️‍♂️
-      </button>
-      <button @click="handleEditFriends" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
-        友達編集 🤝
-      </button>
-      <button @click="handleViewScores" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
-        過去のスコア一覧 📊
-      </button>
+      <!-- ログイン後の表示 -->
+      <div v-else class="flex flex-col space-y-4">
+        <button @click="handleStartGame" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+          ゲームを始める 🏌️‍♂️
+        </button>
+        <button @click="handleEditFriends" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+          友達編集 🤝
+        </button>
+        <button @click="handleViewScores" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+          過去のスコア一覧 📊
+        </button>
+      </div>
     </div>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
 <!-- メインコンテンツ部分 -->
-    <div class="flex-grow flex justify-center items-center p-4 pt-20">
+    <div class="main-layout">
         <div class="container mx-auto max-w-sm card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
                 ラウンド情報を入力
