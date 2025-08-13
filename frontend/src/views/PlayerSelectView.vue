@@ -2,18 +2,19 @@
     <div class="flex-grow flex justify-center items-center p-4 pt-20">
         <div class="container mx-auto max-w-sm card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
-                同伴者を追加
+                同伴者を追加👬
             </h1>
 
             <!-- 新規プレイヤー追加セクション -->
             <div class="space-y-4 mb-6">
                 <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
                 <div class="flex items-center space-x-2">
-                    <input type="text" v-model="newPlayerName" @keyup.enter="addNewPlayer" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
+                    <input type="text" v-model="newPlayerName" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
                     <button @click="addNewPlayer" class="group btn-outline">
                         追加
                     </button>
                 </div>
+                <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
             </div>
 
             <!-- 既存プレイヤーリストセクション -->
@@ -66,6 +67,8 @@ const roundStore = useRoundStore();
 
 // 新規プレイヤー名入力用のリアクティブ変数
 const newPlayerName = ref('');
+// エラーメッセージ表示用のリアクティブ変数
+const errorMessage = ref('');
 
 // 既存プレイヤーのリスト（テストデータ）
 // 実際のアプリケーションでは、APIなどから取得する
@@ -113,16 +116,34 @@ const toggleSelection = (player: Player) => {
  */
 const addNewPlayer = () => {
   const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
-  // 名前が空でなく、かつ既存プレイヤーリストに同じ名前がない場合のみ追加
-  if (name && !existingPlayers.value.some(p => p.name === name)) {
-    const newPlayer: Player = {
-      id: Date.now(), // ユニークなIDを生成（簡易的な方法）
-      name: name,
-    };
-    existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
-    selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
-    newPlayerName.value = ''; // 入力フィールドをクリア
+
+  // 名前が空の場合、エラーメッセージを表示して処理を中断
+  if (!name) {
+    errorMessage.value = 'プレイヤー名を入力してください。';
+    return;
   }
+
+  // 既存プレイヤーリストに同じ名前がないかチェック
+  if (existingPlayers.value.some(p => p.name === name)) {
+    errorMessage.value = `「${name}」は既に存在します。`;
+    return;
+  }
+
+  // 確認ポップアップを表示
+  if (!confirm(`「${name}」を追加しますか？`)) {
+    return; // キャンセルされた場合は処理を中断
+  }
+
+  // エラーがない場合はメッセージをクリア
+  errorMessage.value = '';
+
+  const newPlayer: Player = {
+    id: Date.now(), // ユニークなIDを生成（簡易的な方法）
+    name: name,
+  };
+  existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
+  selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
+  newPlayerName.value = ''; // 入力フィールドをクリア
 };
 
 /**
