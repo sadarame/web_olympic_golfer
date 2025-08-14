@@ -8,13 +8,9 @@
 
             <!-- レート設定セクション -->
             <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl">
-                <h2 class="text-xl font-semibold text-gray-800">現在のレート設定</h2>
-                <div class="flex items-center space-x-2">
-                    <input type="number" v-model.number="rate" class="input-field flex-grow h-12 text-center" placeholder="レートを入力...">
-                    <span class="text-lg font-medium text-gray-700">円/pt</span>
-                    <button @click="setRate" class="group btn-fancy h-12">
-                        確定
-                    </button>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">レート設定</h2>
+                    <span class="text-lg font-medium text-gray-700">{{ rate }}円/pt</span>
                 </div>
             </div>
 
@@ -81,7 +77,7 @@ const { players: selectedPlayers } = storeToRefs(roundStore);
 const scores = ref<{ [key: string]: { points: number } }>({});
 
 // レート設定
-const rate = ref(10); // デフォルトレート
+const rate = roundStore.wager; // デフォルトレート
 
 // カスタムアラート表示用
 const showAlert = ref(false);

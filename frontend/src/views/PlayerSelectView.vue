@@ -48,7 +48,7 @@
             <!-- 次へボタン -->
             <div class="text-center">
                 <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
-                    {{ selectedPlayers.length < 1 ? '同伴者を1人以上選択してください' : 'ゲームを開始 ➡️' }}
+                    {{ selectedPlayers.length < 2 ? '同伴者を1人以上選択してください' : 'ゲームを開始 ➡️' }}
                 </button>
             </div>
         </div>
@@ -167,11 +167,14 @@ const removePlayer = (player: Player) => {
  */
 const startGame = () => {
   // 選択されたプレイヤーが1人以上いることを確認
-  if (selectedPlayers.value.length >= 1) {
+  if (selectedPlayers.value.length >= 2) {
     // ラウンドストアに選択されたプレイヤー情報を設定
     roundStore.setPlayers(selectedPlayers.value);
     // スコア入力画面へルーティング
     router.push({ name: 'ScoreEntry' });
+  }else{
+    errorMessage.value = '同伴者を2人以上選択してください。';
+    return
   }
 };
 </script>
