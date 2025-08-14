@@ -56,127 +56,128 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useRoundStore } from '../stores/round';
-import type { Player } from '../types';
+    import { ref, computed } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useRoundStore } from '../stores/round';
+    import type { Player } from '../types';
 
-// TODO:StartViewで設定した値が存在しない場合、StarViewに遷移する
+    // TODO:StartViewで設定した値が存在しない場合、StarViewに遷移する
 
-// Vue Routerのインスタンスを取得
-const router = useRouter();
-// ラウンド情報を管理するPiniaストアのインスタンスを取得
-const roundStore = useRoundStore();
+    // Vue Routerのインスタンスを取得
+    const router = useRouter();
+    // ラウンド情報を管理するPiniaストアのインスタンスを取得
+    const roundStore = useRoundStore();
 
-// 新規プレイヤー名入力用のリアクティブ変数
-const newPlayerName = ref('');
-// エラーメッセージ表示用のリアクティブ変数
-const errorMessage = ref('');
+    // 新規プレイヤー名入力用のリアクティブ変数
+    const newPlayerName = ref('');
+    // エラーメッセージ表示用のリアクティブ変数
+    const errorMessage = ref('');
 
-// 既存プレイヤーのリスト（テストデータ）
-// 実際のアプリケーションでは、APIなどから取得する
-// TODO:この値はAPIから取得するように変更する。ログインユーザは
-const existingPlayers = ref<Player[]>([
-  { id: 0, name: 'ログインユーザー' }, // ID 0 をログインユーザーとして扱う
-  { id: 1, name: '田中 太郎' },
-  { id: 2, name: '山田 花子' },
-  { id: 3, name: '鈴木 一郎' },
-  { id: 4, name: '佐藤 次郎' },
-]);
+    // 既存プレイヤーのリスト（テストデータ）
+    // 実際のアプリケーションでは、APIなどから取得する
+    // TODO:この値はAPIから取得するように変更する。ログインユーザは
+    const existingPlayers = ref<Player[]>([
+    { id: 0, name: 'ログインユーザー' }, // ID 0 をログインユーザーとして扱う
+    { id: 1, name: '田中 太郎' },
+    { id: 2, name: '山田 花子' },
+    { id: 3, name: '鈴木 一郎' },
+    { id: 4, name: '佐藤 次郎' },
+    ]);
 
-// ラウンドに参加するプレイヤーのリスト
-// 初期状態でログインユーザーを選択済みとする
-const selectedPlayers = ref<Player[]>([{ id: 0, name: 'ログインユーザー' }]); 
+    // ラウンドに参加するプレイヤーのリスト
+    // 初期状態でログインユーザーを選択済みとする
+    const selectedPlayers = ref<Player[]>([{ id: 0, name: 'ログインユーザー' }]); 
 
-/**
- * 指定されたプレイヤーが現在選択されているかどうかを判定する関数
- * @param player - 判定対象のプレイヤーオブジェクト
- * @returns - 選択されていればtrue、そうでなければfalse
- */
-const isSelected = (player: Player) => {
-    return selectedPlayers.value.some(p => p.id === player.id);
-};
+    /**
+     * 指定されたプレイヤーが現在選択されているかどうかを判定する関数
+     * @param player - 判定対象のプレイヤーオブジェクト
+     * @returns - 選択されていればtrue、そうでなければfalse
+     */
+    const isSelected = (player: Player) => {
+        return selectedPlayers.value.some(p => p.id === player.id);
+    };
 
-/**
- * プレイヤーの選択状態を切り替える関数
- * @param player - 選択状態を切り替えるプレイヤーオブジェクト
- */
-const toggleSelection = (player: Player) => {
-  // ログインユーザー（ID 0）は選択解除できないようにする
-  if (player.id === 0) return;
+    /**
+     * プレイヤーの選択状態を切り替える関数
+     * @param player - 選択状態を切り替えるプレイヤーオブジェクト
+     */
+    const toggleSelection = (player: Player) => {
+    // ログインユーザー（ID 0）は選択解除できないようにする
+    if (player.id === 0) return;
 
-  if (isSelected(player)) {
-    // 既に選択されている場合は、selectedPlayersから削除
+    if (isSelected(player)) {
+        // 既に選択されている場合は、selectedPlayersから削除
+        selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
+    } else {
+        // 選択されていない場合は、selectedPlayersに追加
+        selectedPlayers.value.push(player);
+    }
+    };
+
+    /**
+     * 新しいプレイヤーを追加する関数
+     * 入力フィールドから名前を取得し、既存プレイヤーリストと選択済みプレイヤーリストに追加する
+     */
+    const addNewPlayer = () => {
+    const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
+
+    // 名前が空の場合、エラーメッセージを表示して処理を中断
+        if (!name) {
+            errorMessage.value = 'プレイヤー名を入力してください。';
+            return;
+        }
+
+    // 既存プレイヤーリストに同じ名前がないかチェック
+        if (existingPlayers.value.some(p => p.name === name)) {
+            errorMessage.value = `「${name}」は既に存在します。`;
+            return;
+        }
+
+    // 確認ポップアップを表示
+        if (!confirm(`「${name}」を追加しますか？`)) {
+            return; // キャンセルされた場合は処理を中断
+        }
+
+    // エラーがない場合はメッセージをクリア
+        errorMessage.value = '';
+
+        const newPlayer: Player = {
+            id: Date.now(), // ユニークなIDを生成（簡易的な方法）
+            name: name,
+        };
+        
+        existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
+        selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
+        newPlayerName.value = ''; // 入力フィールドをクリア
+        };
+
+    /**
+     * 選択されたプレイヤーをリストから削除する関数
+     * @param player - 削除対象のプレイヤーオブジェクト
+     */
+    const removePlayer = (player: Player) => {
+    // ログインユーザー（ID 0）は削除できないようにする
+    if (player.id === 0) return;
+    // 指定されたプレイヤーをselectedPlayersから除外して新しい配列を作成
     selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
-  } else {
-    // 選択されていない場合は、selectedPlayersに追加
-    selectedPlayers.value.push(player);
-  }
-};
+    };
 
-/**
- * 新しいプレイヤーを追加する関数
- * 入力フィールドから名前を取得し、既存プレイヤーリストと選択済みプレイヤーリストに追加する
- */
-const addNewPlayer = () => {
-  const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
-
-  // 名前が空の場合、エラーメッセージを表示して処理を中断
-  if (!name) {
-    errorMessage.value = 'プレイヤー名を入力してください。';
-    return;
-  }
-
-  // 既存プレイヤーリストに同じ名前がないかチェック
-  if (existingPlayers.value.some(p => p.name === name)) {
-    errorMessage.value = `「${name}」は既に存在します。`;
-    return;
-  }
-
-  // 確認ポップアップを表示
-  if (!confirm(`「${name}」を追加しますか？`)) {
-    return; // キャンセルされた場合は処理を中断
-  }
-
-  // エラーがない場合はメッセージをクリア
-  errorMessage.value = '';
-
-  const newPlayer: Player = {
-    id: Date.now(), // ユニークなIDを生成（簡易的な方法）
-    name: name,
-  };
-  existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
-  selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
-  newPlayerName.value = ''; // 入力フィールドをクリア
-};
-
-/**
- * 選択されたプレイヤーをリストから削除する関数
- * @param player - 削除対象のプレイヤーオブジェクト
- */
-const removePlayer = (player: Player) => {
-  // ログインユーザー（ID 0）は削除できないようにする
-  if (player.id === 0) return;
-  // 指定されたプレイヤーをselectedPlayersから除外して新しい配列を作成
-  selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
-};
-
-/**
- * ゲーム開始ボタンの処理
- * 選択されたプレイヤーが1人以上いる場合、ラウンドストアにプレイヤー情報を設定し、スコア入力画面へ遷移する
- */
-const startGame = () => {
-  // 選択されたプレイヤーが1人以上いることを確認
-  if (selectedPlayers.value.length >= 2) {
-    // ラウンドストアに選択されたプレイヤー情報を設定
-    roundStore.setPlayers(selectedPlayers.value);
-    // スコア入力画面へルーティング
-    router.push({ name: 'ScoreEntry' });
-  }else{
-    errorMessage.value = '同伴者を2人以上選択してください。';
-    return
-  }
-};
+    /**
+     * ゲーム開始ボタンの処理
+     * 選択されたプレイヤーが1人以上いる場合、ラウンドストアにプレイヤー情報を設定し、スコア入力画面へ遷移する
+     */
+    const startGame = () => {
+    // 選択されたプレイヤーが1人以上いることを確認
+    if (selectedPlayers.value.length >= 2) {
+        // ラウンドストアに選択されたプレイヤー情報を設定
+        roundStore.setPlayers(selectedPlayers.value);
+        // スコア入力画面へルーティング
+        router.push({ name: 'ScoreEntry' });
+    }else{
+        errorMessage.value = '同伴者を2人以上選択してください。';
+        return
+    }
+    };
 </script>
 
 <style scoped>

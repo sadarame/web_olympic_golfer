@@ -20,23 +20,24 @@
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-bold">{{ player.name }}</h2>
                         <div class="text-right">
-                            <span class="text-lg font-bold text-green-600">{{ scores[player.name]?.points || 0 }}</span>
+                            <!-- ポイント -->
+                            <span class="text-lg font-bold text-green-600">{{ playerScores[player.name]?.points || 0 }}</span>
                             <span class="text-sm text-gray-500">pt</span>
                             <br>
                             <!-- 金額 -->
-                            <span :class="['text-xl', 'font-bold', (scores[player.name]?.amount || 0) < 0 ? 'text-red-500' : 'text-gray-700']">¥{{ (scores[player.name]?.amount || 0) }}</span>
+                            <span :class="['text-xl', 'font-bold', (playerScores[player.name]?.amount || 0) < 0 ? 'text-red-500' : 'text-gray-700']">¥{{ (playerScores[player.name]?.amount || 0) }}</span>
                         </div>
                     </div>
                     
                     <!-- 特殊ボタン -->
                     <div class="grid grid-cols-5 gap-2 mb-4">
-                        <button v-for="button in buttonConfigs" :key="button.label" :class="['score-input-btn', button.class]" @click="updateScore(player.name, button.score, button.penalty)">{{ button.label }}</button>
+                        <button v-for="button in buttonConfigs" :key="button.label" :class="['score-input-btn', button.class]" @click="updateScore(player.name, button.score)">{{ button.label }}</button>
                     </div>
 
                     <!-- 手動入力 -->
                     <div class="flex items-center space-x-2">
                         <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateManualScore(player.name, -1)">-</button>
-                        <input type="number" v-model.number="scores[player.name].points" class="input-field flex-grow h-14 text-center text-2xl">
+                        <input type="number" v-model.number="playerScores[player.name].points" class="input-field flex-grow h-14 text-center text-2xl">
                         <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateManualScore(player.name, 1)">+</button>
                     </div>
                 </div>
@@ -58,15 +59,16 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, computed } from 'vue';
-	import { useRouter } from 'vue-router';
-	import { storeToRefs } from 'pinia';
-	import { useRoundStore } from '../stores/round';
-	import type { Player } from '../types';
-
-	const router = useRouter();
+    import { ref, computed, onMounted } from 'vue';
+    import { useRouter, useRoute } from 'vue-router';
+    import { storeToRefs } from 'pinia';
+    import { useRoundStore } from '../stores/round';
+    import type { Player } from '../types';
+    
+    const router = useRouter();
+    const route = useRoute();
 	const roundStore = useRoundStore();
-	const { players: selectedPlayers } = storeToRefs(roundStore);
+	const { players: selectedPlayers, playerScores } = storeToRefs(roundStore);
 
     // 人数によってスコアボタンの設定を動的に生成
     // 例: 2人ならダイヤモンド3点、ゴールド2点、シルバー1点
@@ -114,17 +116,8 @@
 
 		return configs;
 	});
-
-	// 各プレイヤーのスコアを管理するリアクティブなオブジェクト
-	// 例: { "プレイヤーA": { points: 0 }, "プレイヤーB": { points: 0 } }
-	const scores = ref<{
-        [key: string]: { 
-            points: number;
-            amount: number; // 金額
-        }
-    }>({});
-
-	// レート設定
+	
+    // レート設定
 	const rate = roundStore.wager; 
 
 	// カスタムアラート表示用
@@ -135,36 +128,55 @@
 	// スコアを初期化する関数
 	const initializeScores = () => {
 		selectedPlayers.value.forEach(player => {
-			scores.value[player.name] = { points: 0 ,amount: 0 };
+			roundStore.setPlayerScore(player.name, 0, 0);
 		});
 	};
 
     // TODO: 再開の場合はAPIから取得
 	// スコアを更新する関数（特殊ボタン用）
-	const updateScore = (playerName: string, scoreToAdd: number, penalty: number) => {
-        // スコアを追加
-		scores.value[playerName].points += scoreToAdd;
+    const ensurePlayer = (name: string) => {
+        if (!playerScores.value[name]) {
+            playerScores.value[name] = { points: 0, amount: 0 };
+        }
+        return playerScores.value[name];
+    };
 
-        // 総得点計算
+    const updateScore = (playerName: string, scoreToAdd: number) => {
+        // 1) まず対象プレイヤーの存在を保証
+        const ps = ensurePlayer(playerName);
+
+        // 2) スコア加算（※ここは store 経由にしておくと永続化が確実）
+        const newPoints = (ps.points || 0) + scoreToAdd;
+        roundStore.setPlayerScore(playerName, newPoints, ps.amount ?? 0);
+
+        console.log(`Updated ${playerName} points ->`, newPoints); // 値をログ出力
+
+        // 3) 総得点
         const totalScore = selectedPlayers.value.reduce((sum, player) => {
-            return sum + (scores.value[player.name]?.points ?? 0)
-        }, 0)
+            return sum + (ensurePlayer(player.name).points ?? 0);
+        }, 0);
 
-        // 金額計算
-        // （自分の点数）×（参加者人数）－（総点数）×レート
-        const numericRate = Number(rate);
+        console.log(`totalScore ${totalScore} `); // 値をログ出力
+
+
+        // 4) 金額計算（各プレイヤーごと）
+        const nPlayers = selectedPlayers.value.length;
+        const numericRate = Number((rate as any)?.value ?? rate); // rateがrefでもOKに
+
         selectedPlayers.value.forEach(player => {
-            scores.value[player.name].amount = 
-                (scores.value[player.name].points * selectedPlayers.value.length - totalScore) * numericRate;
+            const pPoints = ensurePlayer(player.name).points; // ★ 各人の点数
+            const newAmount = (pPoints * nPlayers - totalScore) * numericRate;
+
+            roundStore.setPlayerScore(player.name, pPoints, newAmount); // 置換更新で確実に反映
+            console.log(`Calculating new amount for ${player.name} ->`, newAmount);
         });
-	};
+    };
+
 
 	// スコアを更新する関数（手動入力用）
 	const updateManualScore = (playerName: string, change: number) => {
-		if (!scores.value[playerName]) {
-			scores.value[playerName] = { points: 0 };
-		}
-		scores.value[playerName].points += change;
+		const currentPoints = (playerScores.value[playerName]?.points || 0) + change;
+		roundStore.setPlayerScore(playerName, currentPoints, (playerScores.value[playerName]?.amount || 0));
 	};
 
 	// カスタムアラートを表示する関数
@@ -186,8 +198,14 @@
 		// TODO: 実際のアプリでは、この後結果画面に遷移する処理を実装
 		// router.push({ name: 'ResultView' }); // 例
 	};
-
-	initializeScores();
+    
+    onMounted(() => {
+    // 遷移元の名前が StartView だったら
+        if (route.redirectedFrom?.name === 'StartView') {
+            initializeScores();
+        }
+    });
+	// initializeScores();
 
 </script>
 

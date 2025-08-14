@@ -13,6 +13,7 @@ export interface Round {
   players: Player[];
   totalPoints: number;
   totalAmount: number;
+  playerScores: { [key: string]: { points: number; amount: number; } };
 }
 
 export const useRoundStore = defineStore('round', {
@@ -25,6 +26,7 @@ export const useRoundStore = defineStore('round', {
     players: [],
     totalPoints: 0,
     totalAmount: 0,
+    playerScores: {},
   }),
   actions: {
     setRoundInfo(info: Partial<Round>) {
@@ -45,6 +47,9 @@ export const useRoundStore = defineStore('round', {
     setTotalAmount(amount: number) {
       this.totalAmount = amount;
     },
+    setPlayerScore(playerName: string, points: number, amount: number) {
+      this.playerScores[playerName] = { points, amount };
+    },
     clearRouundInfo() {
       this.roundId = '';
       this.roundDate = '';
@@ -54,6 +59,7 @@ export const useRoundStore = defineStore('round', {
       this.players = [];
       this.totalPoints = 0;
       this.totalAmount = 0;
+      this.playerScores = {};
     },
   },
   persist: true,
