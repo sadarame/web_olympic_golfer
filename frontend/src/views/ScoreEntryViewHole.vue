@@ -24,7 +24,7 @@
                             <span class="text-sm text-gray-500">pt</span>
                             <br>
                             <!-- 金額 -->
-                            <span class="text-xl font-bold text-gray-700">¥{{ (scores[player.name]?.amount || 0) }}</span>
+                            <span :class="['text-xl', 'font-bold', (scores[player.name]?.amount || 0) < 0 ? 'text-red-500' : 'text-gray-700']">¥{{ (scores[player.name]?.amount || 0) }}</span>
                         </div>
                     </div>
                     
@@ -139,6 +139,7 @@
 		});
 	};
 
+    // TODO: 再開の場合はAPIから取得
 	// スコアを更新する関数（特殊ボタン用）
 	const updateScore = (playerName: string, scoreToAdd: number, penalty: number) => {
         // スコアを追加
