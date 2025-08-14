@@ -3,12 +3,12 @@
     <div class="main-layout">
         <div class="container mx-auto max-w-sm card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
-                スコア入力
+                スコア入力📝
             </h1>
 
             <!-- レート設定セクション -->
-            <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl">
-                <div class="flex justify-between items-center mb-4">
+            <div class="space-y-4 mb-6 p-2 bg-gray-50 rounded-xl shadow-md ">
+                <div class="flex justify-between items-center m-2">
                     <h2 class="text-xl font-semibold text-gray-800">レート設定</h2>
                     <span class="text-lg font-medium text-gray-700">{{ rate }}円/pt</span>
                 </div>
@@ -23,17 +23,14 @@
                             <span class="text-lg font-bold text-green-600">{{ scores[player.name]?.points || 0 }}</span>
                             <span class="text-sm text-gray-500">pt</span>
                             <br>
-                            <span class="text-xl font-bold text-gray-700">¥{{ (scores[player.name]?.points || 0) * rate }}</span>
+                            <!-- 金額 -->
+                            <span class="text-xl font-bold text-gray-700">¥{{ (scores[player.name]?.amount || 0) }}</span>
                         </div>
                     </div>
                     
                     <!-- 特殊ボタン -->
                     <div class="grid grid-cols-5 gap-2 mb-4">
-                        <button class="score-input-btn diamond" @click="updateScore(player.name, 10, -3)">ダイヤ</button>
-                        <button class="score-input-btn gold" @click="updateScore(player.name, 5, -2)">金</button>
-                        <button class="score-input-btn silver" @click="updateScore(player.name, 3, -1)">銀</button>
-                        <button class="score-input-btn bronze" @click="updateScore(player.name, 1, -1)">銅</button>
-                        <button class="score-input-btn iron" @click="updateScore(player.name, -1, 1)">鉄</button>
+                        <button v-for="button in buttonConfigs" :key="button.label" :class="['score-input-btn', button.class]" @click="updateScore(player.name, button.score, button.penalty)">{{ button.label }}</button>
                     </div>
 
                     <!-- 手動入力 -->
@@ -61,90 +58,136 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { storeToRefs } from 'pinia';
-import { useRoundStore } from '../stores/round';
-import type { Player } from '../types';
+	import { ref, computed } from 'vue';
+	import { useRouter } from 'vue-router';
+	import { storeToRefs } from 'pinia';
+	import { useRoundStore } from '../stores/round';
+	import type { Player } from '../types';
 
-const router = useRouter();
-const roundStore = useRoundStore();
-const { players: selectedPlayers } = storeToRefs(roundStore);
+	const router = useRouter();
+	const roundStore = useRoundStore();
+	const { players: selectedPlayers } = storeToRefs(roundStore);
 
+    // 人数によってスコアボタンの設定を動的に生成
+    // 例: 2人ならダイヤモンド3点、ゴールド2点、シルバー1点
+    // 3人ならダイヤモンド4点、ゴールド3点、シルバー2点、ブロンズ1点
+    // 4人以上ならダイヤモンド5点、ゴールド4点、シルバー3点、ブロンズ2 点、アイアン1点
+	const buttonConfigs = computed(() => {
+		const playerCount = selectedPlayers.value.length;
+		let configs = [];
 
-// 各プレイヤーのスコアを管理するリアクティブなオブジェクト
-// 例: { "プレイヤーA": { points: 0 }, "プレイヤーB": { points: 0 } }
-const scores = ref<{ [key: string]: { points: number } }>({});
+		// Base points for 4+ players
+		let diamondPoints = 10;
+		let goldPoints = 5;
+		let silverPoints = 3;
+		let bronzePoints = 1;
+		let ironPoints = -1;
 
-// レート設定
-const rate = roundStore.wager; // デフォルトレート
+		// Adjust points based on player count
+		if (playerCount === 2) {
+			diamondPoints = 3;
+			goldPoints = 2;
+			silverPoints = 1;
+		} else if (playerCount === 3) {
+			diamondPoints = 4;
+			goldPoints = 3;
+			silverPoints = 2;
+			bronzePoints = 1;
+		} else if (playerCount >= 4) {
+			diamondPoints = 5;
+			goldPoints = 4;
+			silverPoints = 3;
+			bronzePoints = 2;
+			ironPoints = 1; // Iron button gives 1 point for 4+ players
+		}
 
-// カスタムアラート表示用
-const showAlert = ref(false);
-const alertMessage = ref('');
-let alertTimeout: ReturnType<typeof setTimeout> | null = null;
+		configs.push({ label: '💎', class: 'diamond', score: diamondPoints, penalty: -3 });
+		configs.push({ label: '🥇', class: 'gold', score: goldPoints, penalty: -2 });
+		configs.push({ label: '🥈', class: 'silver', score: silverPoints, penalty: -1 });
 
-// スコアを初期化する関数
-const initializeScores = () => {
-  selectedPlayers.value.forEach(player => {
-    scores.value[player.name] = { points: 0 };
-  });
-};
+		if (playerCount >= 3) {
+			configs.push({ label: '🥉', class: 'bronze', score: bronzePoints, penalty: -1 });
+		}
+		if (playerCount >= 4) {
+			configs.push({ label: '🔩', class: 'iron', score: ironPoints, penalty: 1 });
+		}
 
-// スコアを更新する関数（特殊ボタン用）
-const updateScore = (playerName: string, scoreToAdd: number, penalty: number) => {
-  if (!scores.value[playerName]) {
-    scores.value[playerName] = { points: 0 };
-  }
-  scores.value[playerName].points += scoreToAdd;
+		return configs;
+	});
 
-  // 他のプレイヤーにペナルティを適用
-  selectedPlayers.value.forEach(otherPlayer => {
-    if (otherPlayer.name !== playerName) {
-      if (!scores.value[otherPlayer.name]) {
-        scores.value[otherPlayer.name] = { points: 0 };
-      }
-      scores.value[otherPlayer.name].points += penalty;
-    }
-  });
-};
+	// 各プレイヤーのスコアを管理するリアクティブなオブジェクト
+	// 例: { "プレイヤーA": { points: 0 }, "プレイヤーB": { points: 0 } }
+	const scores = ref<{
+        [key: string]: { 
+            points: number;
+            amount: number; // 金額
+        }
+    }>({});
 
-// スコアを更新する関数（手動入力用）
-const updateManualScore = (playerName: string, change: number) => {
-  if (!scores.value[playerName]) {
-    scores.value[playerName] = { points: 0 };
-  }
-  scores.value[playerName].points += change;
-};
+	// レート設定
+	const rate = roundStore.wager; 
 
-// レート確定ボタンの処理
-const setRate = () => {
-  const newRate = rate.value || 0;
-  rate.value = newRate;
-  showAlertMessage(`レートを¥${newRate}円/ptに設定しました。`);
-};
+	// カスタムアラート表示用
+	const showAlert = ref(false);
+	const alertMessage = ref('');
+	let alertTimeout: ReturnType<typeof setTimeout> | null = null;
 
-// カスタムアラートを表示する関数
-const showAlertMessage = (message: string) => {
-  if (alertTimeout) {
-    clearTimeout(alertTimeout);
-  }
-  alertMessage.value = message;
-  showAlert.value = true;
-  alertTimeout = setTimeout(() => {
-    showAlert.value = false;
-    alertMessage.value = '';
-  }, 2000);
-};
+	// スコアを初期化する関数
+	const initializeScores = () => {
+		selectedPlayers.value.forEach(player => {
+			scores.value[player.name] = { points: 0 ,amount: 0 };
+		});
+	};
 
-// 結果画面へ遷移する関数
-const goToResult = () => {
-  showAlertMessage('結果画面へ遷移します');
-  // TODO: 実際のアプリでは、この後結果画面に遷移する処理を実装
-  // router.push({ name: 'ResultView' }); // 例
-};
+	// スコアを更新する関数（特殊ボタン用）
+	const updateScore = (playerName: string, scoreToAdd: number, penalty: number) => {
+        // スコアを追加
+		scores.value[playerName].points += scoreToAdd;
 
-initializeScores();
+        // 総得点計算
+        const totalScore = selectedPlayers.value.reduce((sum, player) => {
+            return sum + (scores.value[player.name]?.points ?? 0)
+        }, 0)
+
+        // 金額計算
+        // （自分の点数）×（参加者人数）－（総点数）×レート
+        const numericRate = Number(rate);
+        selectedPlayers.value.forEach(player => {
+            scores.value[player.name].amount = 
+                (scores.value[player.name].points * selectedPlayers.value.length - totalScore) * numericRate;
+        });
+	};
+
+	// スコアを更新する関数（手動入力用）
+	const updateManualScore = (playerName: string, change: number) => {
+		if (!scores.value[playerName]) {
+			scores.value[playerName] = { points: 0 };
+		}
+		scores.value[playerName].points += change;
+	};
+
+	// カスタムアラートを表示する関数
+	const showAlertMessage = (message: string) => {
+		if (alertTimeout) {
+			clearTimeout(alertTimeout);
+		}
+		alertMessage.value = message;
+		showAlert.value = true;
+		alertTimeout = setTimeout(() => {
+			showAlert.value = false;
+			alertMessage.value = '';
+		}, 2000);
+	};
+
+	// 結果画面へ遷移する関数
+	const goToResult = () => {
+		showAlertMessage('結果画面へ遷移します');
+		// TODO: 実際のアプリでは、この後結果画面に遷移する処理を実装
+		// router.push({ name: 'ResultView' }); // 例
+	};
+
+	initializeScores();
+
 </script>
 
 <style scoped>
