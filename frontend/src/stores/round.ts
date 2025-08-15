@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import type { Player } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
+export type RoundStatus = 'initial' | 'pending' | 'completed' | 'archived';
 
 export interface Round {
   roundId: string;
@@ -14,6 +15,7 @@ export interface Round {
   totalPoints: number;
   totalAmount: number;
   playerScores: { [key: string]: { points: number; amount: number; } };
+  roundStatus: RoundStatus;
 }
 
 export const useRoundStore = defineStore('round', {
@@ -27,6 +29,7 @@ export const useRoundStore = defineStore('round', {
     totalPoints: 0,
     totalAmount: 0,
     playerScores: {},
+    roundStatus: 'initial',
   }),
   actions: {
     setRoundInfo(info: Partial<Round>) {
@@ -50,6 +53,10 @@ export const useRoundStore = defineStore('round', {
     setPlayerScore(playerName: string, points: number, amount: number) {
       this.playerScores[playerName] = { points, amount };
     },
+    // ステータスを設定するアクション
+    setStatus(newStatus: RoundStatus) {
+      this.roundStatus = newStatus;
+    },
     clearRouundInfo() {
       this.roundId = '';
       this.roundDate = '';
@@ -60,6 +67,7 @@ export const useRoundStore = defineStore('round', {
       this.totalPoints = 0;
       this.totalAmount = 0;
       this.playerScores = {};
+      this.roundStatus = 'initial';
     },
   },
   persist: true,

@@ -127,8 +127,13 @@
 
 	// スコアを初期化する関数
 	const initializeScores = () => {
+        // データが存在しない場合のみ初期化
 		selectedPlayers.value.forEach(player => {
-			roundStore.setPlayerScore(player.name, 0, 0);
+            if (!playerScores.value[player.name]) {
+			    roundStore.setPlayerScore(player.name, 0, 0);
+                // スコア入力待ち状態に設定
+                roundStore.setStatus('pending'); 
+            }
 		});
 	};
 
@@ -199,13 +204,8 @@
 		// router.push({ name: 'ResultView' }); // 例
 	};
     
-    onMounted(() => {
-    // 遷移元の名前が StartView だったら
-        if (route.redirectedFrom?.name === 'StartView') {
-            initializeScores();
-        }
-    });
-	// initializeScores();
+
+    initializeScores();
 
 </script>
 

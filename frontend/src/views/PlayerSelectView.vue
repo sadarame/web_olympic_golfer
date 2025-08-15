@@ -119,21 +119,21 @@
      * 入力フィールドから名前を取得し、既存プレイヤーリストと選択済みプレイヤーリストに追加する
      */
     const addNewPlayer = () => {
-    const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
+        const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
 
-    // 名前が空の場合、エラーメッセージを表示して処理を中断
+        // 名前が空の場合、エラーメッセージを表示して処理を中断
         if (!name) {
             errorMessage.value = 'プレイヤー名を入力してください。';
             return;
         }
 
-    // 既存プレイヤーリストに同じ名前がないかチェック
+        // 既存プレイヤーリストに同じ名前がないかチェック
         if (existingPlayers.value.some(p => p.name === name)) {
             errorMessage.value = `「${name}」は既に存在します。`;
             return;
         }
 
-    // 確認ポップアップを表示
+        // 確認ポップアップを表示
         if (!confirm(`「${name}」を追加しますか？`)) {
             return; // キャンセルされた場合は処理を中断
         }
@@ -149,17 +149,17 @@
         existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
         selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
         newPlayerName.value = ''; // 入力フィールドをクリア
-        };
+    };
 
     /**
      * 選択されたプレイヤーをリストから削除する関数
      * @param player - 削除対象のプレイヤーオブジェクト
      */
     const removePlayer = (player: Player) => {
-    // ログインユーザー（ID 0）は削除できないようにする
-    if (player.id === 0) return;
-    // 指定されたプレイヤーをselectedPlayersから除外して新しい配列を作成
-    selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
+        // ログインユーザー（ID 0）は削除できないようにする
+        if (player.id === 0) return;
+        // 指定されたプレイヤーをselectedPlayersから除外して新しい配列を作成
+        selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
     };
 
     /**
@@ -167,17 +167,28 @@
      * 選択されたプレイヤーが1人以上いる場合、ラウンドストアにプレイヤー情報を設定し、スコア入力画面へ遷移する
      */
     const startGame = () => {
-    // 選択されたプレイヤーが1人以上いることを確認
-    if (selectedPlayers.value.length >= 2) {
-        // ラウンドストアに選択されたプレイヤー情報を設定
-        roundStore.setPlayers(selectedPlayers.value);
-        // スコア入力画面へルーティング
-        router.push({ name: 'ScoreEntry' });
-    }else{
-        errorMessage.value = '同伴者を2人以上選択してください。';
-        return
-    }
+    // 中断中のゲームがないか確認
+        console.log(roundStore.roundStatus);
+        if (roundStore.roundStatus === "pending"){
+            if (!confirm('中断中のゲームがあります。続行しますか？')) {
+                router.push({ name: 'ScoreEntry' });
+                return; // ユーザーがキャンセルした場合は処理を中断
+            }
+        }
+
+         // 選択されたプレイヤーが1人以上いることを確認
+        if (selectedPlayers.value.length >= 2) {
+            // ラウンドストアに選択されたプレイヤー情報を設定
+            roundStore.clearRouundInfo(); // Clear previous round info
+            roundStore.setPlayers(selectedPlayers.value);
+            // スコア入力画面へルーティング
+            router.push({ name: 'ScoreEntry' });
+        }else{
+            errorMessage.value = '同伴者を2人以上選択してください。';
+            return
+        }
     };
+
 </script>
 
 <style scoped>
