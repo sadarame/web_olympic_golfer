@@ -11,6 +11,7 @@ export const useAuthStore = defineStore('auth', {
       this.isAuthenticated = true;
       this.user = user;
       this.token = token;
+      this.updateUserName(user.name); // ユーザー名を更新
     },
     clearAuthInfo() {
       this.isAuthenticated = false;

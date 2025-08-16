@@ -96,7 +96,7 @@
     console.log("Decoded JWT payload:", decoded);
 
     authStore.setAuthInfo(decoded, response.credential); // Save user info and token to Pinia store
-    alert('Googleログイン成功！IDトークンをコンソールで確認してください。');
+
   };
 
   const renderGoogleButton = () => {

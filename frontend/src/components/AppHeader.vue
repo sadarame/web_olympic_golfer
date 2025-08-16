@@ -45,8 +45,7 @@
     };
 
     const goToHome = () => {
-        
-        roundStore.clearRouundInfo();
+        console.log("goToHome called");
         router.push('/');
     };
 </script>

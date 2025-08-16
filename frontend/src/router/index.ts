@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
 import { useAuthStore } from '../stores/auth';
+import { useRoundStore } from '../stores/round';
 
 const routes = [
   {
@@ -32,6 +33,11 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () => import('../views/ScoreEntryViewHole.vue'),
   },
+  {
+    path: '/result',
+    name: 'ResultView',
+    component: () => import('../views/ResultView.vue'),
+  },
   // Catch-all route to redirect to Home
   {
     path: '/:pathMatch(.*)*',
@@ -50,14 +56,20 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = authStore.getIsAuthenticated;
 
   if (to.name !== 'Home' && !isAuthenticated) {
-    next({ name: 'Home' });
-  } else {
-    next();
+    return next({ name: 'Home' });
   }
 
-  // if
+  const roundStore = useRoundStore();
+  if (from.name === 'ScoreEntry' && to.name !== 'ResultView') {
+    if (window.confirm('入力中のデータは失われますが、よろしいですか？')) {
+      roundStore.clearRouundInfo();
+      return next();
+    } else {
+      return next(false);
+    }
+  }
 
-
+  next();
 });
 
 export default router;

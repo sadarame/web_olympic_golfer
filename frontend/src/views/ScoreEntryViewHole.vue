@@ -36,9 +36,9 @@
 
                     <!-- 手動入力 -->
                     <div class="flex items-center space-x-2">
-                        <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateManualScore(player.name, -1)">-</button>
+                        <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateScore(player.name, -1)">-</button>
                         <input type="number" v-model.number="playerScores[player.name].points" class="input-field flex-grow h-14 text-center text-2xl">
-                        <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateManualScore(player.name, 1)">+</button>
+                        <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateScore(player.name, 1)">+</button>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
             <!-- 次へボタン -->
             <div class="text-center mt-8">
                 <button @click="goToResult" class="btn-fancy-next">
-                    結果画面へ ➡️
+                    ラウンド終了（保存） ➡️
                 </button>
             </div>
         </div>
@@ -130,15 +130,16 @@
         // データが存在しない場合のみ初期化
 		selectedPlayers.value.forEach(player => {
             if (!playerScores.value[player.name]) {
-			    roundStore.setPlayerScore(player.name, 0, 0);
-                // スコア入力待ち状態に設定
-                roundStore.setStatus('pending'); 
+                roundStore.setPlayerScore(player.name, 0, 0);
             }
 		});
+        // スコア入力待ち状態に設定
+        if (roundStore.roundStatus === 'initial') {
+            roundStore.setStatus('pending'); 
+        }
 	};
 
-    // TODO: 再開の場合はAPIから取得
-	// スコアを更新する関数（特殊ボタン用）
+    // プレイヤー情報の初期化
     const ensurePlayer = (name: string) => {
         if (!playerScores.value[name]) {
             playerScores.value[name] = { points: 0, amount: 0 };
@@ -146,22 +147,19 @@
         return playerScores.value[name];
     };
 
+    // スコアを更新する関数（💎、🥇、🥈、🥉、🔩）
     const updateScore = (playerName: string, scoreToAdd: number) => {
         // 1) まず対象プレイヤーの存在を保証
         const ps = ensurePlayer(playerName);
 
-        // 2) スコア加算（※ここは store 経由にしておくと永続化が確実）
+        // 2) スコア加算
         const newPoints = (ps.points || 0) + scoreToAdd;
         roundStore.setPlayerScore(playerName, newPoints, ps.amount ?? 0);
-
-        console.log(`Updated ${playerName} points ->`, newPoints); // 値をログ出力
 
         // 3) 総得点
         const totalScore = selectedPlayers.value.reduce((sum, player) => {
             return sum + (ensurePlayer(player.name).points ?? 0);
         }, 0);
-
-        console.log(`totalScore ${totalScore} `); // 値をログ出力
 
 
         // 4) 金額計算（各プレイヤーごと）
@@ -173,16 +171,8 @@
             const newAmount = (pPoints * nPlayers - totalScore) * numericRate;
 
             roundStore.setPlayerScore(player.name, pPoints, newAmount); // 置換更新で確実に反映
-            console.log(`Calculating new amount for ${player.name} ->`, newAmount);
         });
     };
-
-
-	// スコアを更新する関数（手動入力用）
-	const updateManualScore = (playerName: string, change: number) => {
-		const currentPoints = (playerScores.value[playerName]?.points || 0) + change;
-		roundStore.setPlayerScore(playerName, currentPoints, (playerScores.value[playerName]?.amount || 0));
-	};
 
 	// カスタムアラートを表示する関数
 	const showAlertMessage = (message: string) => {
@@ -199,9 +189,8 @@
 
 	// 結果画面へ遷移する関数
 	const goToResult = () => {
-		showAlertMessage('結果画面へ遷移します');
-		// TODO: 実際のアプリでは、この後結果画面に遷移する処理を実装
-		// router.push({ name: 'ResultView' }); // 例
+        roundStore.setStatus('completed');
+		router.push({ name: 'ResultView' });
 	};
     
 

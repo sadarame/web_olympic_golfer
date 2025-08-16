@@ -59,6 +59,7 @@
     import { ref, computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { useRoundStore } from '../stores/round';
+    import { useAuthStore } from '../stores/auth';
     import type { Player } from '../types';
 
     // TODO:StartViewで設定した値が存在しない場合、StarViewに遷移する
@@ -67,6 +68,8 @@
     const router = useRouter();
     // ラウンド情報を管理するPiniaストアのインスタンスを取得
     const roundStore = useRoundStore();
+
+    const authStore = useAuthStore();
 
     // 新規プレイヤー名入力用のリアクティブ変数
     const newPlayerName = ref('');
@@ -77,16 +80,16 @@
     // 実際のアプリケーションでは、APIなどから取得する
     // TODO:この値はAPIから取得するように変更する。ログインユーザは
     const existingPlayers = ref<Player[]>([
-    { id: 0, name: 'ログインユーザー' }, // ID 0 をログインユーザーとして扱う
-    { id: 1, name: '田中 太郎' },
-    { id: 2, name: '山田 花子' },
-    { id: 3, name: '鈴木 一郎' },
-    { id: 4, name: '佐藤 次郎' },
+        { id: 0, name: authStore.user.name  }, // ID 0 をログインユーザーとして扱う
+        { id: 1, name: '田中 太郎' },
+        { id: 2, name: '山田 花子' },
+        { id: 3, name: '鈴木 一郎' },
+        { id: 4, name: '佐藤 次郎' },
     ]);
 
     // ラウンドに参加するプレイヤーのリスト
     // 初期状態でログインユーザーを選択済みとする
-    const selectedPlayers = ref<Player[]>([{ id: 0, name: 'ログインユーザー' }]); 
+    const selectedPlayers = ref<Player[]>([{ id: 0, name: authStore.user.name }]); 
 
     /**
      * 指定されたプレイヤーが現在選択されているかどうかを判定する関数
@@ -170,7 +173,7 @@
     // 中断中のゲームがないか確認
         console.log(roundStore.roundStatus);
         if (roundStore.roundStatus === "pending"){
-            if (!confirm('中断中のゲームがあります。続行しますか？')) {
+            if (!confirm('未保存データがあります。破棄して続行しますか？')) {
                 router.push({ name: 'ScoreEntry' });
                 return; // ユーザーがキャンセルした場合は処理を中断
             }
