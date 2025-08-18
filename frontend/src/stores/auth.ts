@@ -3,25 +3,25 @@ import { defineStore } from 'pinia';
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
-    user: null as any | null,
+    user: null as any | null, // user オブジェクトに customName を含める
     token: null as string | null,
   }),
   actions: {
-    setAuthInfo(user: any, token: string) {
+    // setAuthInfo で customName も受け取るように変更
+    setAuthInfo(user: any, token: string, customName?: string) {
       this.isAuthenticated = true;
-      this.user = user;
+      this.user = { ...user, customName: customName || user.name }; // customName があればそれを使う、なければuser.name
       this.token = token;
-      this.updateUserName(user.name); // ユーザー名を更新
     },
     clearAuthInfo() {
       this.isAuthenticated = false;
       this.user = null;
       this.token = null;
     },
-    // ユーザー名を更新するアクションを追加
-    updateUserName(newName: string) {
+    // customName を更新するアクション
+    updateCustomName(newName: string) {
       if (this.user) {
-        this.user.name = newName;
+        this.user.customName = newName;
       }
     },
   },

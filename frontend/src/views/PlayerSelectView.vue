@@ -182,7 +182,7 @@
          // 選択されたプレイヤーが1人以上いることを確認
         if (selectedPlayers.value.length >= 2) {
             // ラウンドストアに選択されたプレイヤー情報を設定
-            roundStore.clearRouundInfo(); // Clear previous round info
+            // roundStore.clearRouundInfo(); // Clear previous round info
             roundStore.setPlayers(selectedPlayers.value);
             // スコア入力画面へルーティング
             router.push({ name: 'ScoreEntry' });

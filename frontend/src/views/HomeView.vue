@@ -39,16 +39,33 @@
 
       <!-- ログイン後の表示 -->
       <div v-else class="flex flex-col space-y-4">
-        <div class="text-center mb-4">
+        <!-- ローディング表示 -->
+        <div v-if="isLoading" class="text-center">
+          <p class="text-gray-600">ユーザー情報を読み込み中...</p>
+        </div>
+
+        <!-- ユーザー情報表示 -->
+        <div v-else class="text-center mb-4">
           <div v-if="!isEditingUserName">
-            <p class="text-xl font-semibold text-gray-800">ようこそ、{{ authStore.user?.name || 'ゲスト' }}さん！</p>
-            <button @click="editUserName" class="text-blue-500 hover:underline text-sm mt-1">ユーザー名を変更</button>
+            <p class="text-xl font-semibold text-gray-800">
+              ようこそ、{{ displayName }}さん！
+            </p>
+            <button @click="editUserName" class="text-blue-500 hover:underline text-sm mt-1">
+              ユーザー名を変更
+            </button>
           </div>
           <div v-else>
-            <input type="text" v-model="userName" class="input-field text-center text-xl font-semibold text-gray-800 w-full" />
+            <input 
+              type="text" 
+              v-model="userName" 
+              placeholder="カスタムユーザー名を入力"
+              class="input-field text-center text-xl font-semibold text-gray-800 w-full" 
+            />
             <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
-            <button @click="saveUserName" class="btn-primary mt-2">保存</button>
-            <button @click="isEditingUserName = false" class="btn-secondary mt-2 ml-2">キャンセル</button>
+            <button @click="saveUserName" class="btn-primary mt-2" :disabled="isSaving">
+              {{ isSaving ? '保存中...' : '保存' }}
+            </button>
+            <button @click="cancelEdit" class="btn-secondary mt-2 ml-2">キャンセル</button>
           </div>
         </div>
 
@@ -67,17 +84,32 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, watch, nextTick, ref } from 'vue';
+  import { onMounted, watch, nextTick, ref, computed } from 'vue';
   import { useAuthStore } from '../stores/auth';
   import { useRouter } from 'vue-router';
+  import { apiService } from '../services/api';
+  import type { User, UserRegistrationData } from '../types';
 
   const authStore = useAuthStore();
   const router = useRouter();
 
   // ユーザー名編集用のリアクティブ変数
-  const userName = ref(authStore.user?.name || '');
+  const userName = ref('');
   const isEditingUserName = ref(false);
   const errorMessage = ref('');
+  const isLoading = ref(false);
+  const isSaving = ref(false);
+  const currentUser = ref<User | null>(null);
+
+  // 表示名を計算（カスタム名があればそれを使用、なければGoogleアカウント名）
+  const displayName = computed(() => {
+    console.log('currentUser.value', currentUser.value);
+    console.log('currentUser.value', currentUser.value?.customName);
+    if (currentUser.value?.customName) {
+      return currentUser.value.customName;
+    }
+    return authStore.user?.name || 'ゲスト';
+  });
 
   // JWTデコード関数
   function decodeJwtResponse(token: string) {
@@ -89,14 +121,61 @@
     return JSON.parse(jsonPayload);
   }
 
+  // ユーザー情報を取得または作成
+  const fetchOrCreateUser = async () => {
+    if (!authStore.user?.sub || !authStore.token) return;
+
+    isLoading.value = true;
+    try {
+      // ユーザー情報取得APIを呼び出す
+      const existingUser = await apiService.getUser(authStore.token);
+
+      // GPTによる修正
+      const user = normalizeUser(existingUser);
+      if (user) {
+        currentUser.value = user;
+        userName.value = user.customName || authStore.user.name || '';
+        return;
+      }
+      throw new Error('User not found');
+
+    } catch (error) {
+      console.log('ユーザーが見つからないため、新規作成します:', error);
+      
+      // ユーザーが存在しない場合は新規作成
+      try {
+        const userData = {
+          userInfo: {
+            name: authStore.user.name,
+            email: authStore.user.email,
+            profile: authStore.user
+          },
+          customName: authStore.user.name
+        };
+        
+        // ユーザー登録APIを呼び出す
+        const newUser = await apiService.registerUser(userData, authStore.token);
+        // 画面表示変数に値を設定
+        currentUser.value = newUser;
+        userName.value = newUser.customName || authStore.user.name || '';
+
+      } catch (createError) {
+        console.error('ユーザー作成に失敗しました:', createError);
+        errorMessage.value = 'ユーザー情報の作成に失敗しました。';
+      }
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   // コールバック関数
-  const handleCredentialResponse = (response: any) => {
-    console.log("Encoded JWT ID token: " + response.credential);
+  const handleCredentialResponse = async (response: any) => {
+
+    // デコードしてユーザー情報を取得
     const decoded = decodeJwtResponse(response.credential);
-    console.log("Decoded JWT payload:", decoded);
-
-    authStore.setAuthInfo(decoded, response.credential); // Save user info and token to Pinia store
-
+    authStore.setAuthInfo(decoded, response.credential);
+    // ログイン後にユーザー情報を取得または作成
+    await fetchOrCreateUser();
   };
 
   const renderGoogleButton = () => {
@@ -127,30 +206,66 @@
     }
   }, { immediate: true });
 
-  // authStore.user の変更を監視し、userName を更新
+  // authStore.user の変更を監視し、ユーザー情報を取得
   watch(() => authStore.user, (newUser) => {
-    if (newUser) {
-      userName.value = newUser.name || '';
+    if (newUser && authStore.isAuthenticated) {
+      fetchOrCreateUser();
     }
   }, { immediate: true });
 
   // ユーザー名編集モードに入る
   const editUserName = () => {
     isEditingUserName.value = true;
-    userName.value = authStore.user?.name || ''; // 現在のユーザー名で初期化
-    errorMessage.value = ''; // エラーメッセージをクリア
+    userName.value = currentUser.value?.customName || authStore.user?.name || '';
+    errorMessage.value = '';
+  };
+
+  // ユーザー名編集をキャンセル
+  const cancelEdit = () => {
+    isEditingUserName.value = false;
+    userName.value = currentUser.value?.customName || authStore.user?.name || '';
+    errorMessage.value = '';
   };
 
   // ユーザー名を保存する
-  const saveUserName = () => {
+  const saveUserName = async () => {
+    if (!authStore.user?.sub || !authStore.token) return;
+
     const trimmedUserName = userName.value.trim();
     if (!trimmedUserName) {
       errorMessage.value = 'ユーザー名を入力してください。';
       return;
     }
-    authStore.updateUserName(trimmedUserName);
-    isEditingUserName.value = false;
-    errorMessage.value = '';
+
+    isSaving.value = true;
+    try {
+      const userData = {
+        token: authStore.token,
+        userInfo: {
+          name: authStore.user.name,
+          email: authStore.user.email,
+          profile: authStore.user
+        },
+        customName: trimmedUserName
+      };
+
+      const updatedUser = await apiService.registerUser(userData, authStore.token);
+
+      // GPTによる修正
+      const user = normalizeUser(updatedUser);
+      if (!user) throw new Error('ユーザー更新レスポンス不正');
+      currentUser.value = user;
+
+      // currentUser.value = updatedUser;
+      isEditingUserName.value = false;
+      errorMessage.value = '';
+
+    } catch (error) {
+      console.error('ユーザー名の更新に失敗しました:', error);
+      errorMessage.value = 'ユーザー名の更新に失敗しました。';
+    } finally {
+      isSaving.value = false;
+    }
   };
 
   const handleStartGame = () => {
@@ -164,6 +279,21 @@
   const handleViewScores = () => {
     alert('過去のスコア一覧画面への遷移をシミュレートします。');
   };
+
+  // ユーザー情報を正規化する関数
+  function normalizeUser(res: any): User | null {
+    if (!res) return null;
+    const u = 'user' in res ? res.user : res;
+    if (!u) return null;
+    return {
+      uid: u.uid ?? u.userId ?? '',
+      email: u.email ?? u.userInfo?.email ?? '',
+      name: u.name ?? u.userInfo?.name,
+      customName: u.customName,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
+    } as User;
+  }
 </script>
 
 <style scoped>

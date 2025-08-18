@@ -70,5 +70,8 @@ export const useRoundStore = defineStore('round', {
       this.roundStatus = 'initial';
     },
   },
-  persist: true,
+  persist: {
+    key: 'round-store',
+    storage: localStorage
+  },
 });

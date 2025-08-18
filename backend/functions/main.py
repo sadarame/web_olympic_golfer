@@ -1,8 +1,13 @@
 from firebase_functions import https_fn
-from firebase_admin import initialize_app
-from controllers import game_controller
+from firebase_admin import initialize_app, credentials
+import os
+from controllers import game_controller, user_controller
+from utils.auth_utils import require_auth
 
-initialize_app()
+# サービスアカウントキーのパスを正しく設定
+cred_path = os.path.join(os.path.dirname(__file__), '..', 'olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json')
+cred = credentials.Certificate(cred_path)
+initialize_app(cred)
 
 @https_fn.on_request()
 def startGame(request: https_fn.Request):
@@ -23,3 +28,13 @@ def deleteGame(request: https_fn.Request):
 @https_fn.on_request()
 def getGameInfo(request: https_fn.Request):
     return game_controller.get_game_info_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def registerOrUpdateUser(request: https_fn.Request):
+    return user_controller.register_or_update_user_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def getUser(request: https_fn.Request):
+    return user_controller.get_user_controller(request)

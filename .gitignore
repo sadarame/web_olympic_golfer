@@ -1,25 +1,35 @@
-.DS_Store
-node_modules
-/dist
-
-
-# local env files
-.env.local
-.env.*.local
-
-# Log files
+# Logs
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
-# Editor directories and files
-.idea
+# Dependencies
+node_modules
+**/venv
+**/__pycache__
+
+# Build artifacts
+dist
+dist-ssr
+*.local
+
+# IDE settings
 .vscode
+.idea
+.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-backend/venv/
-frontend/olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json
+
+# Local Environment Variables
+.env.local
+.env.*.local
+
+# Firebase
+olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json

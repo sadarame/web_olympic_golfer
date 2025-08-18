@@ -73,11 +73,5 @@
 </script>
 
 <style scoped>
-    .input-base {
-    @apply w-full rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none transition duration-100 ring ring-indigo-300;
-    }
-    /* ← バリアントは @apply に入れない */
-    .input-base:focus {
-    @apply ring;
-    }
+
 </style>
