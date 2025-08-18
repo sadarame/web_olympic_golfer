@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', {
         // 既存の customName を保持しつつ、Firebaseからの情報で更新
         const existingCustomName = this.user?.customName; // 既存の customName を取得
         console.log("Existing customName:", existingCustomName);
-        this.setAuthInfoFromFirebase
 
         this.user = {
           uid: auth.currentUser.uid,

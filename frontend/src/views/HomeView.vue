@@ -94,12 +94,12 @@
 
   const authStore = useAuthStore();
   const router = useRouter();
+  // インプットフィールドとして使用
   const userName = ref('');
   const isEditingUserName = ref(false);
   const errorMessage = ref('');
   const isLoading = ref(false);
   const isSaving = ref(false);
-  const currentUser = ref<User | null>(null);
 
   // 表示名を計算（カスタム名があればそれを使用、なければGoogleアカウント名）
   const displayName = computed(() => {
@@ -108,7 +108,7 @@
   });
 
   // ユーザー情報を取得または作成
-  // ログイン時のみ呼ばれる
+  // ログイン時のみ呼ばれるコールバック後に実行
   const fetchOrCreateUser = async () => {
     // 認証済みだったらFeatchはしない
     if (!auth.currentUser) return;
@@ -123,11 +123,6 @@
       const user = normalizeUser(existingUser);
 
       if (user) {
-        // 画面表示変数に値を設定
-        currentUser.value = user;
-        console.log("User found:", user);
-        // ユーザー名を設定
-        userName.value = user.customName || authStore.user?.name || '';
         // ストアのユーザー名を更新
         authStore.updateCustomName(user.customName ?? '');
         return;
@@ -149,10 +144,7 @@
         };
         
         // ユーザー登録APIを呼び出す
-        const newUser = await apiService.registerUser(userData); // トークンはapiService内で取得される
-        // 画面表示変数に値を設定
-        currentUser.value = newUser;
-        userName.value = newUser.customName || auth.currentUser.displayName || '';
+        await apiService.registerUser(userData); // トークンはapiService内で取得される
 
       } catch (createError) {
         console.error('ユーザー作成に失敗しました:', createError);
@@ -201,62 +193,57 @@
   // ユーザー名編集モードに入る
   const editUserName = () => {
     isEditingUserName.value = true;
-    userName.value = currentUser.value?.customName || authStore.user?.name || '';
+    // 編集モード時に今のカスタムネームをインプットフィールドに設定する
+    userName.value = authStore.user?.customName || '';
     errorMessage.value = '';
   };
 
   // ユーザー名編集をキャンセル
   const cancelEdit = () => {
     isEditingUserName.value = false;
-    userName.value = currentUser.value?.customName || authStore.user?.name || '';
     errorMessage.value = '';
   };
 
   // ユーザー名を保存する
   const saveUserName = async () => {
-    console.log("saveUserName called");
     if (!auth.currentUser) return; // Firebase ユーザーが認証されていることを確認
-    
-
-    console.log("処理に入る");
-
-
+    // トリムして変数に設定
     const trimmedUserName = userName.value.trim();
-      if (!trimmedUserName) {
+      
+    if (!trimmedUserName) {
         errorMessage.value = 'ユーザー名を入力してください。';
         return;
-      }
-      isSaving.value = true;
-      try {
-        const userData = {
-          userInfo: {
-            name: auth.currentUser.displayName || '',
-            email: auth.currentUser.email || '',
-            profile: auth.currentUser.toJSON() // Firebase User オブジェクトをJSONとして保存
-          },
-          customName: trimmedUserName
-        };
+    }
+    isSaving.value = true;
+    try {
+      const userData = {
+        userInfo: {
+          name: auth.currentUser.displayName || '',
+          email: auth.currentUser.email || '',
+          profile: auth.currentUser.toJSON() // Firebase User オブジェクトをJSONとして保存
+        },
+        customName: trimmedUserName
+      };
 
-        // API呼び出し
-        const updatedUser = await apiService.registerUser(userData); // トークンはapiService内で取得される
+      // API呼び出し
+      const updatedUser = await apiService.registerUser(userData); // トークンはapiService内で取得される
 
-        // 正規化してユーザー情報を更新
-        const user = normalizeUser(updatedUser);
-        if (!user) throw new Error('ユーザー更新レスポンス不正');
-        currentUser.value = user;
+      // 正規化してユーザー情報を更新
+      const user = normalizeUser(updatedUser);
+      if (!user) throw new Error('ユーザー更新レスポンス不正');
 
-        // ストアのユーザー名を更新
-        authStore.updateCustomName(user.customName ?? '');
+      // ストアのユーザー名を更新
+      authStore.updateCustomName(user.customName ?? '');
 
-        isEditingUserName.value = false;
-        errorMessage.value = '';
+      isEditingUserName.value = false;
+      errorMessage.value = '';
 
-      } catch (error) {
-        console.error('ユーザー名の更新に失敗しました:', error);
-        errorMessage.value = 'ユーザー名の更新に失敗しました。';
-      } finally {
-        isSaving.value = false;
-      }
+    } catch (error) {
+      console.error('ユーザー名の更新に失敗しました:', error);
+      errorMessage.value = 'ユーザー名の更新に失敗しました。';
+    } finally {
+      isSaving.value = false;
+    }
   };
 
   const handleStartGame = () => {
