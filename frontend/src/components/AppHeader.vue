@@ -9,12 +9,12 @@
             <div id="user-profile-button" class="flex items-center space-x-2 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">
                 <img
                     id="user-avatar"
-                    :src="authStore.user?.picture || 'https://placehold.co/40x40/cccccc/333333?text=None'"
+                    :src="authStore.user?.photoURL || 'https://placehold.co/40x40/cccccc/333333?text=None'"
                     alt="User Avatar"
                     class="w-10 h-10 rounded-full border-2"
                     :class="{
-                        'border-green-500': authStore.user?.picture,
-                        'border-gray-500': !authStore.user?.picture
+                        'border-green-500': authStore.user?.photoURL,
+                        'border-gray-500': !authStore.user?.photoURL
                     }"
                 />
             </div>

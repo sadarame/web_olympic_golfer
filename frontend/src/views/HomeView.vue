@@ -23,11 +23,11 @@
       <div v-if="!authStore.isAuthenticated" class="text-center">
         <!-- Google Sign-In button -->
         <div id="g_id_onload"
-            data-client_id="662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com"
+            data-client_id="735464206154-01ti9otrmjqaqukdlo2956bejgu33u14.apps.googleusercontent.com"
             data-callback="handleCredentialResponse"
             data-auto_prompt="false">
         </div>
-        <div class="g_id_signin mx-auto"
+        <div class="g_id_signin inline-block"
             data-type="standard"
             data-size="large"
             data-theme="outline"
