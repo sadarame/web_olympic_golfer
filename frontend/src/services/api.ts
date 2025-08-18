@@ -72,9 +72,16 @@ class ApiService {
 
     // ユーザー関連のAPI
   async addCompanion(data: any, token: string): Promise<any> {
-    return this.request(API_ENDPOINTS.REGISTER_USER, {
+    return this.request(API_ENDPOINTS.ADD_COMPANION, {
       method: 'POST',
       body: JSON.stringify(data),
+      headers: getAuthHeaders(token),
+    });
+  }
+
+  async getCompanions(token: string): Promise<any> {
+    return this.request(API_ENDPOINTS.GET_COMPANIONS, {
+      method: 'GET',
       headers: getAuthHeaders(token),
     });
   }

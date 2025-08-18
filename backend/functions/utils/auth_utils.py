@@ -29,6 +29,8 @@ def verify_token(token):
     except ValueError as e:
         # トークンが無効な場合
         print(f"Token verification failed: {e}")
+        if "Token expired" in str(e):
+            return None
         # Firebase Admin SDKのトークン検証も試す（フォールバック）
         try:
             decoded_token = auth.verify_id_token(token)

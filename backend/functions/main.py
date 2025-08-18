@@ -43,3 +43,8 @@ def getUser(request: https_fn.Request):
 @require_auth
 def addCompanion(request: https_fn.Request):
     return user_controller.add_companion_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def getCompanions(request: https_fn.Request):
+    return user_controller.get_companions_controller(request)

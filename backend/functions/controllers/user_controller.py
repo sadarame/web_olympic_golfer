@@ -217,3 +217,55 @@ def add_companion_controller(request: https_fn.Request):
             mimetype="application/json",
             headers={'Access-Control-Allow-Origin': '*'}
         )
+
+def get_companions_controller(request: https_fn.Request):
+    """
+    同伴者リストを取得するエンドポイント
+    """
+    user_service = UserService()
+
+    try:
+        # CORSプリフライトリクエストの処理
+        if request.method == 'OPTIONS':
+            return https_fn.Response(
+                status=200,
+                headers={
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                }
+            )
+
+        # 認証済みユーザー情報を取得
+        decoded_token = get_user_from_request(request)
+        if not decoded_token or not decoded_token.get('sub'):
+            return https_fn.Response("Unauthorized", status=401, headers={'Access-Control-Allow-Origin': '*'})
+        
+        user_id = decoded_token['sub']
+
+        # 同伴者リストを取得
+        companions = user_service.get_companions(user_id)
+        
+        # レスポンスの準備
+        response_data = {
+            "success": True,
+            "companions": companions
+        }
+        
+        return https_fn.Response(
+            json.dumps(response_data, default=str),
+            status=200,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+        
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({
+                "error": "Internal server error",
+                "message": str(e)
+            }),
+            status=500,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )

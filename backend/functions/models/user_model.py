@@ -58,3 +58,13 @@ class UserModel:
             "id": companion_ref.id,
             "name": name
         }
+
+    def get_companions(self, user_id):
+        """同伴者リストを取得する"""
+        companions_ref = self.collection.document(user_id).collection("companions")
+        companions = []
+        for doc in companions_ref.stream():
+            companion_data = doc.to_dict()
+            companion_data["id"] = doc.id
+            companions.append(companion_data)
+        return companions

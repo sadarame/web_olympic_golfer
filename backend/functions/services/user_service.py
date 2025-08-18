@@ -57,6 +57,18 @@ class UserService:
         """
         return self.user_model.add_companion(user_id, name)
 
+    def get_companions(self, user_id):
+        """
+        同伴者リストを取得する
+        
+        Args:
+            user_id (str): ユーザーID
+            
+        Returns:
+            list: 同伴者のリスト
+        """
+        return self.user_model.get_companions(user_id)
+
     def delete_user(self, user_id):
         """
         ユーザーを削除する

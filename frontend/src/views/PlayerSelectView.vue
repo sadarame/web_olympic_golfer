@@ -56,11 +56,12 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, watchEffect } from 'vue';
-    import { useRouter } from 'vue-router';
-    import { useRoundStore } from '../stores/round';
-    import { useAuthStore } from '../stores/auth';
-    import type { Player } from '../types';
+    import { ref, watchEffect, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useRoundStore } from '../stores/round';
+import { useAuthStore } from '../stores/auth';
+import type { Player } from '../types';
+import apiService from '../services/api';
 
     // TODO:StartViewで設定した値が存在しない場合、StarViewに遷移する
 
@@ -79,13 +80,25 @@
     // 既存プレイヤーのリスト（テストデータ）
     // 実際のアプリケーションでは、APIなどから取得する
     // TODO:この値はAPIから取得するように変更する。ログインユーザは
-    const existingPlayers = ref<Player[]>([
-        { id: 0, name: playercustomename.value  }, // ID 0 をログインユーザーとして扱う
-        { id: 1, name: '田中 太郎' },
-        { id: 2, name: '山田 花子' },
-        { id: 3, name: '鈴木 一郎' },
-        { id: 4, name: '佐藤 次郎' },
-    ]);
+    const existingPlayers = ref<Player[]>([]);
+
+    const fetchCompanions = async () => {
+        try {
+            const response = await apiService.getCompanions(authStore.token);
+            existingPlayers.value = response.companions;
+        } catch (error) {
+            if (error.message.includes('401')) {
+                authStore.clearAuthInfo();
+                router.push('/');
+            }
+            console.error(error);
+        }
+    };
+
+    onMounted(async () => {
+        await fetchCompanions();
+        existingPlayers.value.unshift({ id: 0, name: authStore.user.customName || authStore.user.name });
+    });
 
     // const { user } = storeToRefs(authStore); 
     // const meName = computed(() =>
@@ -135,7 +148,7 @@
      * 新しいプレイヤーを追加する関数
      * 入力フィールドから名前を取得し、既存プレイヤーリストと選択済みプレイヤーリストに追加する
      */
-    const addNewPlayer = () => {
+    const addNewPlayer = async () => {
         const name = newPlayerName.value.trim(); // 入力値の前後空白を削除
 
         // 名前が空の場合、エラーメッセージを表示して処理を中断
@@ -155,17 +168,29 @@
             return; // キャンセルされた場合は処理を中断
         }
 
-    // エラーがない場合はメッセージをクリア
-        errorMessage.value = '';
+        try {
+            // エラーがない場合はメッセージをクリア
+            errorMessage.value = '';
 
-        const newPlayer: Player = {
-            id: Date.now(), // ユニークなIDを生成（簡易的な方法）
-            name: name,
-        };
-        
-        existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
-        selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
-        newPlayerName.value = ''; // 入力フィールドをクリア
+            // APIを呼び出して同伴者を追加
+            const response = await apiService.addCompanion({ name }, authStore.token);
+
+            const newPlayer: Player = {
+                id: response.id, // APIからのIDを使用
+                name: name,
+            };
+            
+            existingPlayers.value.push(newPlayer); // 既存プレイヤーリストに追加
+            selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
+            newPlayerName.value = ''; // 入力フィールドをクリア
+        } catch (error) {
+            if (error.message.includes('401')) {
+                authStore.clearAuthInfo();
+                router.push('/');
+            }
+            errorMessage.value = '同伴者の追加に失敗しました。';
+            console.error(error);
+        }
     };
 
     /**
