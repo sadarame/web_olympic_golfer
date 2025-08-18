@@ -103,8 +103,6 @@
 
   // 表示名を計算（カスタム名があればそれを使用、なければGoogleアカウント名）
   const displayName = computed(() => {
-    console.log('currentUser.value', currentUser.value);
-    console.log('currentUser.value', currentUser.value?.customName);
     if (currentUser.value?.customName) {
       return currentUser.value.customName;
     }
@@ -135,6 +133,8 @@
       if (user) {
         currentUser.value = user;
         userName.value = user.customName || authStore.user.name || '';
+        console.log('ユーザー情報を取得しました:', currentUser.value);
+        console.log('authstore',(authStore.getUserName));
         return;
       }
       throw new Error('User not found');
@@ -199,6 +199,7 @@
   });
 
   watch(() => authStore.isAuthenticated, (newIsAuthenticated) => {
+    console.log('watch(() => authStore.isAuthenticated', newIsAuthenticated);
     if (!newIsAuthenticated) {
       nextTick(() => {
         renderGoogleButton();
@@ -208,8 +209,10 @@
 
   // authStore.user の変更を監視し、ユーザー情報を取得
   watch(() => authStore.user, (newUser) => {
+    console.log('watch(() => authStore.user', userName.value);
     if (newUser && authStore.isAuthenticated) {
       fetchOrCreateUser();
+      // console.log('authStore.user', userName.value);
     }
   }, { immediate: true });
 
@@ -236,7 +239,6 @@
       errorMessage.value = 'ユーザー名を入力してください。';
       return;
     }
-
     isSaving.value = true;
     try {
       const userData = {
@@ -249,6 +251,9 @@
         customName: trimmedUserName
       };
 
+      console.log('Saving user name:', userName.value);
+
+      // API呼び出し
       const updatedUser = await apiService.registerUser(userData, authStore.token);
 
       // GPTによる修正
@@ -256,9 +261,15 @@
       if (!user) throw new Error('ユーザー更新レスポンス不正');
       currentUser.value = user;
 
+      // ストアのユーザー名を更新
+      authStore.updateCustomName(user.customName ?? '');
+      console.log('ユーザー名を更新しました:', authStore.getUserName);
+
       // currentUser.value = updatedUser;
       isEditingUserName.value = false;
       errorMessage.value = '';
+
+
 
     } catch (error) {
       console.error('ユーザー名の更新に失敗しました:', error);

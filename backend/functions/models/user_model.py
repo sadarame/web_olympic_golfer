@@ -45,3 +45,16 @@ class UserModel:
     def delete_user(self, user_id):
         """ユーザーを削除する"""
         self.collection.document(user_id).delete()
+
+    def add_companion(self, user_id, name):
+        """同伴者をサブコレクションに追加する"""
+        companion_data = {
+            "name": name,
+            "createdAt": datetime.datetime.now(datetime.timezone.utc)
+        }
+        companions_ref = self.collection.document(user_id).collection("companions")
+        update_time, companion_ref = companions_ref.add(companion_data)
+        return {
+            "id": companion_ref.id,
+            "name": name
+        }

@@ -28,6 +28,9 @@ export const API_ENDPOINTS = {
   // ユーザー関連
   REGISTER_USER: '/registerOrUpdateUser',
   GET_USER: '/getUser',
+
+  // 
+  ADD_COMPANION: '/getUser',
   
   // ヘルスチェック
   HEALTH: '/health',

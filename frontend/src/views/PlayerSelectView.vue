@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, computed } from 'vue';
+    import { ref, watchEffect } from 'vue';
     import { useRouter } from 'vue-router';
     import { useRoundStore } from '../stores/round';
     import { useAuthStore } from '../stores/auth';
@@ -68,9 +68,9 @@
     const router = useRouter();
     // ラウンド情報を管理するPiniaストアのインスタンスを取得
     const roundStore = useRoundStore();
-
+    // 認証情報を管理するPiniaストアのインスタンスを取得
     const authStore = useAuthStore();
-
+    const playercustomename = ref(authStore.getUserName);
     // 新規プレイヤー名入力用のリアクティブ変数
     const newPlayerName = ref('');
     // エラーメッセージ表示用のリアクティブ変数
@@ -80,16 +80,30 @@
     // 実際のアプリケーションでは、APIなどから取得する
     // TODO:この値はAPIから取得するように変更する。ログインユーザは
     const existingPlayers = ref<Player[]>([
-        { id: 0, name: authStore.user.name  }, // ID 0 をログインユーザーとして扱う
+        { id: 0, name: playercustomename.value  }, // ID 0 をログインユーザーとして扱う
         { id: 1, name: '田中 太郎' },
         { id: 2, name: '山田 花子' },
         { id: 3, name: '鈴木 一郎' },
         { id: 4, name: '佐藤 次郎' },
     ]);
 
+    // const { user } = storeToRefs(authStore); 
+    // const meName = computed(() =>
+    //     user.value?.customName ?? user.value?.name ?? 'ゲスト'
+    // );
+
+    // const existingPlayers = computed(() => ([
+    //     { id: 0, name: user  }, // ID 0 をログインユーザーとして扱う
+    //     { id: 1, name: '田中 太郎' },
+    //     { id: 2, name: '山田 花子' },
+    //     { id: 3, name: '鈴木 一郎' },
+    //     { id: 4, name: '佐藤 次郎' },
+    // ]));
+
+
     // ラウンドに参加するプレイヤーのリスト
     // 初期状態でログインユーザーを選択済みとする
-    const selectedPlayers = ref<Player[]>([{ id: 0, name: authStore.user.name }]); 
+    const selectedPlayers = ref<Player[]>([{ id: 0, name: authStore.user.customName || authStore.user.name }]); 
 
     /**
      * 指定されたプレイヤーが現在選択されているかどうかを判定する関数

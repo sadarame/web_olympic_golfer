@@ -70,6 +70,15 @@ class ApiService {
     });
   }
 
+    // ユーザー関連のAPI
+  async addCompanion(data: any, token: string): Promise<any> {
+    return this.request(API_ENDPOINTS.REGISTER_USER, {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: getAuthHeaders(token),
+    });
+  }
+
   async getUser(token: string): Promise<any> {
     return this.request(API_ENDPOINTS.GET_USER, {
       method: 'GET',

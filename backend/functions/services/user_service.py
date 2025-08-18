@@ -44,19 +44,18 @@ class UserService:
         """
         return self.user_model.get_user(user_id)
 
-    def update_user_profile(self, user_id, updates):
+    def add_companion(self, user_id, name):
         """
-        ユーザープロフィールを更新する
+        同伴者を追加する
         
         Args:
             user_id (str): ユーザーID
-            updates (dict): 更新する情報
+            name (str): 同伴者の名前
             
         Returns:
-            dict: 更新されたユーザー情報
+            dict: 追加された同伴者の情報
         """
-        self.user_model.update_user(user_id, updates)
-        return self.user_model.get_user(user_id)
+        return self.user_model.add_companion(user_id, name)
 
     def delete_user(self, user_id):
         """
