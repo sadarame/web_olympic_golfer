@@ -1,4 +1,7 @@
-import { getApiUrl, getAuthHeaders, API_ENDPOINTS } from '../config/api';
+import { getApiUrl, API_ENDPOINTS } from '../config/api';
+import router from '../router';
+import { useAuthStore } from '../stores/auth';
+import { auth } from '../main'; // Firebase auth インスタンスをインポート
 
 // API呼び出しの基本クラス
 class ApiService {
@@ -7,15 +10,26 @@ class ApiService {
     options: RequestInit = {}
   ): Promise<T> {
     const url = getApiUrl(endpoint);
+    
+    // 認証ヘッダーを動的に取得
+    const authHeaders = await this.getAuthHeaders();
+
     const response = await fetch(url, {
       ...options,
       headers: {
-        ...getAuthHeaders(),
+        ...authHeaders,
         ...options.headers,
       },
     });
 
     if (!response.ok) {
+      if (response.status === 401) {
+        // トークン切れの場合、認証情報をクリアしてホーム画面へリダイレクト
+        const authStore = useAuthStore();
+        authStore.clearAuthInfo(); // clearAuth から clearAuthInfo に変更
+        router.push('/');
+        throw new Error('Unauthorized: Token expired or invalid.');
+      }
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
@@ -23,73 +37,86 @@ class ApiService {
     return response.json();
   }
 
+  // 認証ヘッダーを生成するヘルパー関数
+  private async getAuthHeaders(): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Firebase から最新のIDトークンを取得
+    if (auth.currentUser) {
+      try {
+        const token = await auth.currentUser.getIdToken(true); // true を渡して強制的にトークンをリフレッシュ
+        headers['Authorization'] = `Bearer ${token}`;
+      } catch (error) {
+        console.error("Error getting Firebase ID token:", error);
+        // トークン取得失敗時は認証ヘッダーなしで続行するか、エラーをスローするか検討
+        // ここではエラーをスローして、request メソッドで捕捉させる
+        throw new Error("Failed to get Firebase ID token.");
+      }
+    }
+    
+    return headers;
+  }
+
   // ゲーム関連のAPI
-  async startGame(data: any, token?: string): Promise<any> {
+  async startGame(data: any): Promise<any> {
     return this.request(API_ENDPOINTS.START_GAME, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: getAuthHeaders(token),
     });
   }
 
-  async updateScore(data: any, token?: string): Promise<any> {
+  async updateScore(data: any): Promise<any> {
     return this.request(API_ENDPOINTS.UPDATE_SCORE, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: getAuthHeaders(token),
     });
   }
 
-  async getGameList(token?: string): Promise<any> {
+  async getGameList(): Promise<any> {
     return this.request(API_ENDPOINTS.GET_GAME_LIST, {
       method: 'GET',
-      headers: getAuthHeaders(token),
     });
   }
 
-  async deleteGame(gameId: string, token?: string): Promise<any> {
+  async deleteGame(gameId: string): Promise<any> {
     return this.request(`${API_ENDPOINTS.DELETE_GAME}?gameId=${gameId}`, {
       method: 'DELETE',
-      headers: getAuthHeaders(token),
     });
   }
 
-  async getGameInfo(gameId: string, token?: string): Promise<any> {
+  async getGameInfo(gameId: string): Promise<any> {
     return this.request(`${API_ENDPOINTS.GET_GAME_INFO}?gameId=${gameId}`, {
       method: 'GET',
-      headers: getAuthHeaders(token),
     });
   }
 
   // ユーザー関連のAPI
-  async registerUser(data: any, token: string): Promise<any> {
+  async registerUser(data: any): Promise<any> {
     return this.request(API_ENDPOINTS.REGISTER_USER, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: getAuthHeaders(token),
     });
   }
 
     // ユーザー関連のAPI
-  async addCompanion(data: any, token: string): Promise<any> {
+  async addCompanion(data: any): Promise<any> {
     return this.request(API_ENDPOINTS.ADD_COMPANION, {
       method: 'POST',
       body: JSON.stringify(data),
-      headers: getAuthHeaders(token),
     });
   }
 
-  async getCompanions(token: string): Promise<any> {
+  async getCompanions(): Promise<any> {
     return this.request(API_ENDPOINTS.GET_COMPANIONS, {
       method: 'GET',
-      headers: getAuthHeaders(token),
     });
   }
 
-  async getUser(token: string): Promise<any> {
+  async getUser(): Promise<any> {
     return this.request(API_ENDPOINTS.GET_USER, {
       method: 'GET',
-      headers: getAuthHeaders(token),
     });
   }
 

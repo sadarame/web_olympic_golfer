@@ -84,10 +84,13 @@ import apiService from '../services/api';
 
     const fetchCompanions = async () => {
         try {
+            if (!authStore.token) {
+                throw new Error('認証トークンがありません。');
+            }
             const response = await apiService.getCompanions(authStore.token);
             existingPlayers.value = response.companions;
         } catch (error) {
-            if (error.message.includes('401')) {
+            if ((error as Error).message && (error as Error).message.includes('401')) {
                 authStore.clearAuthInfo();
                 router.push('/');
             }
@@ -99,19 +102,6 @@ import apiService from '../services/api';
         await fetchCompanions();
         existingPlayers.value.unshift({ id: 0, name: authStore.user.customName || authStore.user.name });
     });
-
-    // const { user } = storeToRefs(authStore); 
-    // const meName = computed(() =>
-    //     user.value?.customName ?? user.value?.name ?? 'ゲスト'
-    // );
-
-    // const existingPlayers = computed(() => ([
-    //     { id: 0, name: user  }, // ID 0 をログインユーザーとして扱う
-    //     { id: 1, name: '田中 太郎' },
-    //     { id: 2, name: '山田 花子' },
-    //     { id: 3, name: '鈴木 一郎' },
-    //     { id: 4, name: '佐藤 次郎' },
-    // ]));
 
 
     // ラウンドに参加するプレイヤーのリスト

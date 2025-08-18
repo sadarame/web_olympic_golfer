@@ -29,23 +29,29 @@
 </template>
 
 <script setup lang="ts">
-// TODO: Home画面以外でログインしていなかった場合、/に遷移する処理を追加する
     import { useAuthStore } from '../stores/auth';
     import { useRoundStore } from '../stores/round';
     import { useRouter } from 'vue-router';
+    import { signOut } from 'firebase/auth'; // Firebase signOut をインポート
+    import { auth } from '../main'; // Firebase auth インスタンスをインポート
 
     const router = useRouter();
     const authStore = useAuthStore();
     const roundStore = useRoundStore();
 
-    const handleLogout = () => {
-        authStore.clearAuthInfo();
-        roundStore.clearRouundInfo();
-        router.push('/');
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            // Firebase の認証状態が変更されると App.vue の onAuthStateChanged が発火し、
+            // authStore.clearAuthInfo() が呼び出されるため、ここではストアの更新は不要
+            roundStore.clearRouundInfo(); // ラウンド情報はここでクリア
+            router.push('/');
+        } catch (error) {
+            console.error("ログアウトに失敗しました:", error);
+        }
     };
 
     const goToHome = () => {
-        console.log("goToHome called");
         router.push('/');
     };
 </script>

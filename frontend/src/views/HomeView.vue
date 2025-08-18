@@ -27,7 +27,7 @@
             data-callback="handleCredentialResponse"
             data-auto_prompt="false">
         </div>
-        <div class="g_id_signin"
+        <div class="g_id_signin mx-auto"
             data-type="standard"
             data-size="large"
             data-theme="outline"
@@ -58,7 +58,7 @@
             <input 
               type="text" 
               v-model="userName" 
-              placeholder="カスタムユーザー名を入力"
+              placeholder="ユーザー名を変更"
               class="input-field text-center text-xl font-semibold text-gray-800 w-full" 
             />
             <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
@@ -88,12 +88,12 @@
   import { useAuthStore } from '../stores/auth';
   import { useRouter } from 'vue-router';
   import { apiService } from '../services/api';
-  import type { User, UserRegistrationData } from '../types';
+  import type { User } from '../types';
+  import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'; // Firebase Auth をインポート
+  import { auth } from '../main'; // Firebase auth インスタンスをインポート
 
   const authStore = useAuthStore();
   const router = useRouter();
-
-  // ユーザー名編集用のリアクティブ変数
   const userName = ref('');
   const isEditingUserName = ref(false);
   const errorMessage = ref('');
@@ -109,32 +109,26 @@
     return authStore.user?.name || 'ゲスト';
   });
 
-  // JWTデコード関数
-  function decodeJwtResponse(token: string) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  }
-
   // ユーザー情報を取得または作成
   const fetchOrCreateUser = async () => {
-    if (!authStore.user?.sub || !authStore.token) return;
+    // Firebase の認証状態が確立されていることを確認
+    if (!auth.currentUser) return;
 
     isLoading.value = true;
     try {
       // ユーザー情報取得APIを呼び出す
-      const existingUser = await apiService.getUser(authStore.token);
+      const existingUser = await apiService.getUser(); // トークンはapiService内で取得される
 
       // GPTによる修正
       const user = normalizeUser(existingUser);
+
       if (user) {
+        // 画面表示変数に値を設定
         currentUser.value = user;
-        userName.value = user.customName || authStore.user.name || '';
-        console.log('ユーザー情報を取得しました:', currentUser.value);
-        console.log('authstore',(authStore.getUserName));
+        // ユーザー名を設定
+        userName.value = user.customName || authStore.user?.name || '';
+        // ストアのユーザー名を更新
+        authStore.updateCustomName(user.customName ?? '');
         return;
       }
       throw new Error('User not found');
@@ -146,18 +140,18 @@
       try {
         const userData = {
           userInfo: {
-            name: authStore.user.name,
-            email: authStore.user.email,
-            profile: authStore.user
+            name: auth.currentUser.displayName || '',
+            email: auth.currentUser.email || '',
+            profile: auth.currentUser.toJSON() // Firebase User オブジェクトをJSONとして保存
           },
-          customName: authStore.user.name
+          customName: auth.currentUser.displayName || '',
         };
         
         // ユーザー登録APIを呼び出す
-        const newUser = await apiService.registerUser(userData, authStore.token);
+        const newUser = await apiService.registerUser(userData); // トークンはapiService内で取得される
         // 画面表示変数に値を設定
         currentUser.value = newUser;
-        userName.value = newUser.customName || authStore.user.name || '';
+        userName.value = newUser.customName || auth.currentUser.displayName || '';
 
       } catch (createError) {
         console.error('ユーザー作成に失敗しました:', createError);
@@ -170,12 +164,21 @@
 
   // コールバック関数
   const handleCredentialResponse = async (response: any) => {
+    // Google IDトークンをFirebaseの認証情報に変換
+    const credential = GoogleAuthProvider.credential(response.credential);
 
-    // デコードしてユーザー情報を取得
-    const decoded = decodeJwtResponse(response.credential);
-    authStore.setAuthInfo(decoded, response.credential);
-    // ログイン後にユーザー情報を取得または作成
-    await fetchOrCreateUser();
+    try {
+      // Firebase にサインイン
+      await signInWithCredential(auth, credential);
+      // Firebase の認証状態が変更されると App.vue の onAuthStateChanged が発火し、
+      // authStore.setAuthInfoFromFirebase() が呼び出されるため、ここではストアの更新は不要
+
+      // ログイン後にユーザー情報を取得または作成
+      await fetchOrCreateUser();
+    } catch (error) {
+      console.error("Firebase sign-in with Google credential failed:", error);
+      errorMessage.value = 'ログインに失敗しました。';
+    }
   };
 
   const renderGoogleButton = () => {
@@ -184,7 +187,7 @@
 
     if (googleAccounts && signInButton) {
       googleAccounts.initialize({
-        client_id: "662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleusercontent.com",
+        client_id: "735464206154-01ti9otrmjqaqukdlo2956bejgu33u14.apps.googleusercontent.com",
         callback: handleCredentialResponse,
       });
       googleAccounts.renderButton(
@@ -193,28 +196,6 @@
       );
     }
   };
-
-  onMounted(() => {
-    (window as any).handleCredentialResponse = handleCredentialResponse;
-  });
-
-  watch(() => authStore.isAuthenticated, (newIsAuthenticated) => {
-    console.log('watch(() => authStore.isAuthenticated', newIsAuthenticated);
-    if (!newIsAuthenticated) {
-      nextTick(() => {
-        renderGoogleButton();
-      });
-    }
-  }, { immediate: true });
-
-  // authStore.user の変更を監視し、ユーザー情報を取得
-  watch(() => authStore.user, (newUser) => {
-    console.log('watch(() => authStore.user', userName.value);
-    if (newUser && authStore.isAuthenticated) {
-      fetchOrCreateUser();
-      // console.log('authStore.user', userName.value);
-    }
-  }, { immediate: true });
 
   // ユーザー名編集モードに入る
   const editUserName = () => {
@@ -232,51 +213,44 @@
 
   // ユーザー名を保存する
   const saveUserName = async () => {
-    if (!authStore.user?.sub || !authStore.token) return;
+    if (!auth.currentUser) return; // Firebase ユーザーが認証されていることを確認
 
     const trimmedUserName = userName.value.trim();
-    if (!trimmedUserName) {
-      errorMessage.value = 'ユーザー名を入力してください。';
-      return;
-    }
-    isSaving.value = true;
-    try {
-      const userData = {
-        token: authStore.token,
-        userInfo: {
-          name: authStore.user.name,
-          email: authStore.user.email,
-          profile: authStore.user
-        },
-        customName: trimmedUserName
-      };
+      if (!trimmedUserName) {
+        errorMessage.value = 'ユーザー名を入力してください。';
+        return;
+      }
+      isSaving.value = true;
+      try {
+        const userData = {
+          userInfo: {
+            name: auth.currentUser.displayName || '',
+            email: auth.currentUser.email || '',
+            profile: auth.currentUser.toJSON() // Firebase User オブジェクトをJSONとして保存
+          },
+          customName: trimmedUserName
+        };
 
-      console.log('Saving user name:', userName.value);
+        // API呼び出し
+        const updatedUser = await apiService.registerUser(userData); // トークンはapiService内で取得される
 
-      // API呼び出し
-      const updatedUser = await apiService.registerUser(userData, authStore.token);
+        // 正規化してユーザー情報を更新
+        const user = normalizeUser(updatedUser);
+        if (!user) throw new Error('ユーザー更新レスポンス不正');
+        currentUser.value = user;
 
-      // GPTによる修正
-      const user = normalizeUser(updatedUser);
-      if (!user) throw new Error('ユーザー更新レスポンス不正');
-      currentUser.value = user;
+        // ストアのユーザー名を更新
+        authStore.updateCustomName(user.customName ?? '');
 
-      // ストアのユーザー名を更新
-      authStore.updateCustomName(user.customName ?? '');
-      console.log('ユーザー名を更新しました:', authStore.getUserName);
+        isEditingUserName.value = false;
+        errorMessage.value = '';
 
-      // currentUser.value = updatedUser;
-      isEditingUserName.value = false;
-      errorMessage.value = '';
-
-
-
-    } catch (error) {
-      console.error('ユーザー名の更新に失敗しました:', error);
-      errorMessage.value = 'ユーザー名の更新に失敗しました。';
-    } finally {
-      isSaving.value = false;
-    }
+      } catch (error) {
+        console.error('ユーザー名の更新に失敗しました:', error);
+        errorMessage.value = 'ユーザー名の更新に失敗しました。';
+      } finally {
+        isSaving.value = false;
+      }
   };
 
   const handleStartGame = () => {
@@ -305,6 +279,35 @@
       updatedAt: u.updatedAt,
     } as User;
   }
+
+    // JWTデコード関数
+  function decodeJwtResponse(token: string) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  }
+
+  // 認証状態の変化を監視し、Googleボタンをレンダリング（headerのログアウト対策）
+  watch(() => authStore.isAuthenticated, (newIsAuthenticated) => {
+    if (!newIsAuthenticated) {
+      nextTick(() => {
+        renderGoogleButton();
+      });
+    }
+  }, { immediate: true });
+
+  onMounted(() => {
+    (window as any).handleCredentialResponse = handleCredentialResponse;
+    // ログイン後にユーザー情報を取得または作成
+    // Firebase の認証状態が確立されてから実行
+    if (auth.currentUser) {
+      fetchOrCreateUser();
+    }
+  });
+
 </script>
 
 <style scoped>
