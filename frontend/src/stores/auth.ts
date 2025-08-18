@@ -16,14 +16,16 @@ export const useAuthStore = defineStore('auth', {
         
         // 既存の customName を保持しつつ、Firebaseからの情報で更新
         const existingCustomName = this.user?.customName; // 既存の customName を取得
+        console.log("Existing customName:", existingCustomName);
+        this.setAuthInfoFromFirebase
 
         this.user = {
           uid: auth.currentUser.uid,
           email: auth.currentUser.email,
-          displayName: auth.currentUser.displayName,
+          // displayName: auth.currentUser.displayName,
           photoURL: auth.currentUser.photoURL,
           // customName はカスタムクレームから取得するか、既存のものを保持、なければdisplayName/email
-          customName: idTokenResult.claims.customName || existingCustomName || auth.currentUser.displayName || auth.currentUser.email,
+          customName: existingCustomName || auth.currentUser.displayName || auth.currentUser.email,
         };
         console.log("User info set from Firebase:", this.user, "customName:", idTokenResult.claims.customName || existingCustomName || auth.currentUser.displayName || auth.currentUser.email);
       } else {

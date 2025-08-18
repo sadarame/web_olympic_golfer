@@ -103,18 +103,18 @@
 
   // 表示名を計算（カスタム名があればそれを使用、なければGoogleアカウント名）
   const displayName = computed(() => {
-    if (currentUser.value?.customName) {
-      return currentUser.value.customName;
-    }
-    return authStore.user?.name || 'ゲスト';
+    const name = authStore.user?.customName || 'ゲスト';
+    return name;
   });
 
   // ユーザー情報を取得または作成
+  // ログイン時のみ呼ばれる
   const fetchOrCreateUser = async () => {
-    // Firebase の認証状態が確立されていることを確認
+    // 認証済みだったらFeatchはしない
     if (!auth.currentUser) return;
 
     isLoading.value = true;
+
     try {
       // ユーザー情報取得APIを呼び出す
       const existingUser = await apiService.getUser(); // トークンはapiService内で取得される
@@ -125,6 +125,7 @@
       if (user) {
         // 画面表示変数に値を設定
         currentUser.value = user;
+        console.log("User found:", user);
         // ユーザー名を設定
         userName.value = user.customName || authStore.user?.name || '';
         // ストアのユーザー名を更新
@@ -213,7 +214,12 @@
 
   // ユーザー名を保存する
   const saveUserName = async () => {
+    console.log("saveUserName called");
     if (!auth.currentUser) return; // Firebase ユーザーが認証されていることを確認
+    
+
+    console.log("処理に入る");
+
 
     const trimmedUserName = userName.value.trim();
       if (!trimmedUserName) {
@@ -280,15 +286,6 @@
     } as User;
   }
 
-    // JWTデコード関数
-  function decodeJwtResponse(token: string) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  }
 
   // 認証状態の変化を監視し、Googleボタンをレンダリング（headerのログアウト対策）
   watch(() => authStore.isAuthenticated, (newIsAuthenticated) => {
@@ -300,12 +297,11 @@
   }, { immediate: true });
 
   onMounted(() => {
+    console.log("HomeView mounted");
     (window as any).handleCredentialResponse = handleCredentialResponse;
-    // ログイン後にユーザー情報を取得または作成
-    // Firebase の認証状態が確立されてから実行
-    if (auth.currentUser) {
-      fetchOrCreateUser();
-    }
+
+    // onAuthStateChanged リスナーが authStore.isAuthenticated を更新するため、
+    // ここでの fetchOrCreateUser() の直接呼び出しは不要
   });
 
 </script>
