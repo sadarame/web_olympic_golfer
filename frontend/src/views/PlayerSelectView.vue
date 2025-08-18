@@ -63,7 +63,6 @@ import { useAuthStore } from '../stores/auth';
 import type { Player } from '../types';
 import apiService from '../services/api';
 
-    // TODO:StartViewで設定した値が存在しない場合、StarViewに遷移する
 
     // Vue Routerのインスタンスを取得
     const router = useRouter();

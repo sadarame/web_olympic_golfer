@@ -286,9 +286,6 @@
   onMounted(() => {
     console.log("HomeView mounted");
     (window as any).handleCredentialResponse = handleCredentialResponse;
-
-    // onAuthStateChanged リスナーが authStore.isAuthenticated を更新するため、
-    // ここでの fetchOrCreateUser() の直接呼び出しは不要
   });
 
 </script>
