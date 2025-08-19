@@ -41,8 +41,14 @@ def start_game_controller(request: https_fn.Request):
 
         game_service.start_new_game(game_id, golf_course, bet_amount, players, editor, memo) # Pass memo
 
-        # Content-Typeをapplication/jsonに設定
-        return https_fn.Response(json.dumps({"message": "Game started successfully!"}), status=200, mimetype="application/json")
+        # Content-Typeをapplication/jsonに設定し、CORSヘッダーも追加
+        headers = {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+        return https_fn.Response(json.dumps({"message": "Game started successfully!"}), status=200, headers=headers)
     except Exception as e:
         return https_fn.Response(f"Error starting game: {e}", status=500)
 

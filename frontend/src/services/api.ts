@@ -22,6 +22,11 @@ class ApiService {
       },
     });
 
+    // デバッグ用ログの追加
+    console.log('API Response:', response);
+    const responseText = await response.text();
+    console.log('API Response Text:', responseText);
+
     if (!response.ok) {
       if (response.status === 401) {
         // トークン切れの場合、認証情報をクリアしてホーム画面へリダイレクト
@@ -30,11 +35,21 @@ class ApiService {
         router.push('/');
         throw new Error('Unauthorized: Token expired or invalid.');
       }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      // エラーレスポンスがJSON形式でない場合を考慮
+      try {
+        const errorData = JSON.parse(responseText);
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      } catch (e) {
+        throw new Error(`HTTP error! status: ${response.status}, Response: ${responseText}`);
+      }
     }
 
-    return response.json();
+    // レスポンスが空の場合を考慮
+    if (responseText === '') {
+      return {} as T; // 空のオブジェクトを返すか、適切なデフォルト値を返す
+    }
+
+    return JSON.parse(responseText); // response.json() の代わりに手動でパース
   }
 
   // 認証ヘッダーを生成するヘルパー関数
