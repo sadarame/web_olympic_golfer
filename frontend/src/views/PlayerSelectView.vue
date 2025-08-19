@@ -56,13 +56,12 @@
 </template>
 
 <script setup lang="ts">
-    import { ref, watchEffect, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useRoundStore } from '../stores/round';
-import { useAuthStore } from '../stores/auth';
-import type { Player } from '../types';
-import apiService from '../services/api';
-import { v4 as uuidv4 } from 'uuid'; // Import uuid
+    import { ref,  onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
+    import { useRoundStore } from '../stores/round';
+    import { useAuthStore } from '../stores/auth';
+    import type { Player } from '../types';
+    import apiService from '../services/api';
 
 
     // Vue Routerのインスタンスを取得
@@ -71,7 +70,6 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid
     const roundStore = useRoundStore();
     // 認証情報を管理するPiniaストアのインスタンスを取得
     const authStore = useAuthStore();
-    const playercustomename = ref(authStore.getUserName);
     // 新規プレイヤー名入力用のリアクティブ変数
     const newPlayerName = ref('');
     // エラーメッセージ表示用のリアクティブ変数
@@ -79,7 +77,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
     // 既存プレイヤーのリスト（テストデータ）
     // 実際のアプリケーションでは、APIなどから取得する
-    // TODO:この値はAPIから取得するように変更する。ログインユーザは
+
     const existingPlayers = ref<Player[]>([]);
 
     const fetchCompanions = async () => {
@@ -216,7 +214,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid
                 const gameId = roundStore.roundId; // UUIDを生成してgameIdとする
                 const golfCourse = roundStore.course; // Get golfCourse from roundStore
                 const betAmount = roundStore.wager; // Get betAmount from roundStore
-                const editor = authStore.user.token
+                const editor = authStore.token;
                 const memo = roundStore.memo; // Get memo from roundStore
 
                 // バックエンドにゲーム開始を通知
