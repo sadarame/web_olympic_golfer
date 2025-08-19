@@ -5,8 +5,7 @@ class GameService:
     def __init__(self):
         self.game_model = GameModel()
 
-    def start_new_game(self, golf_course, bet_amount, players, editor):
-        game_id = str(uuid.uuid4())
+    def start_new_game(self, game_id, golf_course, bet_amount, players, editor, memo): # Add memo
         initial_players_data = []
         for player_name in players:
             initial_players_data.append({
@@ -22,10 +21,10 @@ class GameService:
             "betAmount": bet_amount,
             "editor": editor,
             "players": initial_players_data,
-            "status": "in_progress"
+            "status": "in_progress",
+            "memo": memo # Add memo to game_data
         }
         self.game_model.create_game(game_id, game_data)
-        return game_id
 
     def update_game_data(self, game_id, updated_players_data, new_status=None):
         updates = {"players": updated_players_data}

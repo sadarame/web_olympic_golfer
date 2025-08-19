@@ -5,6 +5,7 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,
     user: null as any | null, // user オブジェクトに customName を含める
+    token: null as string | null, // Firebase ID Token
   }),
   actions: {
     // Firebase の認証状態に基づいて認証情報を設定
@@ -13,6 +14,7 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = true;
         // Firebase のユーザー情報から必要なデータを取得
         const idTokenResult = await auth.currentUser.getIdTokenResult();
+        this.token = idTokenResult.token;
         
         // 既存の customName を保持しつつ、Firebaseからの情報で更新
         const existingCustomName = this.user?.customName; // 既存の customName を取得
@@ -34,6 +36,7 @@ export const useAuthStore = defineStore('auth', {
     clearAuthInfo() {
       this.isAuthenticated = false;
       this.user = null;
+      this.token = null;
     },
     // customName を更新するアクション
     updateCustomName(newName: string) {

@@ -6,20 +6,43 @@ from firebase_functions import https_fn
 
 def start_game_controller(request: https_fn.Request):
     """Handles the logic for starting a new game."""
+    # Handle CORS preflight request
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response('', status=204, headers=headers)
+
     game_service = GameService() # Instantiate GameService inside the function
     try:
         data = request.get_json()
+        print(f"Received data: {data}") # Add this line for debugging
+
+        game_id = data.get('gameId')
         golf_course = data.get('golfCourse')
         bet_amount = data.get('betAmount')
-        players = data.get('players') # List of player names
+        players = data.get('players')
         editor = data.get('editor')
+        memo = data.get('memo') # Add memo
 
-        if not all([golf_course, bet_amount, players, editor]):
+        print(f"game_id: {game_id}, type: {type(game_id)}")
+        print(f"golf_course: {golf_course}, type: {type(golf_course)}")
+        print(f"bet_amount: {bet_amount}, type: {type(bet_amount)}")
+        print(f"players: {players}, type: {type(players)}")
+        print(f"editor: {editor}, type: {type(editor)}")
+        print(f"memo: {memo}, type: {type(memo)}") # Print memo for debugging
+
+
+        if not all([game_id, golf_course, bet_amount, players, editor]): # memoのチェックを外す
             return https_fn.Response("Missing required fields", status=400)
 
-        game_id = game_service.start_new_game(golf_course, bet_amount, players, editor)
+        game_service.start_new_game(game_id, golf_course, bet_amount, players, editor, memo) # Pass memo
 
-        return https_fn.Response(json.dumps({"gameId": game_id, "message": "Game started successfully!"}), status=200, mimetype="application/json")
+        # Content-Typeをapplication/jsonに設定
+        return https_fn.Response(json.dumps({"message": "Game started successfully!"}), status=200, mimetype="application/json")
     except Exception as e:
         return https_fn.Response(f"Error starting game: {e}", status=500)
 

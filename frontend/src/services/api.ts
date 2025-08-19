@@ -108,7 +108,7 @@ class ApiService {
     });
   }
 
-  async getCompanions(): Promise<any> {
+  async getCompanions(token: string): Promise<any> {
     return this.request(API_ENDPOINTS.GET_COMPANIONS, {
       method: 'GET',
     });

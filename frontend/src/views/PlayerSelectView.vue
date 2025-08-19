@@ -62,6 +62,7 @@ import { useRoundStore } from '../stores/round';
 import { useAuthStore } from '../stores/auth';
 import type { Player } from '../types';
 import apiService from '../services/api';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid
 
 
     // Vue Routerのインスタンスを取得
@@ -162,7 +163,7 @@ import apiService from '../services/api';
             errorMessage.value = '';
 
             // APIを呼び出して同伴者を追加
-            const response = await apiService.addCompanion({ name }, authStore.token);
+            const response = await apiService.addCompanion({ name, token: authStore.token });
 
             const newPlayer: Player = {
                 id: response.id, // APIからのIDを使用
@@ -173,7 +174,7 @@ import apiService from '../services/api';
             selectedPlayers.value.push(newPlayer); // 選択済みプレイヤーリストにも追加
             newPlayerName.value = ''; // 入力フィールドをクリア
         } catch (error) {
-            if (error.message.includes('401')) {
+            if ((error as any).message && (error as any).message.includes('401')) {
                 authStore.clearAuthInfo();
                 router.push('/');
             }
@@ -197,7 +198,7 @@ import apiService from '../services/api';
      * ゲーム開始ボタンの処理
      * 選択されたプレイヤーが1人以上いる場合、ラウンドストアにプレイヤー情報を設定し、スコア入力画面へ遷移する
      */
-    const startGame = () => {
+    const startGame = async () => {
     // 中断中のゲームがないか確認
         console.log(roundStore.roundStatus);
         if (roundStore.roundStatus === "pending"){
@@ -209,11 +210,31 @@ import apiService from '../services/api';
 
          // 選択されたプレイヤーが1人以上いることを確認
         if (selectedPlayers.value.length >= 2) {
-            // ラウンドストアに選択されたプレイヤー情報を設定
-            // roundStore.clearRouundInfo(); // Clear previous round info
+            // 選択されたプレイヤーをラウンドストアに設定
             roundStore.setPlayers(selectedPlayers.value);
-            // スコア入力画面へルーティング
-            router.push({ name: 'ScoreEntry' });
+            try {
+                const gameId = roundStore.roundId; // UUIDを生成してgameIdとする
+                const golfCourse = roundStore.course; // Get golfCourse from roundStore
+                const betAmount = roundStore.wager; // Get betAmount from roundStore
+                const editor = authStore.user.token
+                const memo = roundStore.memo; // Get memo from roundStore
+
+                // バックエンドにゲーム開始を通知
+                await apiService.startGame({
+                    gameId,
+                    golfCourse,
+                    betAmount,
+                    players: selectedPlayers.value,
+                    editor,
+                    memo // Add memo to the request
+                });
+                console.log('Game started successfully!');
+                // スコア入力画面へルーティング
+                router.push({ name: 'ScoreEntry' });
+            } catch (error) {
+                console.error('Failed to start game:', error);
+                errorMessage.value = 'ゲームの開始に失敗しました。';
+            }
         }else{
             errorMessage.value = '同伴者を2人以上選択してください。';
             return
