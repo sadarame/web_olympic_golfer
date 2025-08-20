@@ -8,7 +8,7 @@ import router from './router'
 
 // Firebase のインポート
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // あなたの Firebase プロジェクトの実際の値に置き換えてください
 const firebaseConfig = {
@@ -32,4 +32,16 @@ pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router)
 
-app.mount('#app')
+// Firebase の認証状態がロードされるまで待機してからアプリをマウント
+let appInitialized = false;
+onAuthStateChanged(auth, (user) => {
+  if (!appInitialized) {
+    // useAuthStore をインポートして setAuthInfoFromFirebase を呼び出す
+    import('./stores/auth').then(({ useAuthStore }) => {
+      const authStore = useAuthStore();
+      authStore.setAuthInfoFromFirebase(); // Firebase のユーザー情報でストアを更新
+      app.mount('#app');
+      appInitialized = true;
+    });
+  }
+});

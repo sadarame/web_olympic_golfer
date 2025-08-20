@@ -57,13 +57,14 @@ const router = createRouter({
 
 import apiService from '../services/api'; // Add this import
 
-//TODO: 同伴者のケースを入力のケースを記載
 router.beforeEach(async (to, from, next) => { // Mark as async
   const authStore = useAuthStore();
   const isAuthenticated = authStore.getIsAuthenticated;
 
   if (to.name !== 'Home' && !isAuthenticated) {
+    console.log('User is not authenticated, redirecting to Home');
     return next({ name: 'Home' });
+
   }
 
   const roundStore = useRoundStore();
