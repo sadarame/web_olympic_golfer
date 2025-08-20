@@ -220,29 +220,25 @@
         }
     };
 
-onMounted(() => {
-    initializeScores(); // 既存の初期化ロジック
+    onMounted(() => {
 
-    // onMounted 時に各プレイヤーの金額を再計算
-    const nPlayers = selectedPlayers.value.length;
-    const numericRate = Number(roundStore.wager); // roundStore.wager を直接使用
+        // 総得点を計算
+        const totalPoints = Object.values(playerScores.value)
+        .reduce((sum, player) => sum + player.points, 0);
 
-    // 総得点を計算
-    const totalScore = selectedPlayers.value.reduce((sum, player) => {
-        return sum + (playerScores.value[player.name]?.points ?? 0);
-    }, 0);
+        console.log(totalPoints);
 
-    selectedPlayers.value.forEach(player => {
-        const pPoints = playerScores.value[player.name]?.points ?? 0;
-        const newAmount = (pPoints * nPlayers - totalScore) * numericRate;
-        roundStore.setPlayerScore(player.name, pPoints, newAmount);
+        selectedPlayers.value.forEach(player => {
+            const pPoints = playerScores.value[player.name]?.points ?? 0;
+            const nPlayers = selectedPlayers.value.length;
+            const numericRate = Number((rate as any)?.value ?? rate);
+            const newAmount = (pPoints * nPlayers - totalPoints) * numericRate;
+            roundStore.setPlayerScore(player.name, pPoints, newAmount);
+            
+        });
     });
 
-    // 既存の初期化ロジック
-    initializeScores(); 
-
-});
-
+     initializeScores(); 
 
 </script>
 

@@ -77,6 +77,8 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   }
 
   const roundStore = useRoundStore();
+  console.log('Current round status:', roundStore.roundStatus,from.name, to.name, roundStore.roundId);
+
   if (from.name === 'ScoreEntry' && to.name !== 'ResultView' && roundStore.roundId && roundStore.roundStatus !== 'completed') {
     if (window.confirm('入力中のデータは失われますが、よろしいですか？')) {
       try {

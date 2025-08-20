@@ -52,7 +52,9 @@
     };
 
     const goToHome = () => {
-        roundStore.clearRouundInfo();
+        // roundStore.clearRouundInfo();
+        // 過去スコアからの遷移の場合、ホームに戻る
+        // 新規スコア入力からの遷移の場合、スコア入力画面に戻る
         router.push('/');
     };
 </script>

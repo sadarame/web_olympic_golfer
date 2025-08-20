@@ -155,7 +155,6 @@ const startNewRound = () => {
 
 // ホームに戻る
 const goToHome = () => {
-  roundStore.clearRouundInfo();
   router.push('/');
 };
 </script>
