@@ -29,23 +29,6 @@
         </div>
       </div>
 
-      <!-- 結果サマリーセクション -->
-      <div class="space-y-4 mb-6 p-4 bg-green-50 rounded-xl shadow-md border border-green-200">
-        <h2 class="text-xl font-semibold text-gray-800 text-center">結果サマリー</h2>
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <p class="text-gray-600">総ポイント</p>
-            <p class="text-2xl font-bold text-green-600">{{ totalPoints }}</p>
-          </div>
-          <div>
-            <p class="text-gray-600">総金額</p>
-            <p class="text-2xl font-bold" :class="totalAmount >= 0 ? 'text-green-600' : 'text-red-500'">
-              ¥{{ totalAmount }}
-            </p>
-          </div>
-        </div>
-      </div>
-
       <!-- プレイヤー結果一覧セクション -->
       <div class="space-y-4 mb-6">
         <h2 class="text-xl font-semibold text-gray-800 text-center">プレイヤー結果</h2>

@@ -68,7 +68,7 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   }
 
   const roundStore = useRoundStore();
-  if (from.name === 'ScoreEntry' && to.name !== 'ResultView' && roundStore.roundId) {
+  if (from.name === 'ScoreEntry' && to.name !== 'ResultView' && roundStore.roundId && roundStore.roundStatus !== 'completed') {
     if (window.confirm('入力中のデータは失われますが、よろしいですか？')) {
       try {
         // Call backend to delete game from Firestore

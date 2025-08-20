@@ -79,6 +79,7 @@ onMounted(async () => {
   try {
     loading.value = true;
     const gameList = await apiService.getGameList();
+    console.log('Fetched game list:', gameList); // デバッグログを追加
     games.value = gameList.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     error.value = null;
   } catch (err) {
@@ -90,14 +91,27 @@ onMounted(async () => {
 });
 
 const editGame = (game: any) => {
-  roundStore.setRoundInfo({
+  roundStore.setPastRoundInfo({
     roundId: game.gameId,
     roundDate: new Date(game.createdAt).toISOString().split('T')[0],
     course: game.golfCourse,
     wager: game.wager,
     memo: game.memo,
   });
-  roundStore.setPlayers(game.players);
+
+  // roundStore.setPlayers には id と name のみを持つプレイヤーオブジェクトの配列を渡す
+  // ScoreEntryViewHole.vue の selectedPlayers が期待する形式
+  const playersForRoundStore = game.players.map((player: any) => ({
+    id: player.id || player.name, // id がない場合は name を使用
+    name: player.name,
+  }));
+  roundStore.setPlayers(playersForRoundStore);
+
+  // 各プレイヤーのポイントと金額を roundStore.playerScores にセット
+  game.players.forEach((player: any) => {
+    roundStore.setPlayerScore(player.name, player.points, player.amount);
+  });
+
   roundStore.setStatus(game.status);
   router.push({ name: 'ScoreEntry' });
 };

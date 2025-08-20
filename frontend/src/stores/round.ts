@@ -41,6 +41,14 @@ export const useRoundStore = defineStore('round', {
       if (info.wager) this.wager = info.wager;
       if (info.memo) this.memo = info.memo;
     },
+
+    setPastRoundInfo(info: Partial<Round>) {
+      if (info.roundId) this.roundId = info.roundId;
+      if (info.roundDate) this.roundDate = info.roundDate;
+      if (info.course) this.course = info.course;
+      if (info.wager) this.wager = info.wager;
+      if (info.memo) this.memo = info.memo;
+    },
     setPlayers(players: Player[]) {
       this.players = players;
     },

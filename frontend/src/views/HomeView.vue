@@ -286,6 +286,7 @@
   onMounted(() => {
     console.log("HomeView mounted");
     (window as any).handleCredentialResponse = handleCredentialResponse;
+    fetchOrCreateUser();
   });
 
 </script>
