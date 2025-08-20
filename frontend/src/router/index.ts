@@ -53,6 +53,15 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  scrollBehavior(to, from, savedPosition) {
+    // savedPosition があれば、それを使用する (ブラウザの戻る/進むボタン)
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      // それ以外の場合は、常に一番上までスクロールする
+      return { top: 0 };
+    }
+  },
 });
 
 import apiService from '../services/api'; // Add this import

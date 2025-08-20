@@ -6,29 +6,6 @@
         ラウンド結果 🏆
       </h1>
 
-      <!-- ラウンド基本情報セクション -->
-      <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
-        <h2 class="text-xl font-semibold text-gray-800 text-center">ラウンド情報⛳️🔥</h2>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div class="text-center">
-            <p class="text-gray-600">日付</p>
-            <p class="font-semibold text-gray-800">{{ formatDate(roundStore.roundDate) }}</p>
-          </div>
-          <div class="text-center">
-            <p class="text-gray-600">ゴルフ場</p>
-            <p class="font-semibold text-gray-800">{{ roundStore.course || '未設定' }}</p>
-          </div>
-        </div>
-        <div class="text-center">
-          <p class="text-gray-600">レート</p>
-          <p class="font-semibold text-gray-800">{{ roundStore.wager || '100' }}円/pt</p>
-        </div>
-        <div v-if="roundStore.memo" class="text-center">
-          <p class="text-gray-600">メモ</p>
-          <p class="font-semibold text-gray-800">{{ roundStore.memo }}</p>
-        </div>
-      </div>
-
       <!-- プレイヤー結果一覧セクション -->
       <div class="space-y-4 mb-6">
         <h2 class="text-xl font-semibold text-gray-800 text-center">プレイヤー結果😎✨</h2>
@@ -54,6 +31,34 @@
         </div>
       </div>
 
+      <!-- ラウンド基本情報セクション -->
+      <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
+        <div class="flex justify-between items-center cursor-pointer" @click="toggleRoundInfo">
+          <h2 class="text-xl font-semibold text-gray-800">ラウンド情報⛳️🔥</h2>
+          <span class="text-lg font-medium text-gray-700">{{ showRoundInfo ? '▲' : '▼' }}</span>
+        </div>
+        <div v-if="showRoundInfo" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4 text-sm text-left">
+            <div>
+              <p class="text-gray-600">日付</p>
+              <p class="font-semibold text-gray-800">{{ formatDate(roundStore.roundDate) }}</p>
+            </div>
+            <div>
+              <p class="text-gray-600">レート</p>
+              <p class="font-semibold text-gray-800">{{ roundStore.wager || '100' }}円/pt</p>
+            </div>
+          </div>
+          <div class="text-sm">
+            <p class="text-gray-600">ゴルフ場</p>
+            <p class="font-semibold text-gray-800">{{ roundStore.course || '未設定' }}</p>
+          </div>
+          <div class="text-sm">
+            <p class="text-gray-600">メモ</p>
+            <p class="font-semibold text-gray-800">{{ roundStore.memo || 'なし' }}</p>
+          </div>
+        </div>
+      </div>
+
       <!-- アクションボタンセクション -->
       <div class="space-y-4 text-center">
         <button @click="startNewRound" class="w-full btn-fancy-next">
@@ -68,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useRoundStore } from '../stores/round';
 import { useAuthStore } from '../stores/auth';
@@ -76,6 +81,12 @@ import { useAuthStore } from '../stores/auth';
 const router = useRouter();
 const roundStore = useRoundStore();
 const authStore = useAuthStore();
+
+// ラウンド基本情報セクションの表示/非表示を制御するref
+const showRoundInfo = ref(false);
+const toggleRoundInfo = () => {
+  showRoundInfo.value = !showRoundInfo.value;
+};
 
 // 日付フォーマット関数
 const formatDate = (dateString: string) => {
@@ -92,28 +103,6 @@ const formatDate = (dateString: string) => {
     return '未設定';
   }
 };
-
-// デバッグ用：ストアの状態を確認
-onMounted(() => {
-  console.log('Round Store State:', {
-    roundDate: roundStore.roundDate,
-    course: roundStore.course,
-    wager: roundStore.wager,
-    memo: roundStore.memo,
-    players: roundStore.players,
-    playerScores: roundStore.playerScores
-  });
-});
-
-// 総ポイントを計算
-const totalPoints = computed(() => {
-  return Object.values(roundStore.playerScores).reduce((sum, score) => sum + (score.points || 0), 0);
-});
-
-// 総金額を計算
-const totalAmount = computed(() => {
-  return Object.values(roundStore.playerScores).reduce((sum, score) => sum + (score.amount || 0), 0);
-});
 
 // プレイヤーのポイントを取得
 const getPlayerPoints = (playerName: string) => {
@@ -143,9 +132,9 @@ const getPlayerResultClass = (playerName: string) => {
 const getPlayerRankIcon = (playerName: string) => {
   const players = [...roundStore.players];
   players.sort((a, b) => {
-    const aAmount = getPlayerAmount(a.name);
-    const bAmount = getPlayerAmount(b.name);
-    return aAmount - bAmount; // 金額の低い順（昇順）
+    const aPoints = getPlayerPoints(a.name);
+    const bPoints = getPlayerPoints(b.name);
+    return bPoints - aPoints; // ポイントの高い順（降順）
   });
   
   const rank = players.findIndex(p => p.name === playerName) + 1;
