@@ -3,19 +3,12 @@ from services.game_service import GameService
 import json
 from datetime import datetime
 from firebase_functions import https_fn
+from utils.helpers import cors_enabled
+from utils.auth_utils import get_user_from_request
 
+@cors_enabled
 def start_game_controller(request: https_fn.Request):
     """Handles the logic for starting a new game."""
-    # Handle CORS preflight request
-    if request.method == 'OPTIONS':
-        headers = {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            'Access-Control-Max-Age': '3600'
-        }
-        return https_fn.Response('', status=204, headers=headers)
-
     game_service = GameService() # Instantiate GameService inside the function
     try:
         data = request.get_json()
@@ -41,40 +34,43 @@ def start_game_controller(request: https_fn.Request):
 
         game_service.start_new_game(game_id, golf_course, bet_amount, players, editor, memo) # Pass memo
 
-        # Content-Typeをapplication/jsonに設定し、CORSヘッダーも追加
-        headers = {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST',
-            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        }
+        headers = {'Content-Type': 'application/json'}
         return https_fn.Response(json.dumps({"message": "Game started successfully!"}), status=200, headers=headers)
     except Exception as e:
         return https_fn.Response(f"Error starting game: {e}", status=500)
 
+@cors_enabled
 def update_score_and_game_status_controller(request: https_fn.Request):
     """Handles the logic for updating score and game status."""
-    game_service = GameService() # Instantiate GameService inside the function
+    game_service = GameService()
     try:
         data = request.get_json()
         game_id = data.get('gameId')
-        updated_players_data = data.get('players') # List of updated player objects
+        updated_players_data = data.get('players')
         new_status = data.get('status')
 
-        if not all([game_id, updated_players_data]):
+        if not all([game_id, updated_players_data, new_status]):
             return https_fn.Response("Missing required fields", status=400)
 
         game_service.update_game_data(game_id, updated_players_data, new_status)
 
-        return https_fn.Response("Score and game status updated successfully!", status=200)
+        headers = {'Content-Type': 'application/json'}
+        return https_fn.Response(json.dumps({"message": "Score and game status updated successfully!"}), status=200, headers=headers)
     except Exception as e:
         return https_fn.Response(f"Error updating score and game status: {e}", status=500)
 
+@cors_enabled
 def get_game_list_controller(request: https_fn.Request):
-    """Handles the logic for getting the game list."""
-    game_service = GameService() # Instantiate GameService inside the function
+    """Handles the logic for getting the game list for the authenticated user."""
+    game_service = GameService()
     try:
-        games = game_service.get_all_games_list()
+        decoded_token = get_user_from_request(request)
+        if not decoded_token or not decoded_token.get('sub'):
+            return https_fn.Response("Unauthorized", status=401)
+        
+        user_id = decoded_token['sub']
+        games = game_service.get_games_by_editor(user_id)
+        
         # Convert datetime objects to string for JSON serialization
         for game in games:
             if 'createdAt' in game and isinstance(game['createdAt'], datetime):
@@ -83,9 +79,12 @@ def get_game_list_controller(request: https_fn.Request):
                 game['updatedAt'] = game['updatedAt'].isoformat()
 
         return https_fn.Response(json.dumps(games), status=200, mimetype="application/json")
+    
     except Exception as e:
+        print(f"Error in get_game_list_controller: {e}")
         return https_fn.Response(f"Error getting game list: {e}", status=500)
 
+@cors_enabled
 def delete_game_controller(request: https_fn.Request):
     """Handles the logic for deleting a game."""
     game_service = GameService() # Instantiate GameService inside the function
@@ -100,6 +99,7 @@ def delete_game_controller(request: https_fn.Request):
     except Exception as e:
         return https_fn.Response(f"Error deleting game: {e}", status=500)
 
+@cors_enabled
 def get_game_info_controller(request: https_fn.Request):
     """Handles the logic for getting game info."""
     game_service = GameService() # Instantiate GameService inside the function

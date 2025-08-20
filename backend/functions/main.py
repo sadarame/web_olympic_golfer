@@ -18,6 +18,7 @@ def updateScoreAndGameStatus(request: https_fn.Request):
     return game_controller.update_score_and_game_status_controller(request)
 
 @https_fn.on_request()
+@require_auth
 def getGameList(request: https_fn.Request):
     return game_controller.get_game_list_controller(request)
 

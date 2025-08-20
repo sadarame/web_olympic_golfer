@@ -38,6 +38,11 @@ const routes = [
     name: 'ResultView',
     component: () => import('../views/ResultView.vue'),
   },
+  {
+    path: '/past-games',
+    name: 'PastGamesView',
+    component: () => import('../views/PastGamesView.vue'),
+  },
   // Catch-all route to redirect to Home
   {
     path: '/:pathMatch(.*)*',

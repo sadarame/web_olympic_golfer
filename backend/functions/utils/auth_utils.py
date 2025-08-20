@@ -11,33 +11,22 @@ GOOGLE_CLIENT_ID = "662503012810-fh86an6fbiu8bm34mrh4kuu98u3c3i1q.apps.googleuse
 
 def verify_token(token):
     """
-    Google IDトークンを検証する
+    Firebase IDトークンを検証する
     
     Args:
-        token (str): Google IDトークン
+        token (str): Firebase IDトークン
         
     Returns:
         dict: 検証されたユーザー情報
         None: トークンが無効な場合
     """
     try:
-        # Googleのライブラリを使ってトークンを検証
-        id_info = id_token.verify_oauth2_token(
-            token, requests.Request(), GOOGLE_CLIENT_ID
-        )
-        return id_info
-    except ValueError as e:
-        # トークンが無効な場合
-        print(f"Token verification failed: {e}")
-        if "Token expired" in str(e):
-            return None
-        # Firebase Admin SDKのトークン検証も試す（フォールバック）
-        try:
-            decoded_token = auth.verify_id_token(token)
-            return decoded_token
-        except Exception as firebase_e:
-            print(f"Firebase token verification also failed: {firebase_e}")
-            return None
+        # Firebase Admin SDKを使ってトークンを検証
+        decoded_token = auth.verify_id_token(token)
+        return decoded_token
+    except Exception as e:
+        print(f"Firebase token verification failed: {e}")
+        return None
 
 def require_auth(func):
     """

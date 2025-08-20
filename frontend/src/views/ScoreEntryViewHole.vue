@@ -60,12 +60,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useRoundStore } from '../stores/round';
+import apiService from '../services/api'; // apiServiceをインポート
 
 const router = useRouter();
-const route = useRoute();
 const roundStore = useRoundStore();
 const { players: selectedPlayers, playerScores } = storeToRefs(roundStore);
 
@@ -163,13 +163,13 @@ const totalScore = selectedPlayers.value.reduce((sum, player) => {
 
 // 4) 金額計算（各プレイヤーごと）
 const nPlayers = selectedPlayers.value.length;
-const numericRate = Number((rate as any)?.value ?? rate); // rateがrefでもOKに
+const numericRate = Number((rate as any)?.value ?? rate);
 
 selectedPlayers.value.forEach(player => {
-    const pPoints = ensurePlayer(player.name).points; // ★ 各人の点数
+    const pPoints = ensurePlayer(player.name).points;
     const newAmount = (pPoints * nPlayers - totalScore) * numericRate;
 
-    roundStore.setPlayerScore(player.name, pPoints, newAmount); // 置換更新で確実に反映
+    roundStore.setPlayerScore(player.name, pPoints, newAmount);
 });
 };
 
@@ -187,14 +187,37 @@ alertTimeout = setTimeout(() => {
 };
 
 // 結果画面へ遷移する関数
-const goToResult = () => {
+const goToResult = async () => {
     // ユーザーに保存していいか確認
     if (!confirm('スコアを保存してラウンドを終了しますか？')) {
         return; // キャンセルされた場合は処理を中断
     }
-    // ステータスを変更してリザルト画面へ遷移
-    roundStore.setStatus('completed');
-    router.push({ name: 'ResultView' });
+
+    try {
+        // ゲームデータを準備
+        const gameId = roundStore.roundId;
+        const updatedPlayersData = selectedPlayers.value.map(player => ({
+            id: player.id,
+            name: player.name,
+            points: playerScores.value[player.name]?.points || 0,
+            amount: playerScores.value[player.name]?.amount || 0,
+        }));
+        const newStatus = 'completed';
+
+        // バックエンドにゲームデータを更新・保存を依頼
+        await apiService.updateScoreAndGameStatus({
+            gameId,
+            players: updatedPlayersData,
+            status: newStatus,
+        });
+
+        // ステータスを変更してリザルト画面へ遷移
+        roundStore.setStatus(newStatus);
+        router.push({ name: 'ResultView' });
+    } catch (error) {
+        console.error('Failed to save game data:', error);
+        showAlertMessage('ゲームデータの保存に失敗しました。');
+    }
 };
 
 

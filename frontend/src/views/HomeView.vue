@@ -255,7 +255,7 @@
   };
 
   const handleViewScores = () => {
-    alert('過去のスコア一覧画面への遷移をシミュレートします。');
+    router.push('/past-games');
   };
 
   // ユーザー情報を正規化する関数

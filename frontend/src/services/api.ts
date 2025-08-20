@@ -89,6 +89,14 @@ class ApiService {
     });
   }
 
+  // updateScoreAndGameStatusを追加
+  async updateScoreAndGameStatus(data: { gameId: string; players: any[]; status: string; }): Promise<any> {
+    return this.request(API_ENDPOINTS.UPDATE_SCORE, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async getGameList(): Promise<any> {
     return this.request(API_ENDPOINTS.GET_GAME_LIST, {
       method: 'GET',

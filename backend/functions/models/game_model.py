@@ -32,3 +32,10 @@ class GameModel:
         for doc in docs:
             games.append(doc.to_dict())
         return games
+
+    def get_games_by_editor(self, editor_id):
+        docs = self.collection.where("editor", "==", editor_id).stream()
+        games = []
+        for doc in docs:
+            games.append(doc.to_dict())
+        return games

@@ -75,9 +75,13 @@
     // エラーメッセージ表示用のリアクティブ変数
     const errorMessage = ref('');
 
-    // 既存プレイヤーのリスト（テストデータ）
-    // 実際のアプリケーションでは、APIなどから取得する
+    // ログインユーザーの情報を取得
+    const currentUser: Player = {
+        id: authStore.getUserId,
+        name: authStore.getUserName,
+    };
 
+    // 既存プレイヤーのリスト
     const existingPlayers = ref<Player[]>([]);
 
     const fetchCompanions = async () => {
@@ -86,7 +90,12 @@
                 throw new Error('認証トークンがありません。');
             }
             const response = await apiService.getCompanions(authStore.token);
+            // 自分自身が同伴者リストに含まれていないことを確認してから追加
+            const companionExists = response.companions.some((c: Player) => c.id === currentUser.id);
             existingPlayers.value = response.companions;
+            if (!companionExists) {
+                 existingPlayers.value.unshift(currentUser);
+            }
         } catch (error) {
             if ((error as Error).message && (error as Error).message.includes('401')) {
                 authStore.clearAuthInfo();
@@ -98,13 +107,12 @@
 
     onMounted(async () => {
         await fetchCompanions();
-        existingPlayers.value.unshift({ id: 0, name: authStore.user.customName || authStore.user.name });
     });
 
 
     // ラウンドに参加するプレイヤーのリスト
     // 初期状態でログインユーザーを選択済みとする
-    const selectedPlayers = ref<Player[]>([{ id: 0, name: authStore.user.customName || authStore.user.name }]); 
+    const selectedPlayers = ref<Player[]>([currentUser]); 
 
     /**
      * 指定されたプレイヤーが現在選択されているかどうかを判定する関数
@@ -120,16 +128,16 @@
      * @param player - 選択状態を切り替えるプレイヤーオブジェクト
      */
     const toggleSelection = (player: Player) => {
-    // ログインユーザー（ID 0）は選択解除できないようにする
-    if (player.id === 0) return;
+        // ログインユーザーは選択解除できないようにする
+        if (player.id === currentUser.id) return;
 
-    if (isSelected(player)) {
-        // 既に選択されている場合は、selectedPlayersから削除
-        selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
-    } else {
-        // 選択されていない場合は、selectedPlayersに追加
-        selectedPlayers.value.push(player);
-    }
+        if (isSelected(player)) {
+            // 既に選択されている場合は、selectedPlayersから削除
+            selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
+        } else {
+            // 選択されていない場合は、selectedPlayersに追加
+            selectedPlayers.value.push(player);
+        }
     };
 
     /**
@@ -186,8 +194,8 @@
      * @param player - 削除対象のプレイヤーオブジェクト
      */
     const removePlayer = (player: Player) => {
-        // ログインユーザー（ID 0）は削除できないようにする
-        if (player.id === 0) return;
+        // ログインユーザーは削除できないようにする
+        if (player.id === currentUser.id) return;
         // 指定されたプレイヤーをselectedPlayersから除外して新しい配列を作成
         selectedPlayers.value = selectedPlayers.value.filter(p => p.id !== player.id);
     };
@@ -214,7 +222,7 @@
                 const gameId = roundStore.roundId; // UUIDを生成してgameIdとする
                 const golfCourse = roundStore.course; // Get golfCourse from roundStore
                 const betAmount = roundStore.wager; // Get betAmount from roundStore
-                const editor = authStore.token;
+                const editor = authStore.user.uid; // Get user ID from authStore
                 const memo = roundStore.memo; // Get memo from roundStore
 
                 // バックエンドにゲーム開始を通知
