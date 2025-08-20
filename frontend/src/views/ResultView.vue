@@ -8,7 +8,7 @@
 
       <!-- ラウンド基本情報セクション -->
       <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
-        <h2 class="text-xl font-semibold text-gray-800 text-center">ラウンド情報</h2>
+        <h2 class="text-xl font-semibold text-gray-800 text-center">ラウンド情報⛳️🔥</h2>
         <div class="grid grid-cols-2 gap-4 text-sm">
           <div class="text-center">
             <p class="text-gray-600">日付</p>
@@ -31,11 +31,11 @@
 
       <!-- プレイヤー結果一覧セクション -->
       <div class="space-y-4 mb-6">
-        <h2 class="text-xl font-semibold text-gray-800 text-center">プレイヤー結果</h2>
+        <h2 class="text-xl font-semibold text-gray-800 text-center">プレイヤー結果😎✨</h2>
         <div class="space-y-3">
           <div v-for="player in roundStore.players" :key="player.id" 
-               class="bg-white rounded-xl p-4 shadow-md border-2 transition-all duration-200"
-               :class="getPlayerResultClass(player.name)">
+              class="bg-white rounded-xl p-4 shadow-md border-2 transition-all duration-200"
+              :class="getPlayerResultClass(player.name)">
             <div class="flex justify-between items-center">
               <div class="flex items-center space-x-3">
                 <span class="text-2xl">{{ getPlayerRankIcon(player.name) }}</span>

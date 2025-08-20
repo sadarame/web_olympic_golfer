@@ -31,7 +31,7 @@
             <!-- 同伴者選択ボタン -->
             <div class="text-center">
                 <button id="select-partners-button" @click="selectCompanions" class="btn-solid">
-                    同伴者を選択 ➡️
+                    {{ buttonText() }}
                 </button>
             </div>
         </div>
@@ -45,7 +45,6 @@
 
     const router = useRouter();
     const roundStore = useRoundStore();
-
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based
@@ -56,19 +55,37 @@
     const course = ref(roundStore.course || '');
     const wager = ref(roundStore.wager || '100');
     const memo = ref(roundStore.memo || '');
+
+    const buttonText = () => {
+        return roundStore.roundId ? 'スコア入力 ➡️' : '同伴者を選択 ➡️';
+    };
     
     const selectCompanions = () => {
-      if (!roundDate.value ) {
-        alert('ラウンド日は必須です。');
-        return;
-      }
-      roundStore.setRoundInfo({
-        roundDate: roundDate.value,
-        course: course.value,
-        wager: wager.value,
-        memo: memo.value,
-      });
-      router.push('/select-players');
+        // 過去スコア画面から遷移してきた場合考慮
+        // ラウンドIDが設定されていない場合は新規ラウンドとして扱う
+        console.log("selectCompanions called with roundDate:", roundDate.value, "course:", course.value, "wager:", wager.value, "memo:", memo.value);
+        console.log("Current roundId:", roundStore.roundId);
+        if (!roundStore.roundId){
+            console.log("Setting round info for new round");
+            roundStore.setRoundInfo({
+            roundDate: roundDate.value,
+            course: course.value,
+            wager: wager.value,
+            memo: memo.value,
+            })
+            router.push('/select-players');  
+        }else{
+            console.log("Setting round info for existing round");
+            roundStore.setPastRoundInfo({
+                // 既存のラウンドIDを保持しつつ、他の情報を更新
+                roundId: roundStore.roundId,
+                roundDate: roundDate.value,
+                course: course.value,
+                wager: wager.value,
+                memo: memo.value,
+            });
+            router.push('/score-entry'); 
+        }
     };
 </script>
 

@@ -113,7 +113,7 @@ const editGame = (game: any) => {
   });
 
   roundStore.setStatus(game.status);
-  router.push({ name: 'ScoreEntry' });
+  router.push({ name: 'Start' });
 };
 
 const toggleDetails = (gameId: string) => {
