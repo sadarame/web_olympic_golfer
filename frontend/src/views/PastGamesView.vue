@@ -2,7 +2,7 @@
   <div class="main-layout">
     <div class="container mx-auto max-w-lg card">
       <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
-        対戦履歴
+        対戦履歴⚔️
       </h1>
       <div v-if="loading" class="text-center">
         <p>読み込み中...</p>
@@ -16,20 +16,28 @@
       <div v-else class="space-y-4">
         <div v-for="game in games" :key="game.gameId" class="bg-white rounded-xl p-4 shadow-md transition-all">
           <div class="flex justify-between items-center cursor-pointer" @click="toggleDetails(game.gameId)">
-            <div>
-              <p class="font-bold text-lg">{{ game.golfCourse || '未設定のコース' }}</p>
+            <div class="w-1/2 pr-2">
+              <p class="font-bold text-lg truncate">{{ game.golfCourse || '未設定のコース' }}</p>
               <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
             </div>
             <div class="flex items-center space-x-2">
-              <span v-if="game.status === 'completed'" :class="getAmountClass(game.editorResultAmount)" class="font-bold text-lg mr-2">
-                ¥{{ game.editorResultAmount.toLocaleString() }}
-              </span>
-              <span :class="getStatusClass(game.status)" class="status-badge">
-                {{ getStatusText(game.status) }}
-              </span>
-              <button class="btn-fancy text-sm h-10">
-                {{ expandedGameId === game.gameId ? '閉じる' : '詳細' }}
-              </button>
+              <div class="flex flex-col items-end">
+                <span :class="getStatusClass(game.status)" class="status-badge">
+                  {{ getStatusText(game.status) }}
+                </span>
+                <span v-if="game.status === 'completed'" :class="getAmountClass(game.editorResultAmount)" class="font-bold text-lg">
+                  ¥{{ game.editorResultAmount.toLocaleString() }}
+                </span>
+
+              </div>
+              <div class="flex flex-col space-y-2">
+                <button @click.stop="editGame(game)" class="btn-fancy text-sm h-10">
+                  編集
+                </button>
+                <button class="btn-fancy text-sm h-10">
+                  {{ expandedGameId === game.gameId ? '閉じる' : '詳細' }}
+                </button>
+              </div>
             </div>
           </div>
           <div v-if="expandedGameId === game.gameId" class="mt-4 pt-4 border-t border-gray-200">
@@ -58,8 +66,10 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '../services/api';
+import { useRoundStore } from '../stores/round';
 
 const router = useRouter();
+const roundStore = useRoundStore();
 const games = ref<any[]>([]);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -78,6 +88,19 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const editGame = (game: any) => {
+  roundStore.setRoundInfo({
+    roundId: game.gameId,
+    roundDate: new Date(game.createdAt).toISOString().split('T')[0],
+    course: game.golfCourse,
+    wager: game.wager,
+    memo: game.memo,
+  });
+  roundStore.setPlayers(game.players);
+  roundStore.setStatus(game.status);
+  router.push({ name: 'ScoreEntry' });
+};
 
 const toggleDetails = (gameId: string) => {
   if (expandedGameId.value === gameId) {

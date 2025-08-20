@@ -29,7 +29,7 @@ def start_game_controller(request: https_fn.Request):
         print(f"memo: {memo}, type: {type(memo)}") # Print memo for debugging
 
 
-        if not all([game_id, golf_course, bet_amount, players, editor]): # memoのチェックを外す
+        if not all([game_id, bet_amount, players, editor]): # memoとgolf_courseのチェックを外す
             return https_fn.Response("Missing required fields", status=400)
 
         game_service.start_new_game(game_id, golf_course, bet_amount, players, editor, memo) # Pass memo
@@ -95,7 +95,8 @@ def delete_game_controller(request: https_fn.Request):
 
         game_service.delete_existing_game(game_id)
 
-        return https_fn.Response("Game deleted successfully!", status=200)
+        headers = {'Content-Type': 'application/json'}
+        return https_fn.Response(json.dumps({"message": "Game deleted successfully!"}), status=200, headers=headers)
     except Exception as e:
         return https_fn.Response(f"Error deleting game: {e}", status=500)
 

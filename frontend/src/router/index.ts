@@ -55,8 +55,10 @@ const router = createRouter({
   routes,
 });
 
+import apiService from '../services/api'; // Add this import
+
 //TODO: 同伴者のケースを入力のケースを記載
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => { // Mark as async
   const authStore = useAuthStore();
   const isAuthenticated = authStore.getIsAuthenticated;
 
@@ -65,10 +67,23 @@ router.beforeEach((to, from, next) => {
   }
 
   const roundStore = useRoundStore();
-  if (from.name === 'ScoreEntry' && to.name !== 'ResultView') {
+  if (from.name === 'ScoreEntry' && to.name !== 'ResultView' && roundStore.roundId) {
     if (window.confirm('入力中のデータは失われますが、よろしいですか？')) {
+      try {
+        // Call backend to delete game from Firestore
+        await apiService.deleteGame(roundStore.roundId);
+        console.log('Game deleted from Firestore:', roundStore.roundId); // Add log for confirmation
+      } catch (error) {
+        console.error('Failed to delete game from Firestore:', error);
+        // Decide how to handle deletion failure: proceed anyway, or block navigation?
+        // For now, we'll proceed with clearing local data even if backend deletion fails.
+      }
       roundStore.clearRouundInfo();
-      return next();
+      if (to.name === 'Home') {
+        return next();
+      } else {
+        return next({ name: 'Home' });
+      }
     } else {
       return next(false);
     }

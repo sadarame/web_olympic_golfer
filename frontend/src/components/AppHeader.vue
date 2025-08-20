@@ -52,6 +52,7 @@
     };
 
     const goToHome = () => {
+        roundStore.clearRouundInfo();
         router.push('/');
     };
 </script>

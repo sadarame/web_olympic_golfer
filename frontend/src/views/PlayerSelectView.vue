@@ -94,7 +94,7 @@
             const companionExists = response.companions.some((c: Player) => c.id === currentUser.id);
             existingPlayers.value = response.companions;
             if (!companionExists) {
-                 existingPlayers.value.unshift(currentUser);
+                existingPlayers.value.unshift(currentUser);
             }
         } catch (error) {
             if ((error as Error).message && (error as Error).message.includes('401')) {
