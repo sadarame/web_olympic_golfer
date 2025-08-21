@@ -44,18 +44,21 @@ class UserService:
         """
         return self.user_model.get_user(user_id)
 
-    def add_companion(self, user_id, name):
+    def add_companion(self, user_id, name, gender=None, relationship=None, memo=None):
         """
         同伴者を追加する
         
         Args:
             user_id (str): ユーザーID
             name (str): 同伴者の名前
+            gender (str, optional): 性別. Defaults to None.
+            relationship (str, optional): 関係性. Defaults to None.
+            memo (str, optional): メモ. Defaults to None.
             
         Returns:
             dict: 追加された同伴者の情報
         """
-        return self.user_model.add_companion(user_id, name)
+        return self.user_model.add_companion(user_id, name, gender, relationship, memo)
 
     def get_companions(self, user_id):
         """
@@ -68,6 +71,46 @@ class UserService:
             list: 同伴者のリスト
         """
         return self.user_model.get_companions(user_id)
+
+    def delete_companion(self, user_id, companion_id):
+        """
+        同伴者を削除する
+        
+        Args:
+            user_id (str): ユーザーID
+            companion_id (str): 同伴者のドキュメントID
+        """
+        self.user_model.delete_companion(user_id, companion_id)
+
+    def update_companion(self, user_id, companion_id, name, gender=None, relationship=None, memo=None):
+        """
+        同伴者の名前を更新する
+        
+        Args:
+            user_id (str): ユーザーID
+            companion_id (str): 同伴者のドキュメントID
+            name (str): 新しい同伴者の名前
+            gender (str, optional): 性別. Defaults to None.
+            relationship (str, optional): 関係性. Defaults to None.
+            memo (str, optional): メモ. Defaults to None.
+            
+        Returns:
+            dict: 更新された同伴者の情報
+        """
+        return self.user_model.update_companion(user_id, companion_id, name, gender, relationship, memo)
+
+    def get_companion(self, user_id, companion_id):
+        """
+        特定の同伴者を取得する
+        
+        Args:
+            user_id (str): ユーザーID
+            companion_id (str): 同伴者のドキュメントID
+            
+        Returns:
+            dict: 同伴者の情報
+        """
+        return self.user_model.get_companion(user_id, companion_id)
 
     def delete_user(self, user_id):
         """

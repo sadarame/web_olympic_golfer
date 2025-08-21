@@ -49,3 +49,18 @@ def addCompanion(request: https_fn.Request):
 @require_auth
 def getCompanions(request: https_fn.Request):
     return user_controller.get_companions_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def getCompanion(request: https_fn.Request):
+    return user_controller.get_companion_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def updateCompanion(request: https_fn.Request):
+    return user_controller.update_companion_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def deleteCompanion(request: https_fn.Request):
+    return user_controller.delete_companion_controller(request)

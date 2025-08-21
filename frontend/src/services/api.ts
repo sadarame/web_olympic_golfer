@@ -14,6 +14,14 @@ class ApiService {
     // 認証ヘッダーを動的に取得
     const authHeaders = await this.getAuthHeaders();
 
+    // デバッグ用ログの追加: リクエスト情報を表示
+    console.log('API Request:', {
+      url: url,
+      method: options.method || 'GET',
+      headers: { ...authHeaders, ...options.headers },
+      body: options.body ? JSON.parse(options.body.toString()) : undefined,
+    });
+
     const response = await fetch(url, {
       ...options,
       headers: {
@@ -123,23 +131,43 @@ class ApiService {
     });
   }
 
-    // ユーザー関連のAPI
-  async addCompanion(data: any): Promise<any> {
-    return this.request(API_ENDPOINTS.ADD_COMPANION, {
-      method: 'POST',
-      body: JSON.stringify(data),
+  async getUser(): Promise<any> {
+    return this.request(API_ENDPOINTS.GET_USER, {
+      method: 'GET',
     });
   }
 
-  async getCompanions(token: string): Promise<any> {
+  // コンパニオン関連のAPI
+  async getCompanions(): Promise<any> {
     return this.request(API_ENDPOINTS.GET_COMPANIONS, {
       method: 'GET',
     });
   }
 
-  async getUser(): Promise<any> {
-    return this.request(API_ENDPOINTS.GET_USER, {
+  async getCompanion(id: string): Promise<any> {
+    return this.request(`${API_ENDPOINTS.GET_COMPANION}?companionId=${id}`, {
       method: 'GET',
+    });
+  }
+
+  async addCompanion(name: string): Promise<any> {
+    return this.request(API_ENDPOINTS.ADD_COMPANION, {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    });
+  }
+
+  async updateCompanion(id: string, name: string, gender?: string | null, relationship?: string | null, memo?: string | null): Promise<any> {
+    return this.request(`${API_ENDPOINTS.UPDATE_COMPANION}?companionId=${id}`,
+     {
+      method: 'PUT',
+      body: JSON.stringify({ name, gender, relationship, memo }),
+    });
+  }
+
+  async deleteCompanion(id: string): Promise<any> {
+    return this.request(`${API_ENDPOINTS.DELETE_COMPANION}?companionId=${id}`, {
+      method: 'DELETE',
     });
   }
 
@@ -153,4 +181,12 @@ class ApiService {
 
 // シングルトンインスタンスをエクスポート
 export const apiService = new ApiService();
+
+// 外部から直接呼び出せる関数の定義
+export const getCompanions = () => apiService.getCompanions();
+export const getCompanion = (id: string) => apiService.getCompanion(id);
+export const addCompanion = (name: string) => apiService.addCompanion(name);
+export const updateCompanion = (id: string, name: string, gender?: string | null, relationship?: string | null, memo?: string | null) => apiService.updateCompanion(id, name, gender, relationship, memo);
+export const deleteCompanion = (id: string) => apiService.deleteCompanion(id);
+
 export default apiService;

@@ -251,7 +251,7 @@
   };
 
   const handleEditFriends = () => {
-    alert('友達編集画面への遷移をシミュレートします。');
+    router.push('/friends');
   };
 
   const handleViewScores = () => {

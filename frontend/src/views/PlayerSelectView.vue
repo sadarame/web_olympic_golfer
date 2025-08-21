@@ -11,7 +11,7 @@
                 <div class="flex items-center space-x-2">
                     <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
-                    <button @click="addNewPlayer" class="group btn-outline">
+                    <button @click="addNewPlayer" class="group btn-outline" type="button">
                         追加
                     </button>
                 </div>
@@ -89,7 +89,7 @@
             if (!authStore.token) {
                 throw new Error('認証トークンがありません。');
             }
-            const response = await apiService.getCompanions(authStore.token);
+            const response = await apiService.getCompanions();
             // 自分自身が同伴者リストに含まれていないことを確認してから追加
             const companionExists = response.companions.some((c: Player) => c.id === currentUser.id);
             existingPlayers.value = response.companions;
@@ -169,7 +169,7 @@
             errorMessage.value = '';
 
             // APIを呼び出して同伴者を追加
-            const response = await apiService.addCompanion({ name, token: authStore.token });
+            const response = await apiService.addCompanion(name);
 
             const newPlayer: Player = {
                 id: response.id, // APIからのIDを使用

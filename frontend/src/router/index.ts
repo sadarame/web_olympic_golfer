@@ -43,6 +43,16 @@ const routes = [
     name: 'PastGamesView',
     component: () => import('../views/PastGamesView.vue'),
   },
+  {
+    path: '/friends',
+    name: 'Friends',
+    component: () => import('../views/FriendsView.vue'),
+  },
+  {
+    path: '/friends/:id',
+    name: 'FriendEdit',
+    component: () => import('../views/FriendEditView.vue'),
+  },
   // Catch-all route to redirect to Home
   {
     path: '/:pathMatch(.*)*',

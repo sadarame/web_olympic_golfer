@@ -3,6 +3,7 @@ from utils.auth_utils import get_user_from_request
 import json
 from datetime import datetime
 from firebase_functions import https_fn
+from utils.helpers import cors_enabled
 
 def register_or_update_user_controller(request: https_fn.Request):
     """
@@ -254,6 +255,184 @@ def get_companions_controller(request: https_fn.Request):
         
         return https_fn.Response(
             json.dumps(response_data, default=str),
+            status=200,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+        
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({
+                "error": "Internal server error",
+                "message": str(e)
+            }),
+            status=500,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+
+def get_companion_controller(request: https_fn.Request):
+    """
+    特定の同伴者を取得するエンドポイント
+    """
+    user_service = UserService()
+
+    try:
+        if request.method == 'OPTIONS':
+            return https_fn.Response(
+                status=200,
+                headers={
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                }
+            )
+
+        decoded_token = get_user_from_request(request)
+        if not decoded_token or not decoded_token.get('sub'):
+            return https_fn.Response("Unauthorized", status=401, headers={'Access-Control-Allow-Origin': '*'})
+        
+        user_id = decoded_token['sub']
+        companion_id = request.args.get('companionId')
+
+        companion = user_service.get_companion(user_id, companion_id)
+
+        if not companion:
+            return https_fn.Response(
+                json.dumps({"error": "Companion not found"}),
+                status=404,
+                mimetype="application/json",
+                headers={'Access-Control-Allow-Origin': '*'}
+            )
+
+        response_data = {
+            "success": True,
+            "companion": companion
+        }
+        
+        return https_fn.Response(
+            json.dumps(response_data, default=str),
+            status=200,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+        
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({
+                "error": "Internal server error",
+                "message": str(e)
+            }),
+            status=500,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+
+def update_companion_controller(request: https_fn.Request):
+    """
+    同伴者の名前を更新するエンドポイント
+    """
+    user_service = UserService()
+
+    try:
+        if request.method == 'OPTIONS':
+            return https_fn.Response(
+                status=200,
+                headers={
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'PUT, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                }
+            )
+
+        decoded_token = get_user_from_request(request)
+        if not decoded_token or not decoded_token.get('sub'):
+            return https_fn.Response("Unauthorized", status=401, headers={'Access-Control-Allow-Origin': '*'})
+        
+        user_id = decoded_token['sub']
+        companion_id = request.args.get('companionId')
+        data = request.get_json()
+
+        if not data or 'name' not in data or not data['name'].strip():
+            return https_fn.Response(
+                json.dumps({"error": "Companion name is required"}),
+                status=400,
+                mimetype="application/json",
+                headers={'Access-Control-Allow-Origin': '*'}
+            )
+        
+        name = data['name'].strip()
+        gender = data.get('gender')
+        relationship = data.get('relationship')
+        memo = data.get('memo')
+
+        updated_companion = user_service.update_companion(user_id, companion_id, name, gender, relationship, memo)
+
+        if not updated_companion:
+            return https_fn.Response(
+                json.dumps({"error": "Companion not found"}),
+                status=404,
+                mimetype="application/json",
+                headers={'Access-Control-Allow-Origin': '*'}
+            )
+
+        response_data = {
+            "success": True,
+            "message": "Companion updated successfully",
+            "companion": updated_companion
+        }
+        
+        return https_fn.Response(
+            json.dumps(response_data, default=str),
+            status=200,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+        
+    except Exception as e:
+        return https_fn.Response(
+            json.dumps({
+                "error": "Internal server error",
+                "message": str(e)
+            }),
+            status=500,
+            mimetype="application/json",
+            headers={'Access-Control-Allow-Origin': '*'}
+        )
+
+def delete_companion_controller(request: https_fn.Request):
+    """
+    同伴者を削除するエンドポイント
+    """
+    user_service = UserService()
+
+    try:
+        if request.method == 'OPTIONS':
+            return https_fn.Response(
+                status=200,
+                headers={
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+                }
+            )
+
+        decoded_token = get_user_from_request(request)
+        if not decoded_token or not decoded_token.get('sub'):
+            return https_fn.Response("Unauthorized", status=401, headers={'Access-Control-Allow-Origin': '*'})
+        
+        user_id = decoded_token['sub']
+        companion_id = request.args.get('companionId')
+
+        user_service.delete_companion(user_id, companion_id)
+
+        response_data = {
+            "success": True,
+            "message": "Companion deleted successfully"
+        }
+        
+        return https_fn.Response(
+            json.dumps(response_data),
             status=200,
             mimetype="application/json",
             headers={'Access-Control-Allow-Origin': '*'}

@@ -18,3 +18,11 @@ export interface UserRegistrationData {
   name: string;
   customName?: string;
 }
+
+export interface Companion {
+  id: string;
+  name: string;
+  gender?: string;
+  relationship?: string;
+  memo?: string;
+}
