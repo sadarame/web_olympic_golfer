@@ -15,11 +15,12 @@
                 <div>
                     <label for="course-name" class="block text-sm font-medium text-gray-700 mb-1">ゴルフ場名</label>
                     <input type="text" id="course-name" class="main-input" placeholder="例: 広陵カントリークラブ" v-model="course">
-                    <ul v-if="showSuggestions && golfCourseSuggestions.length" class="border border-gray-300 rounded-md mt-1 max-h-48 overflow-y-auto bg-white shadow-lg">
-                        <li v-for="suggestion in golfCourseSuggestions" :key="suggestion" @click="selectSuggestion(suggestion)" class="px-3 py-2 cursor-pointer hover:bg-gray-100 text-gray-800">
+                    <h4 v-if="showSuggestions && golfCourseSuggestions.length" class="text-sm font-medium text-gray-700 mt-2 mb-1">近くのゴルフ場:</h4>
+                    <div v-if="showSuggestions && golfCourseSuggestions.length" class="mt-1">
+                        <div v-for="suggestion in golfCourseSuggestions" :key="suggestion" @click="selectSuggestion(suggestion)" class="text-xs text-blue-600 cursor-pointer hover:underline">
                             {{ suggestion }}
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label for="bet-rate" class="block text-sm font-medium text-gray-700 mb-1">賭け金レート (1枚あたりの金額)</label>
@@ -95,6 +96,7 @@
         }
     };
 
+    // ゴルフ場名の候補を取得する関数
     async function getNearbyGolfCourseNames(lat: number, lon: number): Promise<string[]> {
         const params = new URLSearchParams({
             applicationId: "1095881049230729173", // あなたのAPP ID
@@ -110,35 +112,36 @@
         });
 
         const url = `https://app.rakuten.co.jp/services/api/Gora/GoraGolfCourseSearch/20170623?${params}`;
+        console.log("Rakuten Gora API Request URL:", url);
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
+        console.log("Rakuten Gora API Response Data:", data);
 
-        return (data.items || []).map((i: any) => i.golfCourseName);
+        return (data.Items || []).map((i: any) => i.golfCourseName);
     }
 
     onMounted(() => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
-          try {
-            golfCourseSuggestions.value = await getNearbyGolfCourseNames(lat, lon);
-            showSuggestions.value = golfCourseSuggestions.value.length > 0;
-          } catch (error) {
-            console.error("Failed to fetch golf course suggestions:", error);
-          }
-        }, (error) => {
-          console.error("Geolocation error:", error);
-        });
-      } else {
-        console.log("Geolocation is not supported by this browser.");
-      }
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                try {
+                    golfCourseSuggestions.value = await getNearbyGolfCourseNames(lat, lon);
+                    showSuggestions.value = golfCourseSuggestions.value.length > 0;
+                } catch (error) {
+                    console.error("Failed to fetch golf course suggestions:", error);
+                }
+            }, (error) => {
+                console.error("Geolocation error:", error);
+            });
+        } else {
+            console.log("Geolocation is not supported by this browser.");
+        }
     });
 
     const selectSuggestion = (suggestion: string) => {
-      course.value = suggestion;
-      showSuggestions.value = false;
+        course.value = suggestion;
     };
 
 </script>

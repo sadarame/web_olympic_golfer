@@ -5,7 +5,7 @@
 
       <!-- 検索フォーム -->
       <div class="mb-6 p-4 bg-gray-50 rounded-lg shadow">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">友達を検索</h2>
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">友達を検索🕵🏻‍♀️</h2>
         <input 
           v-model="searchQuery" 
           placeholder="名前で検索..." 
@@ -15,7 +15,7 @@
 
       <!-- 友達追加フォーム -->
       <div class="mb-6 p-4 bg-gray-50 rounded-lg shadow">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">新しい友達を追加</h2>
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">新しい友達を追加👯‍♂️</h2>
         <div class="flex flex-col sm:flex-row gap-2">
           <input 
             v-model="newCompanionName" 
@@ -108,11 +108,14 @@ const addCompanion = async () => {
 };
 
 const deleteCompanion = async (companionId: string) => {
-  try {
-    await apiDeleteCompanion(companionId);
-    companions.value = companions.value.filter(c => c.id !== companionId);
-  } catch (error) {
-    console.error('Failed to delete companion:', error);
+  if (confirm('本当にこの友達を削除しますか？')) {
+    try {
+      await apiDeleteCompanion(companionId);
+      companions.value = companions.value.filter(c => c.id !== companionId);
+    } catch (error) {
+      console.error('Failed to delete companion:', error);
+      alert('友達の削除に失敗しました。'); // Optional: provide user feedback on failure
+    }
   }
 };
 

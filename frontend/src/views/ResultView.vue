@@ -73,91 +73,90 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useRoundStore } from '../stores/round';
-import { useAuthStore } from '../stores/auth';
+  import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  import { useRoundStore } from '../stores/round';
 
-const router = useRouter();
-const roundStore = useRoundStore();
-const authStore = useAuthStore();
+  const router = useRouter();
+  const roundStore = useRoundStore();
 
-// ラウンド基本情報セクションの表示/非表示を制御するref
-const showRoundInfo = ref(false);
-const toggleRoundInfo = () => {
-  showRoundInfo.value = !showRoundInfo.value;
-};
 
-// 日付フォーマット関数
-const formatDate = (dateString: string) => {
-  if (!dateString) return '未設定';
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '未設定';
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+  // ラウンド基本情報セクションの表示/非表示を制御するref
+  const showRoundInfo = ref(false);
+  const toggleRoundInfo = () => {
+    showRoundInfo.value = !showRoundInfo.value;
+  };
+
+  // 日付フォーマット関数
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '未設定';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return '未設定';
+      return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return '未設定';
+    }
+  };
+
+  // プレイヤーのポイントを取得
+  const getPlayerPoints = (playerName: string) => {
+    return roundStore.playerScores[playerName]?.points || 0;
+  };
+
+  // プレイヤーの金額を取得
+  const getPlayerAmount = (playerName: string) => {
+    return roundStore.playerScores[playerName]?.amount || 0;
+  };
+
+  // プレイヤーの金額表示クラスを取得
+  const getPlayerAmountClass = (playerName: string) => {
+    const amount = getPlayerAmount(playerName);
+    return amount >= 0 ? 'text-green-600' : 'text-red-500';
+  };
+
+  // プレイヤーの結果表示クラスを取得
+  const getPlayerResultClass = (playerName: string) => {
+    const amount = getPlayerAmount(playerName);
+    if (amount > 0) return 'border-green-300 bg-green-50';
+    if (amount < 0) return 'border-red-300 bg-red-50';
+    return 'border-gray-300';
+  };
+
+  // プレイヤーの順位アイコンを取得
+  const getPlayerRankIcon = (playerName: string) => {
+    const players = [...roundStore.players];
+    players.sort((a, b) => {
+      const aPoints = getPlayerPoints(a.name);
+      const bPoints = getPlayerPoints(b.name);
+      return bPoints - aPoints; // ポイントの高い順（降順）
     });
-  } catch {
-    return '未設定';
-  }
-};
+    
+    const rank = players.findIndex(p => p.name === playerName) + 1;
+    
+    switch (rank) {
+      case 1: return '🥇';
+      case 2: return '🥈';
+      case 3: return '🥉';
+      default: return '🏌️‍♂️';
+    }
+  };
 
-// プレイヤーのポイントを取得
-const getPlayerPoints = (playerName: string) => {
-  return roundStore.playerScores[playerName]?.points || 0;
-};
+  // 新しいラウンドを始める
+  const startNewRound = () => {
+    roundStore.clearRouundInfo();
+    router.push('/start');
+  };
 
-// プレイヤーの金額を取得
-const getPlayerAmount = (playerName: string) => {
-  return roundStore.playerScores[playerName]?.amount || 0;
-};
-
-// プレイヤーの金額表示クラスを取得
-const getPlayerAmountClass = (playerName: string) => {
-  const amount = getPlayerAmount(playerName);
-  return amount >= 0 ? 'text-green-600' : 'text-red-500';
-};
-
-// プレイヤーの結果表示クラスを取得
-const getPlayerResultClass = (playerName: string) => {
-  const amount = getPlayerAmount(playerName);
-  if (amount > 0) return 'border-green-300 bg-green-50';
-  if (amount < 0) return 'border-red-300 bg-red-50';
-  return 'border-gray-300';
-};
-
-// プレイヤーの順位アイコンを取得
-const getPlayerRankIcon = (playerName: string) => {
-  const players = [...roundStore.players];
-  players.sort((a, b) => {
-    const aPoints = getPlayerPoints(a.name);
-    const bPoints = getPlayerPoints(b.name);
-    return bPoints - aPoints; // ポイントの高い順（降順）
-  });
-  
-  const rank = players.findIndex(p => p.name === playerName) + 1;
-  
-  switch (rank) {
-    case 1: return '🥇';
-    case 2: return '🥈';
-    case 3: return '🥉';
-    default: return '🏌️‍♂️';
-  }
-};
-
-// 新しいラウンドを始める
-const startNewRound = () => {
-  roundStore.clearRouundInfo();
-  router.push('/start');
-};
-
-// ホームに戻る
-const goToHome = () => {
-  roundStore.clearRouundInfo();
-  router.push('/');
-};
+  // ホームに戻る
+  const goToHome = () => {
+    roundStore.clearRouundInfo();
+    router.push('/');
+  };
 </script>
 
 <style scoped>
