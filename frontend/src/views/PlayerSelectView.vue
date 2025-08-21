@@ -1,17 +1,17 @@
 <template>
     <div class="main-layout">
-        <div class="container mx-auto max-w-sm card">
+        <div class="container mx-auto p-4 md:p-8 max-w-md card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
                 同伴者を追加👬
             </h1>
 
             <!-- 新規プレイヤー追加セクション -->
-            <div class="space-y-4 mb-6">
+            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
                 <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
-                <div class="flex items-center space-x-2">
+                <div>
                     <!-- プレイヤー名入力欄 -->
-                    <input type="text" v-model="newPlayerName" class="input-field flex-grow h-12" placeholder="同伴者名を入力...">
-                    <button @click="addNewPlayer" class="group btn-outline" type="button">
+                    <input type="text" v-model="newPlayerName" class="input-field w-full h-12" placeholder="同伴者名を入力...">
+                    <button @click="addNewPlayer" class="btn-primary w-full mt-2" type="button">
                         追加
                     </button>
                 </div>
@@ -19,7 +19,7 @@
             </div>
 
             <!-- 既存プレイヤーリストセクション -->
-            <div class="space-y-4 mb-6">
+            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
                 <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択</h2>
                 <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
                     <div v-for="player in existingPlayers" :key="player.id" @click="toggleSelection(player)"
@@ -33,12 +33,12 @@
             </div>
 
             <!-- ラウンド参加メンバーリストセクション -->
-            <div class="space-y-4 mb-6">
+            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
                 <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者</h2>
                 <div class="space-y-2">
                     <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
                         <span class="text-gray-800 font-medium">{{ player.name }}</span>
-                        <button @click="removePlayer(player)" :disabled="player.id === 0" class="remove-player-btn">
+                        <button @click="removePlayer(player)" :disabled="player.id === 0" class="btn-danger">
                             ×
                         </button>
                     </div>
@@ -258,15 +258,21 @@
 }
 
 .input-field {
-    @apply rounded border bg-gray-50 px-3 py-2 text-gray-800 outline-none ring-indigo-300 transition duration-100 focus:ring;
+  @apply border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow;
 }
 
-.btn-outline {
-    @apply relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 shadow-[3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(60_80_60)];
+
+
+.btn-primary {
+  @apply bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 whitespace-nowrap shadow-md;
 }
 
 .remove-player-btn {
     @apply text-gray-400 hover:text-red-500 transition-colors duration-200;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors duration-200 text-sm whitespace-nowrap;
 }
 
 /* スクロールビューのカスタムデザイン */
@@ -283,5 +289,8 @@
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #84cc16;
+}
+.card {
+    @apply bg-white p-6 rounded-xl shadow-md;
 }
 </style>
