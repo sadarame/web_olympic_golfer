@@ -9,7 +9,7 @@
   }
   .input-base:focus { @apply ring; }
 
-   .main-layout {
+  .main-layout {
     @apply flex-grow flex justify-center items-center p-4 pt-20;
   }
   
@@ -18,7 +18,7 @@
   }
 
   .btn-solid {
-    @apply w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 shadow-[3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(20_100_20)];
+    @apply w-full relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100 shadow-[3px_3px_rgb(20_100_20)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_rgb(20_100_20)] focus:outline-none;
   }
 
   .main-checkbox {

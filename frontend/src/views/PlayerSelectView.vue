@@ -7,11 +7,11 @@
 
             <!-- 新規プレイヤー追加セクション -->
             <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
-                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加</h2>
+                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加➕</h2>
                 <div>
                     <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field w-full h-12" placeholder="同伴者名を入力...">
-                    <button @click="addNewPlayer" class="btn-primary w-full mt-2" type="button">
+                    <button @click="addNewPlayer" class="btn-solid w-full h-12 mt-2" type="button">
                         追加
                     </button>
                 </div>
@@ -20,12 +20,20 @@
 
             <!-- 既存プレイヤーリストセクション -->
             <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
-                <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択</h2>
+                <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
+                <div class="flex items-center gap-2 mb-4">
+                    <input
+                    v-model="searchQuery"
+                    placeholder="名前で検索..."
+                    class="input-field w-full"
+                    >
+                    <button @click="clearSearch" class="btn-secondary">クリア</button>
+                </div>
                 <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
-                    <div v-for="player in existingPlayers" :key="player.id" @click="toggleSelection(player)"
-                        :class="['player-list-item', { 'selected': isSelected(player) }]">
+                    <div v-for="player in filteredPlayers" :key="player.id" @click="toggleSelection(player)"
+                        :class="['player-list-item', { 'selected': isSelected(player), 'current-user-highlight': player.id === currentUser.id }]">
                         <div class="flex items-center space-x-3">
-                            <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === 0" class="main-checkbox">
+                            <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === currentUser.id" class="main-checkbox">
                             <span class="text-gray-800 font-medium">{{ player.name }}</span>
                         </div>
                     </div>
@@ -34,11 +42,11 @@
 
             <!-- ラウンド参加メンバーリストセクション -->
             <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
-                <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者</h2>
+                <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
                 <div class="space-y-2">
                     <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
                         <span class="text-gray-800 font-medium">{{ player.name }}</span>
-                        <button @click="removePlayer(player)" :disabled="player.id === 0" class="btn-danger">
+                        <button v-if="player.id !== currentUser.id" @click="removePlayer(player)" class="btn-danger">
                             ×
                         </button>
                     </div>
@@ -56,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref,  onMounted } from 'vue';
+    import { ref,  onMounted, computed } from 'vue';
     import { useRouter } from 'vue-router';
     import { useRoundStore } from '../stores/round';
     import { useAuthStore } from '../stores/auth';
@@ -74,6 +82,7 @@
     const newPlayerName = ref('');
     // エラーメッセージ表示用のリアクティブ変数
     const errorMessage = ref('');
+    const searchQuery = ref('');
 
     // ログインユーザーの情報を取得
     const currentUser: Player = {
@@ -83,6 +92,19 @@
 
     // 既存プレイヤーのリスト
     const existingPlayers = ref<Player[]>([]);
+
+    const filteredPlayers = computed(() => {
+      if (!searchQuery.value) {
+        return existingPlayers.value;
+      }
+      return existingPlayers.value.filter(player =>
+        player.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+      );
+    });
+
+    const clearSearch = () => {
+      searchQuery.value = '';
+    };
 
     const fetchCompanions = async () => {
         try {
@@ -264,7 +286,11 @@
 
 
 .btn-primary {
-  @apply bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 whitespace-nowrap shadow-md;
+  @apply bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-200 whitespace-nowrap shadow-md focus:outline-none;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-800 px-3 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200 text-sm whitespace-nowrap focus:outline-none;
 }
 
 .remove-player-btn {
@@ -272,7 +298,7 @@
 }
 
 .btn-danger {
-  @apply bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors duration-200 text-sm whitespace-nowrap;
+  @apply bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition-colors duration-200 text-sm whitespace-nowrap focus:outline-none;
 }
 
 /* スクロールビューのカスタムデザイン */
@@ -292,5 +318,8 @@
 }
 .card {
     @apply bg-white p-6 rounded-xl shadow-md;
+}
+.current-user-highlight {
+    @apply bg-blue-50;
 }
 </style>

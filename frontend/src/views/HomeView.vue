@@ -69,13 +69,13 @@
           </div>
         </div>
 
-        <button @click="handleStartGame" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+        <button @click="handleStartGame" class="btn-solid">
           ゲームを始める 🏌️‍♂️
         </button>
-        <button @click="handleEditFriends" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+        <button @click="handleEditFriends" class="btn-solid">
           友達編集 🤝
         </button>
-        <button @click="handleViewScores" class="w-full group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-6 font-medium text-neutral-600 transition-all duration-100 [box-shadow:3px_3px_rgb(60_80_60)] active:translate-x-[2px] active:translate-y-[2px] active:[box-shadow:0px_0px_rgb(60_80_60)]">
+        <button @click="handleViewScores" class="btn-solid">
           過去のスコア一覧 📊
         </button>
       </div>

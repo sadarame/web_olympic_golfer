@@ -61,10 +61,10 @@
 
       <!-- アクションボタンセクション -->
       <div class="space-y-4 text-center">
-        <button @click="startNewRound" class="w-full btn-fancy-next">
-          新しいラウンドを始める 🏌️‍♂️
+        <button @click="shareResults" class="w-full btn-fancy-next">
+          結果を共有 📤
         </button>
-        <button @click="goToHome" class="w-full btn-outline">
+        <button @click="goToHome" class="w-full btn-fancy-next">
           ホームに戻る 🏠
         </button>
       </div>
@@ -142,14 +142,52 @@
       case 1: return '🥇';
       case 2: return '🥈';
       case 3: return '🥉';
-      default: return '🏌️‍♂️';
+      default: return '😭';
     }
   };
 
-  // 新しいラウンドを始める
-  const startNewRound = () => {
-    roundStore.clearRouundInfo();
-    router.push('/start');
+  // 結果を共有
+  const shareResults = async () => {
+    const playerLines = roundStore.players.map(player => {
+      const points = getPlayerPoints(player.name);
+      const amount = getPlayerAmount(player.name);
+      const rankIcon = getPlayerRankIcon(player.name);
+      return `${rankIcon} ${player.name}: ${points}pt (${amount >= 0 ? '+' : ''}${amount}円)`;
+    });
+
+    const resultsSummary = [
+      '⛳️ Olympic Golfer ラウンド結果 🏆',
+      playerLines.join('\n'),
+      '',
+      '---ラウンド情報 ---',
+      `日付: ${formatDate(roundStore.roundDate)}`,
+      `レート: ${roundStore.wager || '100'}円/pt`,
+      `ゴルフ場: ${roundStore.course || '未設定'}`,
+      `メモ: ${roundStore.memo || 'なし'}`,
+      '',
+      '#OlympicGolfer #ゴルフ'
+    ].join('\n');
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Olympic Golfer ラウンド結果',
+          text: resultsSummary,
+        });
+        console.log('Results shared successfully!');
+      } catch (error) {
+        console.error('Error sharing results:', error);
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(resultsSummary);
+        alert('結果をクリップボードにコピーしました！');
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+        alert('結果のコピーに失敗しました。手動でコピーしてください。');
+      }
+    }
   };
 
   // ホームに戻る
