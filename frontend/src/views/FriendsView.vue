@@ -6,7 +6,7 @@
       <!-- 友達追加フォーム -->
       <div class="mb-6 p-4 bg-gray-50 rounded-lg shadow">
         <h2 class="text-xl font-semibold text-gray-700 mb-4">新しい友達を追加👯‍♂️</h2>
-        <div class="flex flex-col sm:flex-row gap-2">
+        <div class="flex flex-col gap-2">
           <input 
             v-model="newCompanionName" 
             placeholder="新しい友達の名前" 
@@ -19,10 +19,10 @@
         <p v-if="companionError" class="text-red-500 text-sm mt-2">{{ companionError }}</p>
       </div>
 
-      <!-- 検索フォーム -->
+      <!-- 友達リスト & 検索 -->
       <div class="mb-6 p-4 bg-gray-50 rounded-lg shadow">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">友達を検索🕵🏻‍♀️</h2>
-        <div class="flex items-center gap-2">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">友達リスト😎</h2>
+        <div class="flex items-center gap-2 mb-4">
           <input 
             v-model="searchQuery" 
             placeholder="名前で検索..." 
@@ -30,11 +30,7 @@
           >
           <button @click="clearSearch" class="btn-secondary">クリア</button>
         </div>
-      </div>
-
-      <!-- 友達リスト -->
-      <div class="mb-6 p-4 bg-gray-50 rounded-lg shadow">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">友達リスト😎</h2>
+        
         <div class="space-y-3">
             <ul v-if="filteredCompanions.length > 0" class="space-y-3">
               <li v-for="companion in filteredCompanions" :key="companion.id" class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-gray-200">
@@ -145,7 +141,7 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  @apply bg-gray-200 text-gray-800 px-3 py-1 rounded-md hover:bg-gray-300 transition-colors duration-200 text-sm whitespace-nowrap;
+  @apply bg-transparent border-2 border-green-500 text-green-600 font-semibold px-3 py-2 rounded-md hover:bg-green-50 hover:text-green-700 transition-colors duration-200 text-sm whitespace-nowrap focus:outline-none;
 }
 
 .btn-danger {

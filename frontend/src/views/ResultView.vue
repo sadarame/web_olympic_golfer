@@ -18,11 +18,14 @@
                 <span class="text-2xl">{{ getPlayerRankIcon(player.name) }}</span>
                 <span class="text-lg font-semibold text-gray-800">{{ player.name }}</span>
               </div>
-              <div class="text-right">
+              <div class="grid grid-cols-[auto,auto] justify-end items-baseline gap-x-2">
+                <!-- Row 1: Points -->
                 <div class="text-sm text-gray-600">ポイント</div>
-                <div class="text-xl font-bold text-green-600">{{ getPlayerPoints(player.name) }}</div>
+                <div class="text-xl font-bold text-green-600 text-right w-24">{{ getPlayerPoints(player.name) }}</div>
+                
+                <!-- Row 2: Amount -->
                 <div class="text-sm text-gray-600">金額</div>
-                <div class="text-lg font-bold" :class="getPlayerAmountClass(player.name)">
+                <div class="text-lg font-bold text-right w-24" :class="getPlayerAmountClass(player.name)">
                   ¥{{ getPlayerAmount(player.name) }}
                 </div>
               </div>
