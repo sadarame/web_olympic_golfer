@@ -8,7 +8,7 @@
     const authStore = useAuthStore();
 
     onMounted(() => {
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, () => {
         // Firebase の認証状態が変更されるたびに Pinia ストアを更新
         authStore.setAuthInfoFromFirebase();
       });

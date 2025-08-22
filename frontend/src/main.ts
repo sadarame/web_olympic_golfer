@@ -17,7 +17,7 @@ app.use(router)
 
 // Firebase の認証状態がロードされるまで待機してからアプリをマウント
 let appInitialized = false;
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, () => {
   if (!appInitialized) {
     // useAuthStore をインポートして setAuthInfoFromFirebase を呼び出す
     import('./stores/auth').then(({ useAuthStore }) => {

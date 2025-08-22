@@ -63,7 +63,7 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(_to, _from, savedPosition) {
     // savedPosition があれば、それを使用する (ブラウザの戻る/進むボタン)
     if (savedPosition) {
       return savedPosition;

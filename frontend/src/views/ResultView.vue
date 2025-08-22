@@ -16,16 +16,16 @@
             <div class="flex justify-between items-center">
               <div class="flex items-center space-x-3">
                 <span class="text-2xl">{{ getPlayerRankIcon(player.name) }}</span>
-                <span class="text-lg font-semibold text-gray-800">{{ player.name }}</span>
+                <span class="text-base font-semibold text-gray-800 max-w-[120px] break-all">{{ player.name }}</span>
               </div>
               <div class="grid grid-cols-[auto,auto] justify-end items-baseline gap-x-2">
                 <!-- Row 1: Points -->
                 <div class="text-sm text-gray-600">ポイント</div>
-                <div class="text-xl font-bold text-green-600 text-right w-24">{{ getPlayerPoints(player.name) }}</div>
+                <div class="text-lg font-bold text-green-600 text-right w-16 truncate">{{ getPlayerPoints(player.name) }}</div>
                 
                 <!-- Row 2: Amount -->
                 <div class="text-sm text-gray-600">金額</div>
-                <div class="text-lg font-bold text-right w-24" :class="getPlayerAmountClass(player.name)">
+                <div class="text-base font-bold text-right w-16 truncate" :class="getPlayerAmountClass(player.name)">
                   ¥{{ getPlayerAmount(player.name) }}
                 </div>
               </div>
@@ -36,9 +36,10 @@
 
       <!-- ラウンド基本情報セクション -->
       <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
-        <div class="flex justify-between items-center cursor-pointer" @click="toggleRoundInfo">
+        <div class="grid grid-cols-[1fr,auto,1fr] items-center cursor-pointer" @click="toggleRoundInfo">
+          <div></div> <!-- Spacer -->
           <h2 class="text-xl font-semibold text-gray-800">ラウンド情報⛳️🔥</h2>
-          <span class="text-lg font-medium text-gray-700">{{ showRoundInfo ? '▲' : '▼' }}</span>
+          <span class="text-lg font-medium text-gray-700 justify-self-end">{{ showRoundInfo ? '▲' : '▼' }}</span>
         </div>
         <div v-if="showRoundInfo" class="space-y-4">
           <div class="grid grid-cols-2 gap-4 text-sm text-left">
