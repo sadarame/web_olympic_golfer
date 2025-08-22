@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympic Golfer - ランディングページ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #a8e063 0%, #56ab2f 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        .container {
+            @apply max-w-2xl bg-white bg-opacity-90 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white border-opacity-30;
+        }
+        .feature-card {
+            @apply flex flex-col items-center text-center p-6 rounded-3xl shadow-lg transition-transform duration-300 hover:scale-105 overflow-hidden relative;
+            z-index: 1;
+        }
+        .feature-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: inherit;
+            background-size: 200% 200%;
+            transition: all 0.5s ease-in-out;
+            z-index: -1;
+        }
+        .feature-card:hover:before {
+            background-position: 100% 100%;
+        }
+        .feature-card.gold-gradient {
+            background-image: linear-gradient(to right, #FFD700 0%, #DAA520 50%, #FFD700 100%);
+            color: white;
+        }
+        .feature-card.blue-gradient {
+            background-image: linear-gradient(to right, #3b82f6 0%, #2563eb 50%, #3b82f6 100%);
+            color: white;
+        }
+        .feature-card.purple-gradient {
+            background-image: linear-gradient(to right, #8b5cf6 0%, #7c3aed 50%, #8b5cf6 100%);
+            color: white;
+        }
+        .feature-card.green-gradient {
+            background-image: linear-gradient(to right, #10b981 0%, #059669 50%, #10b981 100%);
+            color: white;
+        }
+        .feature-card.gemini-gradient {
+            background-image: linear-gradient(to right, #6EE7B7 0%, #34D399 50%, #6EE7B7 100%);
+            color: white;
+        }
+        .icon {
+            @apply text-6xl mb-4 transform transition-transform duration-300 group-hover:rotate-12;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl md:text-5xl font-bold text-center mb-6 text-gray-800">⛳️ Olympic Golfer へようこそ ✨</h1>
+        <p class="text-center text-gray-600 mb-12 text-lg">いつものゴルフをもっと楽しく、もっと熱くするアプリです。</p>
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="feature-card group gold-gradient">
+                <span class="icon">💰</span>
+                <h2 class="text-2xl font-bold mb-2">ポイント＆レート設定</h2>
+                <p>ゲーム開始前に1ptあたりのレートを設定。獲得ポイントがそのまま金額に直結します。</p>
+            </div>
+            <div class="feature-card group blue-gradient">
+                <span class="icon">🏆</span>
+                <h2 class="text-2xl font-bold mb-2">リアルタイム結果発表</h2>
+                <p>ゲーム終了後、即座にランキングと獲得・支払い金額を表示。メダル獲得者には特別なアイコンが登場します。</p>
+            </div>
+            <div class="feature-card group purple-gradient">
+                <span class="icon">💾</span>
+                <h2 class="text-2xl font-bold mb-2">スコアの自動保存</h2>
+                <p>ワンクリックでFirestoreにスコアを保存。いつでも過去のゲームを振り返ることができます。</p>
+            </div>
+            <div class="feature-card group green-gradient">
+                <span class="icon">📱</span>
+                <h2 class="text-2xl font-bold mb-2">直感的なインターフェース</h2>
+                <p>誰でも迷わず使えるデザインで、プレイに集中しながらスムーズにスコアを記録できます。</p>
+            </div>
+            <div class="feature-card group gemini-gradient">
+                <span class="icon">🧠</span>
+                <h2 class="text-2xl font-bold mb-2">AIによるゲーム分析</h2>
+                <p>AIが各プレイヤーのパフォーマンスを分析し、次のゲームに役立つアドバイスを生成します。</p>
+            </div>
+            <div class="feature-card group gemini-gradient">
+                <span class="icon">💡</span>
+                <h2 class="text-2xl font-bold mb-2">AIによるゲーム提案</h2>
+                <p>結果をもとに、次のラウンドを盛り上げるユニークなルールやチャレンジを提案します。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
