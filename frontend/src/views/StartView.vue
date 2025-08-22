@@ -97,6 +97,7 @@
 
     // ゴルフ場名の候補を取得する関数
     async function getNearbyGolfCourseNames(lat: number, lon: number): Promise<string[]> {
+        console.log(`Fetching nearby golf courses for lat=${lat}, lon=${lon}`);
         const params = new URLSearchParams({
             applicationId: "1095881049230729173", // あなたのAPP ID
             affiliateId: "15c62b88.a7bf436f.15c62b89.aa154c9f",
@@ -155,5 +156,13 @@
 </script>
 
 <style scoped>
-
+.main-input:-webkit-autofill,
+.main-input:-webkit-autofill:hover,
+.main-input:-webkit-autofill:focus,
+.main-input:-webkit-autofill:active {
+    -webkit-text-fill-color: #000 !important;
+    -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+    box-shadow: 0 0 0 1000px #fff inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
 </style>
