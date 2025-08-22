@@ -1,7 +1,7 @@
 import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import router from '../router';
 import { useAuthStore } from '../stores/auth';
-import { auth } from '../main'; // Firebase auth インスタンスをインポート
+import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
 
 // API呼び出しの基本クラス
 class ApiService {

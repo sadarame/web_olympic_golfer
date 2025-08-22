@@ -90,10 +90,12 @@
   import { apiService } from '../services/api';
   import type { User } from '../types';
   import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'; // Firebase Auth をインポート
-  import { auth } from '../main'; // Firebase auth インスタンスをインポート
+  import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
+  import { useRoundStore } from '../stores/round'; // 追加: roundStoreのインポート
 
   const authStore = useAuthStore();
   const router = useRouter();
+  const roundStore = useRoundStore(); // 追加: roundStoreの初期化
   // インプットフィールドとして使用
   const userName = ref('');
   const isEditingUserName = ref(false);
@@ -286,6 +288,7 @@
   onMounted(() => {
     (window as any).handleCredentialResponse = handleCredentialResponse;
     fetchOrCreateUser();
+    roundStore.clearRouundInfo();
   });
 
 </script>

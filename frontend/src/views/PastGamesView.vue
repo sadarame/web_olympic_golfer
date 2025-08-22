@@ -17,7 +17,7 @@
         <div v-for="game in games" :key="game.gameId" class="bg-white rounded-xl p-4 shadow-md transition-all">
           <div class="flex justify-between items-center cursor-pointer" @click="toggleDetails(game.gameId)">
             <div class="w-1/2 pr-2">
-              <p class="font-bold text-lg truncate">{{ game.golfCourse || '未設定のコース' }}</p>
+              <p class="font-bold text-base whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
               <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
             </div>
             <div class="flex items-center space-x-2">

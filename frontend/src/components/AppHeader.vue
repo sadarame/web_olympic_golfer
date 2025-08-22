@@ -33,7 +33,7 @@
     import { useRoundStore } from '../stores/round';
     import { useRouter } from 'vue-router';
     import { signOut } from 'firebase/auth'; // Firebase signOut をインポート
-    import { auth } from '../main'; // Firebase auth インスタンスをインポート
+    import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
 
     const router = useRouter();
     const authStore = useAuthStore();
@@ -52,7 +52,6 @@
     };
 
     const goToHome = () => {
-        roundStore.clearRouundInfo();
         // 過去スコアからの遷移の場合、ホームに戻る
         // 新規スコア入力からの遷移の場合、スコア入力画面に戻る
         router.push('/');

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { auth } from '../main'; // Firebase auth インスタンスをインポート
+import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
