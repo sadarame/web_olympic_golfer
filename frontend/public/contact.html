@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympic Golfer - お問い合わせ 📧</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 960px;
+            margin: 1rem;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-out;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .golf-ball-animation {
+            display: inline-block;
+            animation: golfSwing 2s infinite alternate;
+        }
+        nav {
+            background-color: #333;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: inline-block;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        nav a:hover {
+            background-color: #555;
+            transform: translateY(-2px);
+        }
+        h2 {
+            color: #4CAF50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        p {
+            margin-bottom: 15px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9em;
+        }
+
+        @keyframes golfSwing {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-15deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                font-size: 0.9em;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            h2 {
+                font-size: 1.5em;
+            }
+            nav a {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+            .container {
+                margin: 0.5rem;
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.85em;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.3em;
+            }
+            nav a {
+                padding: 6px 8px;
+                font-size: 0.85em;
+            }
+            .container {
+                margin: 0.25rem;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Olympic Golfer <span class="golf-ball-animation">🏌️</span></h1>
+    </header>
+    <nav>
+        <a href="/">ホーム 🏠</a>
+        <a href="/features.html">機能紹介 ✨</a>
+        <a href="/terms.html">利用規約 📜</a>
+        <a href="/privacy.html">プライバシーポリシー 🔒</a>
+        <a href="/contact.html">お問い合わせ 📧</a>
+    </nav>
+    <div class="container">
+        <h2>お問い合わせ 📞</h2>
+        <p>Olympic Golferに関するご質問、ご意見、ご要望などございましたら、お気軽にお問い合わせください。</p>
+        <p>通常、2営業日以内にご返信いたします。</p>
+        <h3>メールでのお問い合わせ</h3>
+        <p>Eメール: <a href="mailto:support@olympicgolfer.com">support@olympicgolfer.com</a></p>
+        <h3>電話でのお問い合わせ</h3>
+        <p>電話番号: +81-12-3456-7890 (受付時間: 平日 9:00 - 17:00)</p>
+        <h3>よくある質問 (FAQ)</h3>
+        <p>お問い合わせいただく前に、<a href="#faq">よくある質問</a>もご確認ください。解決策が見つかるかもしれません。</p>
+    </div>
+    <footer>
+        <p>&copy; 2025 Olympic Golfer. All rights reserved.</p>
+    </footer>
+</body>
+</html>
