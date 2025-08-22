@@ -85,7 +85,6 @@
     </div>
   </div>
   <GlobalFooter />
-  <MobileMenu />
 </template>
 
 <script setup lang="ts">
@@ -98,7 +97,6 @@
   import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
   import { useRoundStore } from '../stores/round'; // 追加: roundStoreのインポート
   import GlobalFooter from '../components/GlobalFooter.vue'; // GlobalFooter コンポーネントをインポート
-  import MobileMenu from '../components/MobileMenu.vue'; // MobileMenu コンポーネントをインポート
 
   const authStore = useAuthStore();
   const router = useRouter();

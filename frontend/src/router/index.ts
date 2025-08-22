@@ -85,7 +85,7 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   const authStore = useAuthStore();
   const isAuthenticated = authStore.getIsAuthenticated;
 
-  if (to.name !== 'Home' && !isAuthenticated) {
+  if ((to.name !== 'Home' && to.name !== 'Review') && !isAuthenticated) {
     console.log('User is not authenticated, redirecting to Home');
     return next({ name: 'Home' });
 
