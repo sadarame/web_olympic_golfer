@@ -1,8 +1,10 @@
 from firebase_functions import https_fn
 from services import review_service
 from utils.auth_utils import get_user_id_from_request
+from utils.helpers import cors_enabled
 import json
 
+@cors_enabled
 def submit_review_controller(request: https_fn.Request):
     if request.method != 'POST':
         return https_fn.Response("Method Not Allowed", status=405)
@@ -30,6 +32,7 @@ def submit_review_controller(request: https_fn.Request):
         print(f"Error submitting review: {e}")
         return https_fn.Response(json.dumps({"error": str(e)}), headers={"Content-Type": "application/json"}, status=500)
 
+@cors_enabled
 def get_reviews_controller(request: https_fn.Request):
     if request.method != 'GET':
         return https_fn.Response("Method Not Allowed", status=405)

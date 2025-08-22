@@ -1,7 +1,7 @@
 from firebase_functions import https_fn
 from firebase_admin import initialize_app, credentials
 import os
-from controllers import game_controller, user_controller
+from controllers import game_controller, user_controller, review_controller
 from utils.auth_utils import require_auth
 
 # サービスアカウントキーのパスを正しく設定
@@ -64,3 +64,13 @@ def updateCompanion(request: https_fn.Request):
 @require_auth
 def deleteCompanion(request: https_fn.Request):
     return user_controller.delete_companion_controller(request)
+
+
+@https_fn.on_request()
+def submitReview(request: https_fn.Request):
+    return review_controller.submit_review_controller(request)
+
+
+@https_fn.on_request()
+def getReviews(request: https_fn.Request):
+    return review_controller.get_reviews_controller(request)

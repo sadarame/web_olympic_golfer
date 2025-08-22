@@ -118,3 +118,23 @@ def get_user_from_request(request: https_fn.Request):
     """
     return getattr(request, 'user', None)
 
+
+def get_user_id_from_request(request: https_fn.Request):
+    """リクエストからユーザーIDを取得するヘルパー関数"""
+    # If request has been processed by require_auth, user info is already attached
+    user = get_user_from_request(request)
+    if user and (user.get('sub') or user.get('uid')):
+        return user.get('sub') or user.get('uid')
+
+    # Fallback: manually parse the Authorization header
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return None
+
+    token = auth_header.split(' ')[1]
+    decoded_token = verify_token(token)
+    if not decoded_token:
+        return None
+
+    return decoded_token.get('sub') or decoded_token.get('uid')
+
