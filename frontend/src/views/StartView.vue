@@ -65,15 +65,13 @@
     const showSuggestions = ref(false);
 
     const buttonText = () => {
-        return roundStore.roundId ? 'スコア入力 ➡️' : '同伴者を選択 ➡️';
+        return roundStore.players.length ? 'スコア入力 ➡️' : '同伴者を選択 ➡️';
     };
     
     const selectCompanions = () => {
         // 過去スコア画面から遷移してきた場合考慮
         // ラウンドIDが設定されていない場合は新規ラウンドとして扱う
-        console.log("selectCompanions called with roundDate:", roundDate.value, "course:", course.value, "wager:", wager.value, "memo:", memo.value);
-        console.log("Current roundId:", roundStore.roundId);
-        if (!roundStore.roundId){
+        if (!roundStore.players.length) {
             console.log("Setting round info for new round");
             roundStore.setRoundInfo({
             roundDate: roundDate.value,
