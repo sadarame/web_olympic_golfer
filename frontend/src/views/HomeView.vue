@@ -1,8 +1,8 @@
 <template>
-  <div class="main-layout">
+  <div class="main-layout pt-16 pb-16">
     <div class="container mx-auto p-4 md:p-8 max-w-sm card">
     <!-- ページタイトル -->
-      <h1 class="text-4xl font-bold text-center mb-4 text-gray-800">
+      <h1 class="text-4xl font-bold text-center mb-2 text-gray-800">
         ⛳️
       </h1>
       <p class="text-center text-gray-600 mb-8">
@@ -78,9 +78,14 @@
         <button @click="handleViewScores" class="btn-solid">
           過去のスコア一覧 📊
         </button>
+        <button @click="handleReview" class="btn-solid">
+          レビュー ⭐️
+        </button>
       </div>
     </div>
   </div>
+  <GlobalFooter />
+  <MobileMenu />
 </template>
 
 <script setup lang="ts">
@@ -92,6 +97,7 @@
   import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth'; // Firebase Auth をインポート
   import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
   import { useRoundStore } from '../stores/round'; // 追加: roundStoreのインポート
+  import GlobalFooter from '../components/GlobalFooter.vue'; // GlobalFooter コンポーネントをインポート
 
   const authStore = useAuthStore();
   const router = useRouter();
@@ -258,6 +264,10 @@
 
   const handleViewScores = () => {
     router.push('/past-games');
+  };
+
+  const handleReview = () => {
+    router.push('/review');
   };
 
   // ユーザー情報を正規化する関数

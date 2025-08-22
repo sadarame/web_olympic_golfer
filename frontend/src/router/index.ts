@@ -53,6 +53,11 @@ const routes = [
     name: 'FriendEdit',
     component: () => import('../views/FriendEditView.vue'),
   },
+  {
+    path: '/review',
+    name: 'Review',
+    component: () => import('../views/ReviewView.vue'),
+  },
   // Catch-all route to redirect to Home
   {
     path: '/:pathMatch(.*)*',
