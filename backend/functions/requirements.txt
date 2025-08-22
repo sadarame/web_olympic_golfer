@@ -1,5 +1,4 @@
 firebase-functions
 firebase-admin
-flask
-flask-cors
 functions-framework
+gunicorn

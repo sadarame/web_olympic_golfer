@@ -1,13 +1,26 @@
 from firebase_functions import https_fn
 from firebase_admin import initialize_app, credentials
+import firebase_admin
 import os
 from controllers import game_controller, user_controller
 from utils.auth_utils import require_auth
 
 # サービスアカウントキーのパスを正しく設定
-cred_path = os.path.join(os.path.dirname(__file__), '..', 'olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json')
-cred = credentials.Certificate(cred_path)
-initialize_app(cred)
+# Firebase Admin の初期化
+if not firebase_admin._apps:  # ←二重初期化を防ぐため
+    # 本番かどうかを環境変数で判定（Cloud Functions上なら FIREBASE_CONFIG が必ず入る）
+    if os.getenv("FIREBASE_CONFIG") or os.getenv("K_SERVICE"):
+        # 本番（GCP/Firebase Functions）はデフォルト認証でOK
+        initialize_app()
+    else:
+        # ローカル開発 → サービスアカウントキーを使う
+        cred_path = os.path.join(
+            os.path.dirname(__file__),
+            '..',
+            'olynpicgolf-firebase-adminsdk-114c2-6abf1bf32d.json'
+        )
+        cred = credentials.Certificate(cred_path)
+        initialize_app(cred)
 
 @https_fn.on_request()
 def startGame(request: https_fn.Request):
