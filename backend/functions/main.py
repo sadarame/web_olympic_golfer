@@ -64,3 +64,14 @@ def updateCompanion(request: https_fn.Request):
 @require_auth
 def deleteCompanion(request: https_fn.Request):
     return user_controller.delete_companion_controller(request)
+
+@https_fn.on_request()
+@require_auth
+def submitReview(request: https_fn.Request):
+    from controllers import review_controller
+    return review_controller.submit_review_controller(request)
+
+@https_fn.on_request()
+def getReviews(request: https_fn.Request):
+    from controllers import review_controller
+    return review_controller.get_reviews_controller(request)

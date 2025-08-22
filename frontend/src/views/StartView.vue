@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+    console.log('StartView.vue script setup');
     import { ref, onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     import { useRoundStore } from '../stores/round';
@@ -119,19 +120,28 @@
         return (data.Items || []).map((i: any) => i.golfCourseName);
     }
 
+    console.log('Before onMounted');
+
     onMounted(() => {
+        console.log('Inside onMounted');
         if (navigator.geolocation) {
+            console.log('Requesting geolocation...');
             navigator.geolocation.getCurrentPosition(async (position) => {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
+                console.log(`Geolocation successful: lat=${lat}, lon=${lon}`);
                 try {
                     golfCourseSuggestions.value = await getNearbyGolfCourseNames(lat, lon);
+                    console.log('golfCourseSuggestions:', golfCourseSuggestions.value);
                     showSuggestions.value = golfCourseSuggestions.value.length > 0;
+                    console.log('showSuggestions:', showSuggestions.value);
                 } catch (error) {
                     console.error("Failed to fetch golf course suggestions:", error);
                 }
             }, (error) => {
                 console.error("Geolocation error:", error);
+            }, {
+                timeout: 10000 // 10秒でタイムアウト
             });
         } else {
             console.log("Geolocation is not supported by this browser.");

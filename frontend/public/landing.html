@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Olympic Golf – スコア管理＆AI分析</title>
+  <meta name="description" content="仲間と楽しむゴルフのスコア管理。リアルタイム集計とAIのプレー分析で、次のラウンドをもっと面白く。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { color-scheme: light; }
+    html, body { height: 100%; }
+    body { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur border-b border-gray-200">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <a href="#" class="inline-flex items-center gap-2 font-bold text-lg">
+        <span class="text-2xl">⛳️</span> Olympic Golf
+      </a>
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
+        <a href="#features" class="hover:text-green-700">機能</a>
+        <a href="#how" class="hover:text-green-700">使い方</a>
+        <a href="#faq" class="hover:text-green-700">FAQ</a>
+      </nav>
+      <div class="flex items-center gap-3">
+        <a href="/" class="hidden sm:inline-flex items-center justify-center rounded-full border border-gray-300 px-4 py-2 text-sm font-semibold hover:bg-gray-100">デモを見る</a>
+        <a href="/" class="inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold shadow-sm">今すぐはじめる</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-green-100 via-white to-white"></div>
+    <div class="mx-auto max-w-6xl px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <h1 class="text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+          ゴルフの結果を<br class="hidden md:block">もっと“わかりやすく・楽しく”
+        </h1>
+        <p class="mt-4 text-lg md:text-xl text-gray-600">
+          スコア入力→自動集計→ランキング→<span class="font-semibold">AI分析</span>までこれひとつ。
+          面倒な計算ゼロで、ラウンドに集中できます。
+        </p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a href="/" class="inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-6 py-3 font-bold shadow">
+            無料で試す 🚀
+          </a>
+          <a href="#features" class="inline-flex items-center justify-center rounded-full border border-gray-300 px-6 py-3 font-bold hover:bg-gray-100">
+            機能を見る
+          </a>
+        </div>
+        <div class="mt-6 flex items-center gap-4 text-sm text-gray-500">
+          <div class="inline-flex items-center gap-1">★4.8 / 5</div>
+          <div class="h-1 w-1 rounded-full bg-gray-300"></div>
+          <div>スマホ最適化・インストール不要</div>
+        </div>
+      </div>
+      <div class="relative">
+        <div class="aspect-[4/3] rounded-2xl ring-1 ring-gray-200 bg-white shadow-md overflow-hidden">
+          <!-- ここにアプリのスクリーンショットを画像で差し替え -->
+          <div class="h-full w-full grid place-items-center text-center p-8">
+            <div>
+              <div class="text-6xl mb-4">📊</div>
+              <p class="font-semibold">スコア入力 & ランキング & AI提案</p>
+              <p class="text-gray-500 text-sm mt-2">スクリーンショット画像をここに配置</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-16 bg-white">
+    <div class="mx-auto max-w-6xl px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-center">主要機能</h2>
+      <p class="text-center text-gray-600 mt-2">必要な要素だけをシンプルに、使いやすくまとめました。</p>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- 1 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">💰</div>
+          <h3 class="mt-3 font-bold text-lg">ポイント & レート設定</h3>
+          <p class="mt-2 text-gray-600 text-sm">1ptあたりのレートを自由に設定。集計は自動、金額換算もワンタップ。</p>
+        </div>
+        <!-- 2 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">🏆</div>
+          <h3 class="mt-3 font-bold text-lg">リアルタイム結果</h3>
+          <p class="mt-2 text-gray-600 text-sm">終了と同時にランキング表示。メダル表示で盛り上がること間違いなし。</p>
+        </div>
+        <!-- 3 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">💾</div>
+          <h3 class="mt-3 font-bold text-lg">自動保存</h3>
+          <p class="mt-2 text-gray-600 text-sm">ワンクリックでFirestoreに保存。履歴からいつでも振り返り。</p>
+        </div>
+        <!-- 4 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">📱</div>
+          <h3 class="mt-3 font-bold text-lg">シンプルUI</h3>
+          <p class="mt-2 text-gray-600 text-sm">スマホで片手操作OK。迷わない導線と大きめUIで快適。</p>
+        </div>
+        <!-- 5 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">🧠</div>
+          <h3 class="mt-3 font-bold text-lg">AI分析</h3>
+          <p class="mt-2 text-gray-600 text-sm">プレー傾向を自動で解析。次戦に向けた改善ポイントを提案。</p>
+        </div>
+        <!-- 6 -->
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm hover:shadow-md transition">
+          <div class="text-3xl">👥</div>
+          <h3 class="mt-3 font-bold text-lg">友だちと共有</h3>
+          <p class="mt-2 text-gray-600 text-sm">リンク共有で誰でも参加。ゲストでもすぐ記録開始。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="py-16 bg-gray-50">
+    <div class="mx-auto max-w-6xl px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-center">３ステップで開始</h2>
+      <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm">
+          <div class="text-4xl">1️⃣</div>
+          <h3 class="mt-3 font-bold">ログイン</h3>
+          <p class="mt-2 text-gray-600 text-sm">Googleで簡単サインイン。インストール不要です。</p>
+        </div>
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm">
+          <div class="text-4xl">2️⃣</div>
+          <h3 class="mt-3 font-bold">プレイヤー & レート設定</h3>
+          <p class="mt-2 text-gray-600 text-sm">人数とレートを決めて、すぐにラウンド開始。</p>
+        </div>
+        <div class="rounded-2xl bg-white ring-1 ring-gray-200 p-6 shadow-sm">
+          <div class="text-4xl">3️⃣</div>
+          <h3 class="mt-3 font-bold">スコア入力 & 共有</h3>
+          <p class="mt-2 text-gray-600 text-sm">ホール毎に入力。終了と同時に結果とAI分析を表示。</p>
+        </div>
+      </div>
+      <div class="text-center mt-10">
+        <a href="/" class="inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-7 py-3 font-bold shadow">
+          今すぐはじめる 🏌️‍♂️
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social proof / screenshots (optional placeholders) -->
+  <section class="py-16 bg-white">
+    <div class="mx-auto max-w-6xl px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="rounded-2xl ring-1 ring-gray-200 p-6 bg-gradient-to-br from-green-50 to-white">
+          <p class="text-sm text-gray-600">ユーザーの声</p>
+          <blockquote class="mt-3 text-sm md:text-base">「計算いらずで助かる。ランキング表示で最後まで盛り上がる！」</blockquote>
+          <div class="mt-3 text-xs text-gray-500">※ サンプル。実際のレビューに差し替え可</div>
+        </div>
+        <div class="rounded-2xl ring-1 ring-gray-200 p-6">
+          <div class="aspect-video rounded-xl bg-gray-100 grid place-items-center text-gray-500">
+            スクリーンショット
+          </div>
+        </div>
+        <div class="rounded-2xl ring-1 ring-gray-200 p-6">
+          <div class="aspect-video rounded-xl bg-gray-100 grid place-items-center text-gray-500">
+            スクリーンショット
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-16 bg-gray-50">
+    <div class="mx-auto max-w-4xl px-4">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-center">よくある質問</h2>
+      <div class="mt-8 space-y-4">
+        <details class="group rounded-xl bg-white ring-1 ring-gray-200 p-5 shadow-sm">
+          <summary class="cursor-pointer list-none font-semibold flex items-center justify-between">料金はかかりますか？<span class="transition group-open:rotate-180">⌄</span></summary>
+          <p class="mt-3 text-sm text-gray-600">基本機能は無料でお使いいただけます。将来的に上位プランを追加予定です。</p>
+        </details>
+        <details class="group rounded-xl bg-white ring-1 ring-gray-200 p-5 shadow-sm">
+          <summary class="cursor-pointer list-none font-semibold flex items-center justify-between">データはどこに保存されますか？<span class="transition group-open:rotate-180">⌄</span></summary>
+          <p class="mt-3 text-sm text-gray-600">スコアはFirestoreに保存され、ログインユーザーで安全に管理されます。</p>
+        </details>
+        <details class="group rounded-xl bg-white ring-1 ring-gray-200 p-5 shadow-sm">
+          <summary class="cursor-pointer list-none font-semibold flex items-center justify-between">スマホでも使えますか？<span class="transition group-open:rotate-180">⌄</span></summary>
+          <p class="mt-3 text-sm text-gray-600">はい。スマホ・タブレットに最適化されたUIです。</p>
+        </details>
+      </div>
+      <div class="text-center mt-10">
+        <a href="/" class="inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-7 py-3 font-bold shadow">
+          プレイをはじめる
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 text-sm text-gray-500 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p>© <span id="y"></span> Olympic Golf</p>
+      <nav class="flex items-center gap-4">
+        <a href="#" class="hover:text-gray-700">利用規約</a>
+        <a href="#" class="hover:text-gray-700">プライバシー</a>
+        <a href="#" class="hover:text-gray-700">お問い合わせ</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
