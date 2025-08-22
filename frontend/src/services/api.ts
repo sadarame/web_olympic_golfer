@@ -177,6 +177,20 @@ class ApiService {
       method: 'GET',
     });
   }
+
+  // レビュー関連
+  async getReviews(): Promise<any> {
+    return this.request(API_ENDPOINTS.GET_REVIEWS, {
+      method: 'GET',
+    });
+  }
+
+  async submitReview(data: any): Promise<any> {
+    return this.request(API_ENDPOINTS.SUBMIT_REVIEW, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 // シングルトンインスタンスをエクスポート
@@ -188,5 +202,7 @@ export const getCompanion = (id: string) => apiService.getCompanion(id);
 export const addCompanion = (name: string) => apiService.addCompanion(name);
 export const updateCompanion = (id: string, name: string, gender?: string | null, relationship?: string | null, memo?: string | null) => apiService.updateCompanion(id, name, gender, relationship, memo);
 export const deleteCompanion = (id: string) => apiService.deleteCompanion(id);
+export const getReviews = () => apiService.getReviews(); // New export
+export const submitReview = (data: any) => apiService.submitReview(data); // New export
 
 export default apiService;

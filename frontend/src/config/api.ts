@@ -35,7 +35,12 @@ export const API_ENDPOINTS = {
   GET_COMPANION: '/getCompanion',
   ADD_COMPANION: '/addCompanion',
   UPDATE_COMPANION: '/updateCompanion',
+  // コンパニオン関連
   DELETE_COMPANION: '/deleteCompanion',
+  
+  // レビュー関連
+  GET_REVIEWS: '/getReviews',
+  SUBMIT_REVIEW: '/submitReview',
   
   // ヘルスチェック
   HEALTH: '/health',
