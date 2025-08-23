@@ -24,67 +24,291 @@ if not firebase_admin._apps:  # ←二重初期化を防ぐため
 
 @https_fn.on_request()
 def startGame(request: https_fn.Request):
-    return game_controller.start_game_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = game_controller.start_game_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 def updateScoreAndGameStatus(request: https_fn.Request):
-    return game_controller.update_score_and_game_status_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = game_controller.update_score_and_game_status_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def getGameList(request: https_fn.Request):
-    return game_controller.get_game_list_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = game_controller.get_game_list_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 def deleteGame(request: https_fn.Request):
-    return game_controller.delete_game_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = game_controller.delete_game_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 def getGameInfo(request: https_fn.Request):
-    return game_controller.get_game_info_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = game_controller.get_game_info_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def registerOrUpdateUser(request: https_fn.Request):
-    return user_controller.register_or_update_user_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.register_or_update_user_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def getUser(request: https_fn.Request):
-    return user_controller.get_user_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.get_user_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def addCompanion(request: https_fn.Request):
-    return user_controller.add_companion_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.add_companion_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def getCompanions(request: https_fn.Request):
-    return user_controller.get_companions_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.get_companions_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def getCompanion(request: https_fn.Request):
-    return user_controller.get_companion_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.get_companion_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def updateCompanion(request: https_fn.Request):
-    return user_controller.update_companion_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.update_companion_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def deleteCompanion(request: https_fn.Request):
-    return user_controller.delete_companion_controller(request)
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
+    response = user_controller.delete_companion_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 @require_auth
 def submitReview(request: https_fn.Request):
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
     from controllers import review_controller
-    return review_controller.submit_review_controller(request)
+    response = review_controller.submit_review_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response
 
 @https_fn.on_request()
 def getReviews(request: https_fn.Request):
+    # CORSプリフライトリクエストの処理
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': 'https://olynpicgolf.web.app',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '3600'
+        }
+        return https_fn.Response(status=204, headers=headers)
+
+    # 通常のリクエストの処理
     from controllers import review_controller
-    return review_controller.get_reviews_controller(request)
+    response = review_controller.get_reviews_controller(request)
+    response.headers.set('Access-Control-Allow-Origin', 'https://olynpicgolf.web.app')
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    response.headers.set('Access-Control-Max-Age', '3600')
+    return response

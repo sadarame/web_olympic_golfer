@@ -28,12 +28,37 @@
   ],
   "hosting": {
     "public": "frontend/dist",
+    "cleanUrls": true,              
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/contact",
+        "destination": "/contact.html"
+      },
+      {
+        "source": "/features",
+        "destination": "/features.html"
+      },
+      {
+        "source": "/landing",
+        "destination": "/landing.html"
+      },
+      {
+        "source": "/lp",
+        "destination": "/lp.html"
+      },
+      {
+        "source": "/privacy",
+        "destination": "/privacy.html"
+      },
+      {
+        "source": "/terms",
+        "destination": "/terms.html"
+      },
       {
         "source": "**",
         "destination": "/index.html"
