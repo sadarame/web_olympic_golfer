@@ -8,7 +8,7 @@
 
       <!-- プレイヤー結果一覧セクション -->
       <div class="space-y-4 mb-6">
-        <h2 class="text-xl font-semibold text-gray-800 text-center">プレイヤー結果😎✨</h2>
+        <h2 class="text-xl font-semibold text-gray-800">プレイヤー結果😎✨</h2>
         <div class="space-y-3">
           <div v-for="player in roundStore.players" :key="player.id" 
               class="bg-white rounded-xl p-4 shadow-md border-2 transition-all duration-200"
@@ -34,34 +34,7 @@
         </div>
       </div>
 
-      <!-- ラウンド基本情報セクション -->
-      <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
-        <div class="grid grid-cols-[1fr,auto,1fr] items-center cursor-pointer" @click="toggleRoundInfo">
-          <div></div> <!-- Spacer -->
-          <h2 class="text-xl font-semibold text-gray-800">ラウンド情報⛳️🔥</h2>
-          <span class="text-lg font-medium text-gray-700 justify-self-end">{{ showRoundInfo ? '▲' : '▼' }}</span>
-        </div>
-        <div v-if="showRoundInfo" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4 text-sm text-left">
-            <div>
-              <p class="text-gray-600">日付</p>
-              <p class="font-semibold text-gray-800">{{ formatDate(roundStore.roundDate) }}</p>
-            </div>
-            <div>
-              <p class="text-gray-600">レート</p>
-              <p class="font-semibold text-gray-800">{{ roundStore.wager || '100' }}円/pt</p>
-            </div>
-          </div>
-          <div class="text-sm">
-            <p class="text-gray-600">ゴルフ場</p>
-            <p class="font-semibold text-gray-800">{{ roundStore.course || '未設定' }}</p>
-          </div>
-          <div class="text-sm">
-            <p class="text-gray-600">メモ</p>
-            <p class="font-semibold text-gray-800">{{ roundStore.memo || 'なし' }}</p>
-          </div>
-        </div>
-      </div>
+      <RoundInfo />
 
       <!-- アクションボタンセクション -->
       <div class="space-y-4 text-center">
@@ -80,6 +53,7 @@
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useRoundStore } from '../stores/round';
+  import RoundInfo from '../components/RoundInfo.vue'; // Import RoundInfo component
 
   const router = useRouter();
   const roundStore = useRoundStore();
@@ -202,16 +176,6 @@
 </script>
 
 <style scoped>
-.card {
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  margin: 1rem;
-}
 
 .btn-fancy-next {
   @apply w-full relative inline-flex h-14 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100;

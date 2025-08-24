@@ -1,61 +1,89 @@
 <template>
-<!-- メインコンテンツ部分 -->
-<div class="main-layout">
-<div class="container mx-auto max-w-sm card">
-    <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
-        スコア入力📝
-    </h1>
-
-    <!-- レート設定セクション -->
-    <div class="space-y-4 mb-6 p-2 bg-gray-50 rounded-xl shadow-md ">
-        <div class="flex justify-between items-center m-2">
-            
-            <span class="text-lg font-medium text-gray-700">{{ rate }}円/pt</span>
-        </div>
-    </div>
-
-    <div id="player-score-sections" class="space-y-8">
-        <!-- プレイヤーごとのスコア入力セクション -->
-        <div v-for="player in selectedPlayers" :key="player.id" class="bg-white rounded-xl p-4 shadow-md">
-            <div class="flex justify-between items-center mb-4">
-                <div class=" font-bold">{{ player.name }}</div>
-                <div class="text-right">
-                    <!-- ポイント -->
-                    <span class="text-lg font-bold text-green-600">{{ playerScores[player.name]?.points || 0 }}</span>
-                    <span class="text-sm text-gray-500">pt</span>
-                    <br>
-                    <!-- 金額 -->
-                    <span :class="['text-xl', 'font-bold', (playerScores[player.name]?.amount || 0) < 0 ? 'text-red-500' : 'text-gray-700']">¥{{ (playerScores[player.name]?.amount || 0) }}</span>
+    <!-- メインコンテンツ部分 -->
+    <div class="main-layout">
+        <div class="container mx-auto max-w-sm">
+            <!-- ラウンド情報せクション -->
+            <div class="space-y-4 mb-6 p-4 bg-gray-50 rounded-xl shadow-md">
+                <div class="grid grid-cols-[1fr,auto,1fr] items-center cursor-pointer" @click="toggleRoundInfo">
+                    <div></div> <!-- Spacer -->
+                    <div class="text-xl font-semibold text-gray-800">ラウンド情報⛳️🔥</div>
+                    <span class="text-lg font-medium text-gray-700 justify-self-end">{{ showRoundInfo ? '▲' : '▼'
+                        }}</span>
+                </div>
+                <div v-if="showRoundInfo" class="space-y-4 text-left pl-2">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-gray-600">日付</p>
+                            <p class="font-semibold text-gray-800">{{ formatDate(roundStore.roundDate) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-600">レート</p>
+                            <p class="font-semibold text-gray-800">{{ roundStore.wager || '100' }}円/pt</p>
+                        </div>
+                    </div>
+                    <div class="text-sm">
+                        <p class="text-gray-600">ゴルフ場</p>
+                        <p class="font-semibold text-gray-800">{{ roundStore.course || '未設定' }}</p>
+                    </div>
+                    <div class="text-sm">
+                        <p class="text-gray-600">メモ</p>
+                        <p class="font-semibold text-gray-800">{{ roundStore.memo || 'なし' }}</p>
+                    </div>
                 </div>
             </div>
-            
-            <!-- 特殊ボタン -->
-            <div class="grid grid-cols-3 gap-2 mb-4">
-                <button v-for="button in buttonConfigs" :key="button.label" :class="['score-input-btn', button.class]" @click="updateScore(player.name, button.score)">{{ button.label }}</button>
+
+            <!-- スコア入力セクション -->
+            <div id="player-score-sections" class="space-y-8">
+                <!-- プレイヤーごとのスコア入力セクション -->
+                <div v-for="player in selectedPlayers" :key="player.id" class="bg-white rounded-xl p-4 shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class=" font-bold">{{ player.name }}</div>
+                        <div class="text-right">
+                            <!-- ポイント -->
+                            <span class="text-lg font-bold text-green-600">{{ playerScores[player.name]?.points || 0
+                                }}</span>
+                            <span class="text-sm text-gray-500">pt</span>
+                            <br>
+                            <!-- 金額 -->
+                            <span
+                                :class="['text-xl', 'font-bold', (playerScores[player.name]?.amount || 0) < 0 ? 'text-red-500' : 'text-gray-700']">¥{{
+                                (playerScores[player.name]?.amount || 0) }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 特殊ボタン -->
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <button v-for="button in buttonConfigs" :key="button.label"
+                            :class="['score-input-btn', button.class]"
+                            @click="updateScore(player.name, button.score)">{{ button.label }}</button>
+                    </div>
+
+                    <!-- 手動入力 -->
+                    <div class="flex items-center space-x-2">
+                        <button class="group btn-fancy w-14 h-14 text-2xl"
+                            @click="updateScore(player.name, -1)">-</button>
+                        <input type="number" v-model.number="playerScores[player.name].points"
+                            class="input-field flex-grow h-14 text-center text-2xl">
+                        <button class="group btn-fancy w-14 h-14 text-2xl"
+                            @click="updateScore(player.name, 1)">+</button>
+                    </div>
+                </div>
             </div>
 
-            <!-- 手動入力 -->
-            <div class="flex items-center space-x-2">
-                <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateScore(player.name, -1)">-</button>
-                <input type="number" v-model.number="playerScores[player.name].points" class="input-field flex-grow h-14 text-center text-2xl">
-                <button class="group btn-fancy w-14 h-14 text-2xl" @click="updateScore(player.name, 1)">+</button>
+            <!-- 次へボタン -->
+            <div class="text-center mt-8">
+                <button @click="goToResult" class="btn-fancy-next">
+                    ラウンド終了（保存） ➡️
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- 次へボタン -->
-    <div class="text-center mt-8">
-        <button @click="goToResult" class="btn-fancy-next">
-            ラウンド終了（保存） ➡️
-        </button>
+    <!-- カスタムアラートボックス -->
+    <div v-if="showAlert"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-white text-gray-800 z-50 text-center">
+        <p class="font-bold text-lg">{{ alertMessage }}</p>
     </div>
-</div>
-</div>
-
-<!-- カスタムアラートボックス -->
-<div v-if="showAlert" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-white text-gray-800 z-50 text-center">
-<p class="font-bold text-lg">{{ alertMessage }}</p>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -68,6 +96,27 @@
     const router = useRouter();
     const roundStore = useRoundStore();
     const { players: selectedPlayers, playerScores } = storeToRefs(roundStore);
+    const showRoundInfo = ref(false);
+    const toggleRoundInfo = () => {
+        showRoundInfo.value = !showRoundInfo.value;
+    };
+
+
+  // 日付フォーマット関数
+    const formatDate = (dateString: string) => {
+    if (!dateString) return '未設定';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '未設定';
+        return date.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+        });
+    } catch {
+        return '未設定';
+    }
+    };
 
     // 人数によってスコアボタンの設定を動的に生成
     // 例: 2人ならダイヤモンド3点、ゴールド2点、シルバー1点

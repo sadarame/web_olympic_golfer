@@ -1,9 +1,9 @@
 <template>
     <!-- ヘッダー部分 -->
     <header class="header fixed top-0 left-0 right-0 z-10 flex items-center justify-between">
-        <h1 class="text-2xl font-bold text-gray-800 cursor-pointer" @click="goToHome">
+        <div class="text-2xl font-bold text-gray-800 cursor-pointer" @click="goToHome">
             Golf Olympic  <span class="inline-block golf-ball-bounce">⛳️</span>
-        </h1>
+        </div>
         <!-- ログイン状態表示部分 -->
         <div id="user-info" class="flex items-center space-x-4 relative group">
             <div id="user-profile-button" class="flex items-center space-x-2 cursor-pointer p-2 rounded-full hover:bg-gray-100 transition-colors duration-200">

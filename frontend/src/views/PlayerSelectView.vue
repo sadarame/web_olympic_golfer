@@ -5,47 +5,43 @@
                 同伴者を追加👬
             </h1>
 
-            <!-- 新規プレイヤー追加セクション -->
-            <div class="space-y-4 mb-8  rounded-lg">
-                <h2 class="font-semibold text-gray-800">新しい同伴者を追加✨</h2>
-                <div>
+            <div class="space-y-6">
+                <!-- 新規プレイヤー追加セクション -->
+                <div class="space-y-2 mb-8 bg-gray-50 rounded-lg">
+                    <h2 class="font-semibold text-gray-800">新しい同伴者を追加✨</h2>
                     <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field w-full h-12" placeholder="同伴者名を入力...">
                     <button @click="addNewPlayer" class="btn-solid w-full h-12 mt-2" type="button">
                         追加
                     </button>
+                    <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
                 </div>
-                <p v-if="errorMessage" class="text-red-500 text-sm mt-1">{{ errorMessage }}</p>
-            </div>
 
-            <!-- 既存プレイヤーリストセクション -->
-            <div class="space-y-4 mb-8 bg-gray-50 rounded-lg">
-                <h2 class="font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
-                <div>
+                <!-- 既存プレイヤーリストセクション -->
+                <div class="space-y-2 mb-8 bg-gray-50 rounded-lg">
+                    <h2 class="font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
                     <input
-                    v-model="searchQuery"
-                    placeholder="名前で検索..."
-                    class="input-field w-full h-12"
+                        v-model="searchQuery"
+                        placeholder="名前で検索..."
+                        class="input-field w-full h-12"
                     >
                     <div class="text-right mt-1">
                         <button @click="clearSearch" class="btn-secondary">クリア</button>
                     </div>
-                </div>
-                <div class="space-y-1 h-50 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
-                    <div v-for="player in filteredPlayers" :key="player.id" @click="toggleSelection(player)"
+                    <div class="space-y-1 h-50 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
+                        <div v-for="player in filteredPlayers" :key="player.id" @click="toggleSelection(player)"
                         :class="['player-list-item', { 'selected': isSelected(player), 'current-user-highlight': player.id === currentUser.id }]">
-                        <div class="flex items-center space-x-3">
-                            <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === currentUser.id" class="main-checkbox">
-                            <span class="text-gray-800 font-medium">{{ player.name }}</span>
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" :checked="isSelected(player)" :disabled="player.id === currentUser.id" class="main-checkbox">
+                                <span class="text-gray-800 font-medium">{{ player.name }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ラウンド参加メンバーリストセクション -->
-            <div class="space-y-4 mb-6 rounded-lg">
-                <h2 class="font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
-                <div class="space-y-2">
+                <!-- ラウンド参加メンバーリストセクション -->
+                <div class="space-y-2 mb-8 bg-gray-50 rounded-lg">
+                    <h2 class="font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
                     <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
                         <span class="text-gray-800 font-medium">{{ player.name }}</span>
                         <button v-if="player.id !== currentUser.id" @click="removePlayer(player)" class="btn-danger">
@@ -53,13 +49,13 @@
                         </button>
                     </div>
                 </div>
-            </div>
-            
-            <!-- 次へボタン -->
-            <div class="text-center">
-                <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
-                    {{ selectedPlayers.length < 2 ? '1人以上選択してください' : 'ゲームを開始 ➡️' }}
-                </button>
+
+                <!-- 次へボタン -->
+                <div class="text-center">
+                    <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
+                        {{ selectedPlayers.length < 2 ? '1人以上選択してください' : 'ゲームを開始 ➡️' }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -275,7 +271,7 @@
 
 <style scoped>
 .player-list-item {
-    @apply flex items-center justify-between rounded-lg transition-all duration-200 cursor-pointer mb-2 border-2 border-transparent;
+    @apply flex items-center justify-between rounded-lg transition-all duration-200 cursor-pointer mb-2 border-2 border-transparent px-3;
 }
 .player-list-item:hover {
     @apply bg-gray-50;
@@ -284,7 +280,6 @@
 .input-field {
   @apply border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow;
 }
-
 
 
 .btn-primary {
