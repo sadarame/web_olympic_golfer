@@ -54,7 +54,7 @@
                     <!-- 特殊ボタン -->
                     <div class="grid grid-cols-3 gap-2 mb-4">
                         <button v-for="button in buttonConfigs" :key="button.label"
-                            :class="['score-input-btn', button.class]"
+                            :class="['score-input-btn', 'touch-manipulation',button.class]"
                             @click="updateScore(player.name, button.score)">{{ button.label }}</button>
                     </div>
 
@@ -64,7 +64,7 @@
                             @click="updateScore(player.name, -1)">-</button>
                         <input type="number" v-model.number="playerScores[player.name].points"
                             class="input-field flex-grow h-14 text-center text-2xl">
-                        <button class="group btn-fancy w-14 h-14 text-2xl"
+                        <button class="group btn-fancy w-14 h-14 text-2xl touch-manipulation"
                             @click="updateScore(player.name, 1)">+</button>
                     </div>
                 </div>
