@@ -13,9 +13,12 @@
       <div v-else-if="games.length === 0" class="text-center text-gray-500">
         <p>対戦履歴がありません。</p>
       </div>
-      <div v-else class="space-y-4">
-        <div v-for="game in games" :key="game.gameId" class="rounded-xl transition-all">
-          <div class="flex justify-between items-center cursor-pointer" @click="toggleDetails(game.gameId)">
+      <div v-else class="space-y-1">
+        <div v-for="game in games" :key="game.gameId" class="transition-all">
+
+          
+           <!-- 履歴エリア -->
+          <div class="flex justify-between items-center cursor-pointer bg-white rounded-xl p-2 shadow-md " @click="toggleDetails(game.gameId)">
             <div class="w-1/2 pr-2">
               <p class="text-sm whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
               <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
@@ -30,16 +33,14 @@
                 </span>
 
               </div>
-              <div class="flex flex-col space-y-2">
-                <button @click.stop="editGame(game)" class="btn-fancy text-sm h-10">
+              <div>
+                <button @click.stop="editGame(game)" class="btn-edit">
                   編集
-                </button>
-                <button class="btn-fancy text-sm h-10">
-                  {{ expandedGameId === game.gameId ? '閉じる' : '詳細' }}
                 </button>
               </div>
             </div>
           </div>
+          <!-- 詳細エリア -->
           <div v-if="expandedGameId === game.gameId" class="mt-4 pt-4 border-t border-gray-200">
             <h3 class="font-semibold text-gray-700 mb-2">プレイヤーの結果:</h3>
             <ul>
@@ -149,7 +150,10 @@ const goHome = () => {
 
 <style scoped>
 .btn-fancy {
-  @apply relative inline-flex h-10 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-4 font-medium text-neutral-600 transition-all duration-100 [box-shadow:2px_2px_rgb(60_80_60)] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_rgb(60_80_60)];
+  @apply relative inline-flex h-10 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-2 font-medium text-neutral-600 transition-all duration-100 [box-shadow:2px_2px_rgb(60_80_60)] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_rgb(60_80_60)];
+}
+.btn-edit {
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-md border h-6 px-2 text-[11px] bg-blue-100 text-blue-700 border-blue-200 transition-all duration-100 [box-shadow:2px_2px_rgb(100,116,139)] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_rgb(100,116,139)];
 }
 .btn-fancy-next {
   @apply w-full relative inline-flex h-14 items-center justify-center overflow-hidden rounded-md border-2 border-green-700 bg-green-500 px-6 font-bold text-white transition-all duration-100;
