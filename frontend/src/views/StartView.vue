@@ -1,7 +1,7 @@
 <template>
 <!-- メインコンテンツ部分 -->
     <div class="main-layout">
-        <div class="container mx-auto max-w-sm card">
+        <div class="container p-4 mx-auto max-w-sm card">
             <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">
                 ラウンド情報✍️
             </h1>

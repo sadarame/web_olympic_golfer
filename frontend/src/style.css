@@ -73,7 +73,10 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(10px);
   border-radius: 1.5rem; /* より丸みのあるデザインに */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* 影を強調 */
-  padding: 1rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-bottom: 1rem;
+   padding-top: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 

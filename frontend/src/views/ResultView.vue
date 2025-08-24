@@ -21,11 +21,11 @@
               <div class="grid grid-cols-[auto,auto] justify-end items-baseline gap-x-2">
                 <!-- Row 1: Points -->
                 <div class="text-sm text-gray-600">ポイント</div>
-                <div class="text-lg font-bold text-green-600 text-right w-16 truncate">{{ getPlayerPoints(player.name) }}</div>
+                <div class="text-sm font-bold text-green-600 text-right w-16 truncate">{{ getPlayerPoints(player.name) }}</div>
                 
                 <!-- Row 2: Amount -->
                 <div class="text-sm text-gray-600">金額</div>
-                <div class="text-base font-bold text-right w-16 truncate" :class="getPlayerAmountClass(player.name)">
+                <div class="text-sm font-bold text-right w-20 truncate" :class="getPlayerAmountClass(player.name)">
                   ¥{{ getPlayerAmount(player.name) }}
                 </div>
               </div>
