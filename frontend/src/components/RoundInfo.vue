@@ -1,7 +1,7 @@
 <template>
-    <div class="space-y-4 mb-6　rounded-xl">
+    <div class="space-y-4 mb-6 rounded-xl">
         <div class="grid grid-cols-[1fr,auto,1fr] items-center cursor-pointer" @click="toggleRoundInfo">
-            <H2 class="text-xl font-semibold text-gray-800"">ラウンド情報⛳️🔥</H2>
+                        <h2 class="text-xl font-semibold text-gray-800 whitespace-nowrap">ラウンド情報⛳️🔥</h2>
             <div></div> <!-- Spacer -->
             <span class="text-lg font-medium text-gray-700 justify-self-end">{{ showRoundInfo ? '▲' : '▼' }}</span>
         </div>

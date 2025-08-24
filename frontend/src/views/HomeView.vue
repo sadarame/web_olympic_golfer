@@ -2,9 +2,9 @@
   <div class="main-layout pt-16">
     <div class="container mx-auto p-4 md:p-8 max-w-sm card">
     <!-- ページタイトル -->
-      <h1 class="text-4xl font-bold text-center mb-2 text-gray-800">
+      <div class="text-4xl font-bold text-center mb-2 text-gray-800">
         ⛳️
-      </h1>
+      </div>
       <p class="text-center text-gray-600 mb-8">
         オリンピックゴルフの<br>
         スコアを楽しく記録しよう！😊

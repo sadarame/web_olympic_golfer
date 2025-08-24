@@ -8,10 +8,12 @@
 
             <!-- ラウンド基本情報入力セクション -->
             <div class="space-y-4 mb-6 text-left">
+                <!-- 日付入力セクション -->
                 <div>
                     <label for="round-date" class="block text-sm font-medium text-gray-700 mb-1">ラウンド日</label>
                     <input type="date" id="round-date" class="main-input" v-model="roundDate">
                 </div>
+                <!-- ゴルフ場入力セクション -->
                 <div>
                     <label for="course-name" class="block text-sm font-medium text-gray-700 mb-1">ゴルフ場名</label>
                     <input type="text" id="course-name" class="main-input" placeholder="例: 広陵カントリークラブ" v-model="course">
@@ -22,16 +24,16 @@
                         </div>
                     </div>
                 </div>
+                <!-- 掛け金入力セクション -->
                 <div>
                     <label for="bet-rate" class="block text-sm font-medium text-gray-700 mb-1">賭け金レート (1枚あたりの金額)</label>
                     <input type="number" id="bet-rate" class="main-input" v-model="wager">
                 </div>
-            </div>
-
-            <!-- メモ入力セクション -->
-            <div class="space-y-4 mb-6 text-left">
-                <h2 class="text-xl font-semibold text-gray-800">メモ</h2>
-                <textarea id="memo" rows="3" class="main-input" placeholder="ゲームに関するメモをここに記入してください。" v-model="memo"></textarea>
+                <!-- メモ入力セクション -->
+                <div>
+                    <label class="text-sm font-semibold text-gray-800">メモ</label>
+                    <textarea id="memo" rows="3" class="main-input" placeholder="ゲームに関するメモをここに記入してください。" v-model="memo"></textarea>
+                </div>
             </div>
 
             <!-- 同伴者選択ボタン -->
