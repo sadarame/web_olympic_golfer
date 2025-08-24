@@ -27,9 +27,11 @@
                     placeholder="名前で検索..."
                     class="input-field w-full h-12"
                     >
-                    <button @click="clearSearch" class="btn-secondary">クリア</button>
+                    <div class="text-right mt-1">
+                        <button @click="clearSearch" class="btn-secondary">クリア</button>
+                    </div>
                 </div>
-                <div class="space-y-2 h-48 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
+                <div class="space-y-1 h-50 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
                     <div v-for="player in filteredPlayers" :key="player.id" @click="toggleSelection(player)"
                         :class="['player-list-item', { 'selected': isSelected(player), 'current-user-highlight': player.id === currentUser.id }]">
                         <div class="flex items-center space-x-3">
@@ -41,7 +43,7 @@
             </div>
 
             <!-- ラウンド参加メンバーリストセクション -->
-            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
+            <div class="space-y-4 mb-6 rounded-lg">
                 <h2 class="font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
                 <div class="space-y-2">
                     <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
@@ -56,7 +58,7 @@
             <!-- 次へボタン -->
             <div class="text-center">
                 <button @click="startGame" :disabled="selectedPlayers.length < 1" class="btn-solid">
-                    {{ selectedPlayers.length < 2 ? '同伴者を1人以上選択してください' : 'ゲームを開始 ➡️' }}
+                    {{ selectedPlayers.length < 2 ? '1人以上選択してください' : 'ゲームを開始 ➡️' }}
                 </button>
             </div>
         </div>
