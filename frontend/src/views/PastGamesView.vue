@@ -15,40 +15,41 @@
       </div>
       <div v-else class="space-y-1">
         <div v-for="game in games" :key="game.gameId" class="transition-all">
-           <!-- 一覧エリア -->
-          <div class="flex justify-between items-center cursor-pointer bg-white rounded-xl p-2 shadow-md " @click="toggleDetails(game.gameId)">
-            <div class="w-1/2 pr-2">
-              <p class="text-sm whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
-              <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
-            </div>
-            <div class="flex items-center space-x-2">
-              <div class="flex flex-col items-end">
-                <span :class="getStatusClass(game.status)" class="status-badge">
-                  {{ getStatusText(game.status) }}
-                </span>
-                <span v-if="game.status === 'completed'" :class="getAmountClass(game.editorResultAmount)" class="font-bold text-lg">
-                  ¥{{ game.editorResultAmount.toLocaleString() }}
-                </span>
-
+          <div class="bg-white rounded-xl p-2 shadow-md cursor-pointer" @click="toggleDetails(game.gameId)">
+            <!-- 一覧エリア -->
+            <div class="flex justify-between items-center">
+              <div class="w-1/2 pr-2">
+                <p class="text-sm whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
+                <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
               </div>
-              <div>
-                <button @click.stop="editGame(game)" class="btn-edit">
-                  編集
-                </button>
+              <div class="flex items-center space-x-2">
+                <div class="flex flex-col items-end">
+                  <span :class="getStatusClass(game.status)" class="status-badge">
+                    {{ getStatusText(game.status) }}
+                  </span>
+                  <span v-if="game.status === 'completed'" :class="getAmountClass(game.editorResultAmount)" class="font-bold text-lg">
+                    ¥{{ game.editorResultAmount.toLocaleString() }}
+                  </span>
+                </div>
+                <div>
+                  <button @click.stop="editGame(game)" class="btn-edit">
+                    編集
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- 詳細エリア -->
-          <div v-if="expandedGameId === game.gameId" class="mt-4 pt-4 border-t border-gray-200">
-            <h3 class="font-semibold text-gray-700 mb-2">プレイヤーの結果:</h3>
-            <ul>
-              <li v-for="player in game.players" :key="player.name" class="flex justify-between items-center py-1">
-                <span>{{ player.name }}</span>
-                <span :class="getAmountClass(player.amount)" class="font-bold">
-                  ¥{{ player.amount.toLocaleString() }}
-                </span>
-              </li>
-            </ul>
+            <!-- 詳細エリア -->
+            <div v-if="expandedGameId === game.gameId" class="mt-4 pt-4 border-t border-gray-200">
+              <h3 class="font-semibold text-gray-700 mb-2">プレイヤーの結果:</h3>
+              <ul>
+                <li v-for="player in game.players" :key="player.name" class="flex justify-between items-center py-1">
+                  <span>{{ player.name }}</span>
+                  <span :class="getAmountClass(player.amount)" class="font-bold">
+                    ¥{{ player.amount.toLocaleString() }}
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
