@@ -9,7 +9,7 @@
     <!-- レート設定セクション -->
     <div class="space-y-4 mb-6 p-2 bg-gray-50 rounded-xl shadow-md ">
         <div class="flex justify-between items-center m-2">
-            <h2 class="text-xl font-semibold text-gray-800">レート設定</h2>
+            
             <span class="text-lg font-medium text-gray-700">{{ rate }}円/pt</span>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <!-- プレイヤーごとのスコア入力セクション -->
         <div v-for="player in selectedPlayers" :key="player.id" class="bg-white rounded-xl p-4 shadow-md">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">{{ player.name }}</h2>
+                <div class=" font-bold">{{ player.name }}</div>
                 <div class="text-right">
                     <!-- ポイント -->
                     <span class="text-lg font-bold text-green-600">{{ playerScores[player.name]?.points || 0 }}</span>
@@ -30,7 +30,7 @@
             </div>
             
             <!-- 特殊ボタン -->
-            <div class="grid grid-cols-5 gap-2 mb-4">
+            <div class="grid grid-cols-3 gap-2 mb-4">
                 <button v-for="button in buttonConfigs" :key="button.label" :class="['score-input-btn', button.class]" @click="updateScore(player.name, button.score)">{{ button.label }}</button>
             </div>
 
@@ -261,17 +261,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.card {
-    background-color: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    margin: 1rem;
 }
 
 .input-field {

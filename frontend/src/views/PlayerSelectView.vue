@@ -7,7 +7,7 @@
 
             <!-- 新規プレイヤー追加セクション -->
             <div class="space-y-4 mb-8  rounded-lg">
-                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加✨</h2>
+                <h2 class="font-semibold text-gray-800">新しい同伴者を追加✨</h2>
                 <div>
                     <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field w-full h-12" placeholder="同伴者名を入力...">
@@ -20,7 +20,7 @@
 
             <!-- 既存プレイヤーリストセクション -->
             <div class="space-y-4 mb-8 bg-gray-50 rounded-lg">
-                <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
+                <h2 class="font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
                 <div>
                     <input
                     v-model="searchQuery"
@@ -42,7 +42,7 @@
 
             <!-- ラウンド参加メンバーリストセクション -->
             <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
-                <h2 class="text-xl font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
+                <h2 class="font-semibold text-gray-800">ラウンドに参加する同伴者🏌️</h2>
                 <div class="space-y-2">
                     <div v-for="player in selectedPlayers" :key="player.id" class="player-list-item">
                         <span class="text-gray-800 font-medium">{{ player.name }}</span>

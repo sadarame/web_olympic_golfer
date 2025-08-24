@@ -10,7 +10,7 @@
   .input-base:focus { @apply ring; }
 
   .main-layout {
-    @apply flex-grow flex justify-center items-center pt-20;
+    @apply flex-grow flex justify-center items-center pt-20 pb-20;
   }
   
   .main-input {
