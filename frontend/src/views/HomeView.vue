@@ -6,12 +6,12 @@
         ⛳️
       </div>
       <p class="text-center text-gray-600 mb-8">
-        オリンピックゴルフの<br>
+        <a href="/about.html" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">オリンピックゴルフ</a>の<br>
         スコアを楽しく記録しよう！😊
       </p>
 
       <!-- アプリ説明 -->
-      <p class="text-center text-gray-700 mb-8 leading-relaxed">
+      <p class="text-center text-gray-700 mb-2 leading-relaxed">
         
         <div v-if="!authStore.isAuthenticated">
           Googleアカウントでの<br>
