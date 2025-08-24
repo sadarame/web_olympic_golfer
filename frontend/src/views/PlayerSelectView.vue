@@ -6,8 +6,8 @@
             </h1>
 
             <!-- 新規プレイヤー追加セクション -->
-            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
-                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加➕</h2>
+            <div class="space-y-4 mb-8  rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-800">新しい同伴者を追加✨</h2>
                 <div>
                     <!-- プレイヤー名入力欄 -->
                     <input type="text" v-model="newPlayerName" class="input-field w-full h-12" placeholder="同伴者名を入力...">
@@ -19,13 +19,13 @@
             </div>
 
             <!-- 既存プレイヤーリストセクション -->
-            <div class="space-y-4 mb-6 bg-gray-50 p-4 rounded-lg shadow">
+            <div class="space-y-4 mb-8 bg-gray-50 rounded-lg">
                 <h2 class="text-xl font-semibold text-gray-800">登録済プレイヤーから選択👥</h2>
-                <div class="flex items-center gap-2 mb-4">
+                <div>
                     <input
                     v-model="searchQuery"
                     placeholder="名前で検索..."
-                    class="input-field w-full"
+                    class="input-field w-full h-12"
                     >
                     <button @click="clearSearch" class="btn-secondary">クリア</button>
                 </div>
@@ -316,9 +316,7 @@
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #84cc16;
 }
-.card {
-    @apply bg-white p-6 rounded-xl shadow-md;
-}
+
 .current-user-highlight {
     @apply bg-blue-50;
 }

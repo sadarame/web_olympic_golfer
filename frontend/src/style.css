@@ -37,6 +37,13 @@ h1 {
   line-height: 1.1;
 }
 
+h2 {
+  padding: 0.25em 0.5em;/*上下 左右の余白*/
+  color: #494949;/*文字色*/
+  background: transparent;/*背景透明に*/
+  border-left: solid 2px #90d36a;/*左線*/
+}
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -63,14 +70,14 @@ button:focus-visible {
   -webkit-backdrop-filter: blur(10px);
   border-radius: 1.5rem; /* より丸みのあるデザインに */
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); /* 影を強調 */
-  padding: 2rem;
+  padding: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 #app {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
 }
 
@@ -85,4 +92,6 @@ button:focus-visible {
   button {
     /* background-color: #f9f9f9; */
   }
+
+  
 }

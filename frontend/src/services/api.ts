@@ -2,6 +2,7 @@ import { getApiUrl, API_ENDPOINTS } from '../config/api';
 import router from '../router';
 import { useAuthStore } from '../stores/auth';
 import { auth } from '../firebase'; // Firebase auth インスタンスをインポート
+import { useLoadingStore } from '../stores/loading'; // <-- Add this import
 
 // API呼び出しの基本クラス
 class ApiService {
@@ -9,55 +10,62 @@ class ApiService {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = getApiUrl(endpoint);
-    
-    // 認証ヘッダーを動的に取得
-    const authHeaders = await this.getAuthHeaders();
+    const loadingStore = useLoadingStore(); // <-- Get loading store instance
+    loadingStore.startLoading(); // <-- Start loading
 
-    // デバッグ用ログの追加: リクエスト情報を表示
-    console.log('API Request:', {
-      url: url,
-      method: options.method || 'GET',
-      headers: { ...authHeaders, ...options.headers },
-      body: options.body ? JSON.parse(options.body.toString()) : undefined,
-    });
+    try { // <-- Wrap existing code in try-finally
+      const url = getApiUrl(endpoint);
+      
+      // 認証ヘッダーを動的に取得
+      const authHeaders = await this.getAuthHeaders();
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        ...authHeaders,
-        ...options.headers,
-      },
-    });
+      // デバッグ用ログの追加: リクエスト情報を表示
+      console.log('API Request:', {
+        url: url,
+        method: options.method || 'GET',
+        headers: { ...authHeaders, ...options.headers },
+        body: options.body ? JSON.parse(options.body.toString()) : undefined,
+      });
 
-    // デバッグ用ログの追加
-    console.log('API Response:', response);
-    const responseText = await response.text();
-    console.log('API Response Text:', responseText);
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          ...authHeaders,
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        // トークン切れの場合、認証情報をクリアしてホーム画面へリダイレクト
-        const authStore = useAuthStore();
-        authStore.clearAuthInfo(); // clearAuth から clearAuthInfo に変更
-        router.push('/');
-        throw new Error('Unauthorized: Token expired or invalid.');
+      // デバッグ用ログの追加
+      console.log('API Response:', response);
+      const responseText = await response.text();
+      console.log('API Response Text:', responseText);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // トークン切れの場合、認証情報をクリアしてホーム画面へリダイレクト
+          const authStore = useAuthStore();
+          authStore.clearAuthInfo(); // clearAuth から clearAuthInfo に変更
+          router.push('/');
+          throw new Error('Unauthorized: Token expired or invalid.');
+        }
+        // エラーレスポンスがJSON形式でない場合を考慮
+        try {
+          const errorData = JSON.parse(responseText);
+          throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+        } catch (e) {
+          throw new Error(`HTTP error! status: ${response.status}, Response: ${responseText}`);
+        }
       }
-      // エラーレスポンスがJSON形式でない場合を考慮
-      try {
-        const errorData = JSON.parse(responseText);
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      } catch (e) {
-        throw new Error(`HTTP error! status: ${response.status}, Response: ${responseText}`);
+
+      // レスポンスが空の場合を考慮
+      if (responseText === '') {
+        return {} as T; // 空のオブジェクトを返すか、適切なデフォルト値を返す
       }
-    }
 
-    // レスポンスが空の場合を考慮
-    if (responseText === '') {
-      return {} as T; // 空のオブジェクトを返すか、適切なデフォルト値を返す
+      return JSON.parse(responseText); // response.json() の代わりに手動でパース
+    } finally { // <-- Ensure stopLoading is called
+      loadingStore.stopLoading(); // <-- Stop loading
     }
-
-    return JSON.parse(responseText); // response.json() の代わりに手動でパース
   }
 
   // 認証ヘッダーを生成するヘルパー関数
@@ -161,7 +169,7 @@ class ApiService {
     return this.request(`${API_ENDPOINTS.UPDATE_COMPANION}?companionId=${id}`,
      {
       method: 'PUT',
-      body: JSON.stringify({ name, gender, relationship, memo }),
+      body: JSON.IFY(name, gender, relationship, memo ),
     });
   }
 

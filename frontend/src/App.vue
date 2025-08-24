@@ -4,6 +4,7 @@
     import { auth } from './firebase';
     import { useAuthStore } from './stores/auth';
     import AppHeader from './components/AppHeader.vue';
+    import LoadingSpinner from './components/LoadingSpinner.vue'; // Add this import
 
     const authStore = useAuthStore();
 
@@ -18,6 +19,7 @@
 <template>
   <AppHeader />
   <router-view />
+  <LoadingSpinner /> <!-- Add this line -->
 </template>
 
 <style scoped>
