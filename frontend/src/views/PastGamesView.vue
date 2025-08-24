@@ -15,9 +15,7 @@
       </div>
       <div v-else class="space-y-1">
         <div v-for="game in games" :key="game.gameId" class="transition-all">
-
-          
-           <!-- 履歴エリア -->
+           <!-- 一覧エリア -->
           <div class="flex justify-between items-center cursor-pointer bg-white rounded-xl p-2 shadow-md " @click="toggleDetails(game.gameId)">
             <div class="w-1/2 pr-2">
               <p class="text-sm whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
