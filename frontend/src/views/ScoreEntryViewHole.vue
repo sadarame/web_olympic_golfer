@@ -60,7 +60,7 @@
 
                     <!-- 手動入力 -->
                     <div class="flex items-center space-x-2">
-                        <button class="group btn-fancy w-14 h-14 text-2xl"
+                        <button class="group btn-fancy w-14 h-14 text-2xl touch-manipulation"
                             @click="updateScore(player.name, -1)">-</button>
                         <input type="number" v-model.number="playerScores[player.name].points"
                             class="input-field flex-grow h-14 text-center text-2xl">
@@ -287,7 +287,7 @@
         });
     });
 
-     initializeScores(); 
+    initializeScores(); 
 
 </script>
 
@@ -369,4 +369,10 @@ body {
     transform: translate(2px, 2px);
     box-shadow: 0px 0px rgb(20, 100, 20);
 }
+
+button
+{
+    @apply touch-manipulation;
+}
+
 </style>

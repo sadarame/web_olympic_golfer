@@ -137,7 +137,7 @@
       `レート: ${roundStore.wager || '100'}円/pt`,
       `ゴルフ場: ${roundStore.course || '未設定'}`,
       `メモ: ${roundStore.memo || 'なし'}`,
-      '',
+      'https://olynpicgolf.web.app/',
       '#OlympicGolfer #ゴルフ'
     ].join('\n');
 
