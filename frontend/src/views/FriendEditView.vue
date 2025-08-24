@@ -39,12 +39,18 @@
 
         <div class="flex justify-end space-x-2 mt-6">
           <button @click="updateCompanion" class="btn-primary">保存</button>
-          <router-link to="/friends" class="btn-secondary">キャンセル</router-link>
+          <router-link to="/friends" class="btn-secondary">戻る</router-link>
         </div>
       </div>
       <div v-else class="text-center text-gray-500 py-8">
         <p>Loading companion details...</p>
       </div>
+    </div>
+
+    <!-- Custom Alert Box -->
+    <div v-if="showAlert"
+        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-white text-gray-800 z-50 text-center">
+        <p class="font-bold text-lg">{{ alertMessage }}</p>
     </div>
   </div>
 </template>
@@ -58,6 +64,22 @@ import type { Companion } from '@/types'; // Import Companion interface
 const route = useRoute();
 const router = useRouter();
 const companion = ref<Companion | null>(null);
+
+const showAlert = ref(false);
+const alertMessage = ref('');
+let alertTimeout: ReturnType<typeof setTimeout> | null = null;
+
+const showAlertMessage = (message: string) => {
+    if (alertTimeout) {
+        clearTimeout(alertTimeout);
+    }
+    alertMessage.value = message;
+    showAlert.value = true;
+    alertTimeout = setTimeout(() => {
+        showAlert.value = false;
+        alertMessage.value = '';
+    }, 2000);
+};
 
 const fetchCompanion = async () => {
   try {
@@ -79,9 +101,13 @@ const updateCompanion = async () => {
         companion.value.relationship || null,
         companion.value.memo || null
       );
-      router.push('/friends');
+      showAlertMessage('更新しました');
+      setTimeout(() => {
+        router.push('/friends');
+      }, 2000);
     } catch (error) {
       console.error('Failed to update companion:', error);
+      showAlertMessage('更新に失敗しました');
     }
   }
 };

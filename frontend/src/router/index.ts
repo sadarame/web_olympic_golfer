@@ -94,6 +94,7 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   const roundStore = useRoundStore();
   console.log('Current round status:', roundStore.roundStatus,from.name, to.name, roundStore.roundId);
 
+  // 過去スコアからの戻り以外は入力データ失われるって出してホーム
   if (from.name === 'ScoreEntry' && to.name !== 'ResultView' && roundStore.roundId && roundStore.roundStatus !== 'completed') {
     if (window.confirm('入力中のデータは失われますが、よろしいですか？')) {
       try {
@@ -114,6 +115,12 @@ router.beforeEach(async (to, from, next) => { // Mark as async
     } else {
       return next(false);
     }
+  }
+
+  // 結果画面からスコア入力戻って、さらにプレイヤーセレクトに戻るボタンで戻る場合
+  if (from.name === 'ScoreEntry' && to.name === 'PlayerSelect' && roundStore.roundStatus === 'completed') {
+    roundStore.clearRouundInfo();
+    return next({ name: 'Home' });
   }
 
   next();

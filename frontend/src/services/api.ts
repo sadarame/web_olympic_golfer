@@ -169,7 +169,7 @@ class ApiService {
     return this.request(`${API_ENDPOINTS.UPDATE_COMPANION}?companionId=${id}`,
      {
       method: 'PUT',
-      body: JSON.IFY(name, gender, relationship, memo ),
+      body: JSON.stringify({ name, gender, relationship, memo }),
     });
   }
 

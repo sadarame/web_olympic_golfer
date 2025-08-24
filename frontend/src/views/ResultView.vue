@@ -16,17 +16,12 @@
             <div class="flex justify-between items-center">
               <div class="flex items-center space-x-3">
                 <span class="text-2xl">{{ getPlayerRankIcon(player.name) }}</span>
-                <span class="text-base font-semibold text-gray-800 max-w-[120px] break-all">{{ player.name }}</span>
+                <span class="text-lg font-semibold text-gray-800">{{ player.name }}</span>
               </div>
-              <div class="grid grid-cols-[auto,auto] justify-end items-baseline gap-x-2">
-                <!-- Row 1: Points -->
-                <div class="text-sm text-gray-600">ポイント</div>
-                <div class="text-sm font-bold text-green-600 text-right w-16 truncate">{{ getPlayerPoints(player.name) }}</div>
-                
-                <!-- Row 2: Amount -->
-                <div class="text-sm text-gray-600">金額</div>
-                <div class="text-sm font-bold text-right w-20 truncate" :class="getPlayerAmountClass(player.name)">
-                  ¥{{ getPlayerAmount(player.name) }}
+              <div class="text-right">
+                <span class="text-xl font-bold text-green-600">{{ getPlayerPoints(player.name) }} pt</span>
+                <div class="text-lg font-bold" :class="getPlayerAmountClass(player.name)">
+                    ¥{{ getPlayerAmount(player.name).toLocaleString() }}
                 </div>
               </div>
             </div>

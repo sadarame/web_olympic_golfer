@@ -37,7 +37,7 @@
                 <!-- プレイヤーごとのスコア入力セクション -->
                 <div v-for="player in selectedPlayers" :key="player.id" class="bg-white rounded-xl p-4 shadow-md">
                     <div class="flex justify-between items-center mb-4">
-                        <div class=" font-bold">{{ player.name }}</div>
+                        <div class="text-left font-bold">{{ player.name }}</div>
                         <div class="text-right">
                             <!-- ポイント -->
                             <span class="text-lg font-bold text-green-600">{{ playerScores[player.name]?.points || 0

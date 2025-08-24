@@ -14,10 +14,10 @@
         <p>対戦履歴がありません。</p>
       </div>
       <div v-else class="space-y-4">
-        <div v-for="game in games" :key="game.gameId" class="bg-white rounded-xl p-4 shadow-md transition-all">
+        <div v-for="game in games" :key="game.gameId" class="rounded-xl transition-all">
           <div class="flex justify-between items-center cursor-pointer" @click="toggleDetails(game.gameId)">
             <div class="w-1/2 pr-2">
-              <p class="font-bold text-base whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
+              <p class="text-sm whitespace-normal">{{ game.golfCourse || '未設定のコース' }}</p>
               <p class="text-sm text-gray-500">{{ new Date(game.createdAt).toLocaleDateString() }}</p>
             </div>
             <div class="flex items-center space-x-2">
@@ -148,16 +148,6 @@ const goHome = () => {
 </script>
 
 <style scoped>
-.card {
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  padding: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  margin: 1rem auto;
-}
 .btn-fancy {
   @apply relative inline-flex h-10 items-center justify-center overflow-hidden rounded-md border border-neutral-200 bg-transparent px-4 font-medium text-neutral-600 transition-all duration-100 [box-shadow:2px_2px_rgb(60_80_60)] active:translate-x-[1px] active:translate-y-[1px] active:[box-shadow:0px_0px_rgb(60_80_60)];
 }
