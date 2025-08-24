@@ -28,7 +28,7 @@
                     <div class="text-right mt-1">
                         <button @click="clearSearch" class="btn-secondary">クリア</button>
                     </div>
-                    <div class="space-y-1 h-50 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
+                                        <div class="space-y-1 h-64 overflow-y-scroll custom-scrollbar p-2 border border-gray-200 rounded-lg">
                         <div v-for="player in filteredPlayers" :key="player.id" @click="toggleSelection(player)"
                         :class="['player-list-item', { 'selected': isSelected(player), 'current-user-highlight': player.id === currentUser.id }]">
                             <div class="flex items-center space-x-3">
