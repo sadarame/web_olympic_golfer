@@ -84,6 +84,28 @@
         class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg shadow-xl bg-white text-gray-800 z-50 text-center">
         <p class="font-bold text-lg">{{ alertMessage }}</p>
     </div>
+    <!-- カスタム確認ダイアログ -->
+    <div v-if="showCustomConfirm"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div
+            class="bg-white p-4 sm:p-6 rounded-lg border border-gray-200 shadow-2xl text-gray-800 text-center w-full max-w-xs sm:max-w-sm">
+            <!-- メッセージ -->
+            <p class="font-bold text-base sm:text-lg mb-4 break-words">
+                {{ customConfirmMessage }}
+            </p>
+            <!-- ボタン配置 -->
+            <div class="flex justify-center space-x-2 sm:space-x-4">
+                <button @click="handleConfirmYes"
+                    class="px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base border border-green-500 rounded-md bg-green-50 hover:bg-green-100 shadow">
+                    はい
+                </button>
+                <button @click="handleConfirmNo"
+                    class="px-4 py-1.5 sm:px-6 sm:py-2 text-sm sm:text-base border border-gray-400 rounded-md bg-gray-50 hover:bg-gray-100 shadow">
+                    いいえ
+                </button>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -173,6 +195,24 @@
     const alertMessage = ref('');
     let alertTimeout: ReturnType<typeof setTimeout> | null = null;
 
+    const showCustomConfirm = ref(false);
+    const customConfirmMessage = ref('');
+    let confirmCallback: ((confirmed: boolean) => void) | null = null; // To store the callback for confirmation
+
+// カスタム確認ダイアログの「はい」ボタンがクリックされた時の処理
+const handleConfirmYes = () => {
+    if (confirmCallback) {
+        confirmCallback(true);
+    }
+};
+
+// カスタム確認ダイアログの「いいえ」ボタンがクリックされた時の処理
+const handleConfirmNo = () => {
+    if (confirmCallback) {
+        confirmCallback(false);
+    }
+};
+
     // スコアを初期化する関数
     const initializeScores = () => {
         // データが存在しない場合のみ初期化
@@ -237,36 +277,52 @@
 
     // 結果画面へ遷移する関数
     const goToResult = async () => {
-        // ユーザーに保存していいか確認
-        if (!confirm('スコアを保存してラウンドを終了しますか？')) {
-            return; // キャンセルされた場合は処理を中断
-        }
+        console.log("ゲームデータ保存処理開始");
 
-        try {
-            // ゲームデータを準備
-            const gameId = roundStore.roundId;
-            const updatedPlayersData = selectedPlayers.value.map(player => ({
-                id: player.id,
-                name: player.name,
-                points: playerScores.value[player.name]?.points || 0,
-                amount: playerScores.value[player.name]?.amount || 0,
-            }));
-            const newStatus = 'completed';
+        // カスタム確認ダイアログを表示
+        showCustomConfirm.value = true;
+        customConfirmMessage.value = 'スコアを保存してラウンドを終了しますか？';
 
-            // バックエンドにゲームデータを更新・保存を依頼
-            await apiService.updateScoreAndGameStatus({
-                gameId,
-                players: updatedPlayersData,
-                status: newStatus,
-            });
+        return new Promise<void>((resolve, reject) => {
+            confirmCallback = async (confirmed: boolean) => {
+                showCustomConfirm.value = false; // Hide the modal
+                confirmCallback = null; // Clear the callback
 
-            // ステータスを変更してリザルト画面へ遷移
-            roundStore.setStatus(newStatus);
-            router.push({ name: 'ResultView' });
-        } catch (error) {
-            console.error('Failed to save game data:', error);
-            showAlertMessage('ゲームデータの保存に失敗しました。');
-        }
+                if (!confirmed) {
+                    console.log('保存がキャンセルされました。');
+                    reject(new Error('保存がキャンセルされました。'));
+                    return;
+                }
+
+                try {
+                    // ゲームデータを準備
+                    const gameId = roundStore.roundId;
+                    const updatedPlayersData = selectedPlayers.value.map(player => ({
+                        id: player.id,
+                        name: player.name,
+                        points: playerScores.value[player.name]?.points || 0,
+                        amount: playerScores.value[player.name]?.amount || 0,
+                    }));
+                    const newStatus = 'completed';
+
+                    // バックエンドにゲームデータを更新・保存を依頼
+                    await apiService.updateScoreAndGameStatus({
+                        gameId,
+                        players: updatedPlayersData,
+                        status: newStatus,
+                    });
+
+                    // ステータスを変更してリザルト画面へ遷移
+                    roundStore.setStatus(newStatus);
+                    router.push({ name: 'ResultView' });
+                    resolve();
+                } catch (error) {
+                    console.error('Failed to save game data:', error);
+                    showAlertMessage('ゲームデータの保存に失敗しました。');
+                    reject(error);
+                }
+            };
+        });
     };
 
     onMounted(() => {

@@ -86,9 +86,13 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   const isAuthenticated = authStore.getIsAuthenticated;
 
   if ((to.name !== 'Home' && to.name !== 'Review') && !isAuthenticated) {
-    console.log('User is not authenticated, redirecting to Home');
     return next({ name: 'Home' });
 
+  }
+
+  // ホームからスコア入力に行くのはダメ
+  if(from.name === 'Home' && to.name === 'ScoreEntry') {
+    return next({ name: 'Home' });
   }
 
   const roundStore = useRoundStore();
