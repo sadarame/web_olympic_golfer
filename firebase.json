@@ -28,45 +28,23 @@
   ],
   "hosting": {
     "public": "frontend/dist",
-    "cleanUrls": false,              
+    "cleanUrls": false,
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "rewrites": [
-      {
-        "source": "/about",
-        "destination": "/about.html"
-      },
-      {
-        "source": "/contact",
-        "destination": "/contact.html"
-      },
-      {
-        "source": "/features",
-        "destination": "/features.html"
-      },
-      {
-        "source": "/landing",
-        "destination": "/landing.html"
-      },
-      {
-        "source": "/lp",
-        "destination": "/lp.html"
-      },
-      {
-        "source": "/privacy",
-        "destination": "/privacy.html"
-      },
-      {
-        "source": "/terms",
-        "destination": "/terms.html"
-      },
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+"rewrites": [
+      { "source": "/",        "destination": "/landing.html" },
+       { "source": "/home",   "destination": "/home.html" },
+      { "source": "/about",   "destination": "/about.html" },
+      { "source": "/contact", "destination": "/contact.html" },
+      { "source": "/features","destination": "/features.html" },
+      { "source": "/privacy", "destination": "/privacy.html" },
+      { "source": "/terms",   "destination": "/terms.html" },
+      { "source": "/app/**",  "destination": "/app/index.html" },
+      { "source": "/index",   "destination": "/index.html" },
+      { "source": "**",       "destination": "/landing.html" }
     ]
   }
 }
