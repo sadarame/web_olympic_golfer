@@ -24,6 +24,8 @@
       <a href="/landing.html" class="inline-flex items-center gap-2 font-bold text-lg">
         <span class="text-2xl">⛳️</span> Olympic Golf
       </a>
+      
+      <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium">
         <a href="#features" class="hover:text-green-700">機能</a>
         <a href="#how" class="hover:text-green-700">使い方</a>
@@ -31,9 +33,29 @@
         <a href="/about" class="hover:text-green-700">オリンピックとは</a>
         <a href="/home" class="hover:text-green-700">機能詳細</a>
       </nav>
+      
       <div class="flex items-center gap-3">
-        <a href="/app/" class="inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold shadow-sm">今すぐはじめる</a>
+        <a href="/app/" class="hidden sm:inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-4 sm:px-5 py-2 sm:py-2.5 text-sm font-bold shadow-sm">今すぐはじめる</a>
+        
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+          </svg>
+        </button>
       </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <div id="mobile-menu" class="hidden md:hidden">
+      <nav class="px-4 pt-2 pb-4 border-t border-gray-200 flex flex-col gap-4">
+        <a href="#features" class="block text-sm font-medium hover:text-green-700">機能</a>
+        <a href="#how" class="block text-sm font-medium hover:text-green-700">使い方</a>
+        <a href="#faq" class="block text-sm font-medium hover:text-green-700">FAQ</a>
+        <a href="/about" class="block text-sm font-medium hover:text-green-700">オリンピックとは</a>
+        <a href="/home" class="block text-sm font-medium hover:text-green-700">機能詳細</a>
+        <a href="/app/" class="mt-2 inline-flex items-center justify-center rounded-full bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 text-sm font-bold shadow-sm">今すぐはじめる</a>
+      </nav>
     </div>
   </header>
 
@@ -248,6 +270,13 @@
 
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
   </script>
 </body>
 </html>
