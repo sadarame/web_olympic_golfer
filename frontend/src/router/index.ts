@@ -130,4 +130,11 @@ router.beforeEach(async (to, from, next) => { // Mark as async
   next();
 });
 
+router.afterEach((to) => {
+  (window as any).gtag('config', 'G-12W0MY2D42', {
+    page_path: to.path,
+    page_title: to.name?.toString(),
+  });
+});
+
 export default router;
