@@ -54,3 +54,23 @@ This method starts a development server for the frontend, allowing for hot-reloa
     npm run dev
     ```
     This will start the frontend development server (typically on `http://localhost:5173`). It is configured to automatically connect to the Firebase Functions emulator running on `http://localhost:5001` when in development mode.
+
+## デプロイ
+
+アプリケーションをFirebase HostingとFunctionsにデプロイするには、次の手順に従います。
+
+1.  **フロントエンドアプリケーションのビルド:**
+    `frontend`ディレクトリに移動し、ビルドコマンドを実行します。
+    ```bash
+    cd frontend
+    npm run build
+    ```
+    これにより、本番環境用のアセットを含む`dist`ディレクトリが作成されます。
+
+2.  **Firebaseへのデプロイ:**
+    プロジェクトのルートディレクトリに戻り、デプロイコマンドを実行します。
+    ```bash
+    cd ..
+    firebase deploy
+    ```
+    このコマンドは、`frontend/dist`のホスティングコンテンツと`backend/functions`の関数の両方をデプロイします。
